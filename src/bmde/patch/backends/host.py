@@ -1,5 +1,5 @@
 import shutil
-from pathlib import Path
+
 from .base import PatchBackend
 from ..spec import PatchSpec
 from ...core.exec import run_cmd, ExecOptions

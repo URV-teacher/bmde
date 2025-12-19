@@ -1,11 +1,11 @@
 """
 Defines the schema of settings of the application.
 """
-from typing import Literal, Optional, List
+from typing import Optional, List
 
 from pydantic import BaseModel, FilePath
 
-from bmde.core.types import BackendName, RunBackendName, RunDockerOutputName, LogLevel, LogLevelLiteral
+from bmde.core.types import BackendName, RunBackendName, RunDockerOutputName, LogLevelLiteral
 
 
 class LoggingSettings(BaseModel):

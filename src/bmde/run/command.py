@@ -13,7 +13,7 @@ from ..config.schema import Settings
 from ..core.exec import ExecOptions
 from ..core.logging import setup_logging
 
-log = logging.getLogger("bmde.run")
+log = logging.getLogger(__name__)
 
 def run_nds_command(
         nds: Path, image: Path, shell: bool, arguments: list[str], settings: Settings, dry_run: bool = False

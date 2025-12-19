@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Sequence, Literal
+from typing import Optional, Sequence
 
-from bmde.core.types import Backend, BackendName
+from bmde.core.types import BackendName
 
 
 @dataclass

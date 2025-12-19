@@ -1,4 +1,3 @@
-# src/bmde/run/command.py
 from __future__ import annotations
 
 import logging
@@ -8,9 +7,8 @@ from .service import run
 from .spec import GitSpec
 from ..config.schema import Settings
 from ..core.exec import ExecOptions
-from ..core.logging import setup_logging
 
-log = logging.getLogger("bmde.git")
+log = logging.getLogger(__name__)
 
 def git_nds_command(
         d: Path, shell: bool, arguments: list[str], settings: Settings, dry_run: bool = False

@@ -1,6 +1,6 @@
 import logging
 import shutil
-from pathlib import Path
+
 from .base import GitBackend
 from ..spec import GitSpec
 from ...core.exec import run_cmd, ExecOptions
@@ -15,7 +15,6 @@ class HostRunner(GitBackend):
         entry = spec.entrypoint or (shutil.which("git"))
         if not entry:
             return 127
-        #args = [entry, str(spec.d)]
         args = []
         args += list(spec.arguments)
         log.debug("Arguments for git in host backend: " + str(args))

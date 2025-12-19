@@ -1,5 +1,7 @@
 from __future__ import annotations
-import logging, shlex, subprocess
+
+import logging
+import subprocess
 from dataclasses import dataclass
 
 log = logging.getLogger(__name__)

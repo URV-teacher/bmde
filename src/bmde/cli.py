@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Optional, Annotated, LiteralString
 
 import typer
-from pydantic import FilePath
 from pygments.lexers import shell
 from rich.console import Console
 
@@ -26,7 +25,7 @@ from .git.command import git_nds_command
 from .shared_options import (
     RunBackendOpt, EntrypointOpt, DebugOpt, PortOpt,
     DryRunOpt, VerboseOpt, QuietOpt, DockerScreenOpt, BackendOpt, ArgumentsOpt, DirectoryOpt, ShellOpt,
-    DirectoryTargetOpt, DirectoryTestOpt, VeryVerboseOpt, VeryQuietOpt, LogFileOpt, InfoOpt,
+    VeryVerboseOpt, VeryQuietOpt, LogFileOpt, InfoOpt,
 )
 
 console = Console()
