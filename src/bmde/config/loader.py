@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import logging
 import os
 from pathlib import Path
 import tomllib
 from .schema import Settings
+from ..core import logging
 from ..core.paths import find_upwards
 
-log = logging.getLogger(__name__)
+log = logging.get_logger(__name__)
 
 def read_toml(path: Path) -> dict:
     """

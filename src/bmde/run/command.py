@@ -4,16 +4,16 @@ into the specification of the pure logic of the command, for example, translatin
 """
 from __future__ import annotations
 
-import logging
 from pathlib import Path
 
 from .service import run, resolve_nds
 from .spec import RunSpec
 from ..config.schema import Settings
+from ..core import logging
 from ..core.exec import ExecOptions
 from ..core.logging import setup_logging
 
-log = logging.getLogger(__name__)
+log = logging.get_logger(__name__)
 
 def run_nds_command(
         nds: Path, image: Path, shell: bool, arguments: list[str], settings: Settings, dry_run: bool = False

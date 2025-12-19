@@ -1,16 +1,16 @@
-import logging
 import os
 import subprocess
 
 from .backend import PatchBackend
 from ..spec import PatchSpec
+from ...core.docker import can_run_docker
 from ...core.exec import run_cmd, ExecOptions
 
-log = logging.getLogger(__name__)
+log = logging.get_logger(__name__)
 
 class DockerRunner(PatchBackend):
     def is_available(self) -> bool:
-        return True  # optionally check docker info
+        return can_run_docker()
 
     def run(self, spec: PatchSpec, exec_opts: ExecOptions) -> int:
         entry = []

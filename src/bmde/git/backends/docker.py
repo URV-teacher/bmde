@@ -1,4 +1,3 @@
-import logging
 import os
 import time
 import subprocess
@@ -7,11 +6,12 @@ from typing import Optional
 
 from .backend import GitBackend
 from ..spec import GitSpec
-from ...core.docker import docker_inspect_health
+from ...core import logging
+from ...core.docker import docker_inspect_health, docker_container_exists, can_run_docker
 from ...core.exec import run_cmd, ExecOptions
 from ...core.os_utils import host_uid_gid
 
-log = logging.getLogger(__name__)
+log = logging.get_logger(__name__)
 
 
 
@@ -70,7 +70,7 @@ def _ensure_vpn_healthy(spec: GitSpec, exec_opts: ExecOptions, timeout_s: int = 
     if status == "healthy":
         log.debug(f"VPN is healthy")
         return
-    elif _docker_container_exists(container_name):
+    elif docker_container_exists(container_name):
         log.debug(f"Container '{container_name}' exists but is not healthy ({status}); removing it...")
         try:
             subprocess.run(
@@ -111,7 +111,7 @@ def _ensure_vpn_healthy(spec: GitSpec, exec_opts: ExecOptions, timeout_s: int = 
 
 class DockerRunner(GitBackend):
     def is_available(self) -> bool:
-        return True  # optionally check docker info
+        return can_run_docker()
 
     def run(self, spec: GitSpec, exec_opts: ExecOptions) -> int:
         """

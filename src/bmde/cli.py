@@ -8,7 +8,6 @@ to data coming from the CLI, the syntax of the overrides is not responsibility o
 """
 from __future__ import annotations
 
-import logging
 import os
 from pathlib import Path
 from typing import Optional, Annotated, LiteralString
@@ -19,6 +18,7 @@ from rich.console import Console
 
 from .config.loader import load_settings
 from .config.schema import Settings
+from .core import logging
 from .core.logging import setup_logging
 from .core.types import PROJECT_DIR, LogLevel, NOW
 from .git.command import git_nds_command
@@ -30,7 +30,7 @@ from .shared_options import (
 
 console = Console()
 app = typer.Typer(add_completion=False, help="bmde – BMDE CLI", no_args_is_help=True)  # TODO Completion does not work
-log = logging.getLogger("bmde.cli")
+log = logging.get_logger(__name__)
 
 def get_default_log_path() -> LiteralString | str | bytes:
     return os.path.join(PROJECT_DIR, "logs", NOW + ".log")
@@ -171,7 +171,6 @@ def build_command(
         ctx: typer.Context,
         arguments: ArgumentsOpt = (),
         directory: DirectoryOpt = os.getcwd(),
-        shell: ShellOpt = False,
         backend: BackendOpt = None,
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False
@@ -186,15 +185,10 @@ def build_command(
     log.debug("CLI options provided:\n"
               f"- Arguments: {str(arguments)}\n"
               f"- Directory: {str(directory)}\n"
-              f"- Shell: {str(shell)}\n"
               f"- Backend: {str(backend)}\n"
               f"- Entrypoint: {str(entrypoint)}\n"
               f"- Dry run: {str(dry_run)}\n"
               )
-
-    # CLI logic
-    if entrypoint is not None and shell is True:
-        log.warning("The --entrypoint option is incompatible with --shell, entrypoint will be ignored")
 
     # CLI overrides
     if backend is not None:
@@ -205,14 +199,13 @@ def build_command(
     log.debug("Final settings for build command:\n"
               f"- Arguments: {str(arguments)}\n"
               f"- Directory: {str(directory)}\n"
-              f"- Shell: {str(shell)}\n"
               f"- Dry run: {str(dry_run)}\n"
               f"- Backend: {str(settings.build.backend)}\n"
               f"- Entrypoint: {str(settings.build.entrypoint)}\n"
               )
 
     build_nds_command(
-        d=directory, shell=shell,
+        d=directory,
         arguments=arguments or [], settings=settings, dry_run=dry_run
     )
 

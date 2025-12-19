@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-import logging
 from pathlib import Path
 
 from .backends.docker import DockerRunner
 from .backends.flatpak import FlatpakRunner
 from .backends.host import HostRunner
 from .spec import RunSpec
+from ..core import logging
 from ..core.exec import ExecOptions
 
-log = logging.getLogger(__name__)
+log = logging.get_logger(__name__)
 
 
 def validate_nds_file(p: Path) -> Path:

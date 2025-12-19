@@ -1,11 +1,11 @@
-import logging
 import shutil
-from pathlib import Path
+
 from .backend import RunBackend
 from ..spec import RunSpec
+from ...core import logging
 from ...core.exec import run_cmd, ExecOptions
 
-log = logging.getLogger(__name__)
+log = logging.get_logger(__name__)
 
 
 class HostRunner(RunBackend):

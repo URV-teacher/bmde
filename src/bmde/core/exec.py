@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import logging
 import subprocess
 from dataclasses import dataclass
 
-log = logging.getLogger(__name__)
+from bmde.core import logging
+
+log = logging.get_logger(__name__)
 
 
 @dataclass

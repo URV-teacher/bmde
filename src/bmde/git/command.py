@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-import logging
 from pathlib import Path
 
 from .service import run
 from .spec import GitSpec
 from ..config.schema import Settings
+from ..core import logging
 from ..core.exec import ExecOptions
 
-log = logging.getLogger(__name__)
+log = logging.get_logger(__name__)
 
 def git_nds_command(
         d: Path, shell: bool, arguments: list[str], settings: Settings, dry_run: bool = False
