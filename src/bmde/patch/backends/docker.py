@@ -8,22 +8,6 @@ from ...core.exec import run_cmd, ExecOptions
 
 log = logging.getLogger(__name__)
 
-def _host_uid_gid() -> tuple[int, int] | None:
-    """Return (uid, gid) if available on this OS; otherwise None."""
-    # Prefer Python stdlib where available (POSIX)
-    if hasattr(os, "getuid") and hasattr(os, "getgid"):
-        try:
-            return os.getuid(), os.getgid()
-        except Exception:
-            pass
-    # Fallback to `id` command (e.g., inside POSIX shells without getuid support).
-    try:
-        uid = subprocess.check_output(["id", "-u"], text=True).strip()
-        gid = subprocess.check_output(["id", "-g"], text=True).strip()
-        return int(uid), int(gid)
-    except Exception:
-        return None
-
 class DockerRunner(PatchBackend):
     def is_available(self) -> bool:
         return True  # optionally check docker info

@@ -5,24 +5,10 @@ import subprocess
 from .backend import BuildBackend
 from ..spec import BuildSpec
 from ...core.exec import run_cmd, ExecOptions
+from ...core.os_utils import host_uid_gid
 
 log = logging.getLogger(__name__)
 
-def _host_uid_gid() -> tuple[int, int] | None:
-    """Return (uid, gid) if available on this OS; otherwise None."""
-    # Prefer Python stdlib where available (POSIX)
-    if hasattr(os, "getuid") and hasattr(os, "getgid"):
-        try:
-            return os.getuid(), os.getgid()
-        except Exception:
-            pass
-    # Fallback to `id` command (e.g., inside POSIX shells without getuid support).
-    try:
-        uid = subprocess.check_output(["id", "-u"], text=True).strip()
-        gid = subprocess.check_output(["id", "-g"], text=True).strip()
-        return int(uid), int(gid)
-    except Exception:
-        return None
 
 class DockerRunner(BuildBackend):
     def is_available(self) -> bool:
@@ -42,7 +28,7 @@ class DockerRunner(BuildBackend):
         envs = []
         ports = []
         workdir_opt = ["-w", f"/input/{dirname}"]  # Workdir
-        uid, gid = _host_uid_gid()
+        uid, gid = host_uid_gid()
         user_opt = ["--user", f"{uid}:{gid}"]
 
         run_args = ["docker", "run", "--pull=always", "--rm", "-it", *user_opt, *mounts, *envs, *ports, *entry,

@@ -7,40 +7,12 @@ from typing import Optional
 
 from .backend import GitBackend
 from ..spec import GitSpec
+from ...core.docker import docker_inspect_health
 from ...core.exec import run_cmd, ExecOptions
+from ...core.os_utils import host_uid_gid
 
 log = logging.getLogger(__name__)
 
-
-def _host_uid_gid() -> tuple[int, int] | None:
-    """Return (uid, gid) if available on this OS; otherwise None."""
-    # Prefer Python stdlib where available (POSIX)
-    if hasattr(os, "getuid") and hasattr(os, "getgid"):
-        try:
-            return os.getuid(), os.getgid()
-        except Exception:
-            pass
-    # Fallback to `id` command (e.g., inside POSIX shells without getuid support).
-    try:
-        uid = subprocess.check_output(["id", "-u"], text=True).strip()
-        gid = subprocess.check_output(["id", "-g"], text=True).strip()
-        return int(uid), int(gid)
-    except Exception:
-        return None
-
-def _docker_inspect_health(container_name: str) -> Optional[str]:
-    """
-    Return health status string: "healthy", "unhealthy", "starting", or None if not found/no health.
-    """
-    try:
-        out = subprocess.check_output(
-            ["docker", "inspect", "-f", "{{.State.Health.Status}}", container_name],
-            text=True, stderr=subprocess.STDOUT
-        ).strip()
-        return out if out else None
-    except subprocess.CalledProcessError:
-        # Container absent or no Health configured
-        return None
 
 
 def _run_vpn(spec: GitSpec, exec_opts: ExecOptions, container_name: str) -> Optional[int]:
@@ -84,15 +56,7 @@ def _run_vpn(spec: GitSpec, exec_opts: ExecOptions, container_name: str) -> Opti
 
     run_cmd(run_args, exec_opts)
 
-def _docker_container_exists(container_name: str) -> bool:
-    try:
-        subprocess.check_output(
-            ["docker", "inspect", container_name],
-            stderr=subprocess.DEVNULL
-        )
-        return True
-    except subprocess.CalledProcessError:
-        return False
+
 
 def _ensure_vpn_healthy(spec: GitSpec, exec_opts: ExecOptions, timeout_s: int = 20000) -> None:
     """
@@ -100,7 +64,7 @@ def _ensure_vpn_healthy(spec: GitSpec, exec_opts: ExecOptions, timeout_s: int = 
     If absent or not healthy, start with `docker compose up -d forti-vpn` and wait.
     """
     container_name = "forti-vpn"
-    status = _docker_inspect_health(container_name)
+    status = docker_inspect_health(container_name)
 
     log.debug("VPN container status: " + str(status))
     if status == "healthy":
@@ -124,7 +88,7 @@ def _ensure_vpn_healthy(spec: GitSpec, exec_opts: ExecOptions, timeout_s: int = 
     previous_state = None  # Will be used to determine if the container started and stopped, which means failure
     deadline = time.time() + timeout_s
     while time.time() < deadline:
-        status = _docker_inspect_health(container_name)
+        status = docker_inspect_health(container_name)
         if status == "healthy":
             log.info(f"VPN is healthy.")
             return
@@ -179,7 +143,7 @@ class DockerRunner(GitBackend):
 
         # share network namespace with the running VPN container
         net = ["--network", "container:forti-vpn"]
-        uid, gid = _host_uid_gid()
+        uid, gid = host_uid_gid()
         user_opt = ["--user", f"{uid}:{gid}"]
 
         envs: list[str] = [
