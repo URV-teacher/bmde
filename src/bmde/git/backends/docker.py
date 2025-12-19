@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
-from .base import GitBackend
+from .backend import GitBackend
 from ..spec import GitSpec
 from ...core.exec import run_cmd, ExecOptions
 

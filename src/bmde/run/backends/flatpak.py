@@ -1,10 +1,10 @@
 import shutil
-from .base import RunnerBackend
+from .backend import RunBackend
 from ..spec import RunSpec
 from ...core.exec import run_cmd, ExecOptions
 
 
-class FlatpakRunner(RunnerBackend):
+class FlatpakRunner(RunBackend):
     def is_available(self) -> bool:
         return shutil.which("flatpak")
 

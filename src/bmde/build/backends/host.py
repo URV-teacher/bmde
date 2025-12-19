@@ -1,7 +1,7 @@
 import logging
 import shutil
 from pathlib import Path
-from .base import BuildBackend
+from .backend import BuildBackend
 from ..spec import BuildSpec
 from ...core.exec import run_cmd, ExecOptions
 

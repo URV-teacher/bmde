@@ -1,13 +1,13 @@
 import logging
 
-from .base import RunnerBackend
+from .backend import RunBackend
 from ..spec import RunSpec
 from ...core.exec import run_cmd, ExecOptions
 
 log = logging.getLogger(__name__)
 
 
-class DockerRunner(RunnerBackend):
+class DockerRunner(RunBackend):
     def is_available(self) -> bool:
         return True  # optionally check docker info
 

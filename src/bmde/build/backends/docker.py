@@ -2,7 +2,7 @@ import logging
 import os
 import subprocess
 
-from .base import BuildBackend
+from .backend import BuildBackend
 from ..spec import BuildSpec
 from ...core.exec import run_cmd, ExecOptions
 

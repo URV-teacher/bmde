@@ -1,14 +1,14 @@
 import logging
 import shutil
 from pathlib import Path
-from .base import RunnerBackend
+from .backend import RunBackend
 from ..spec import RunSpec
 from ...core.exec import run_cmd, ExecOptions
 
 log = logging.getLogger(__name__)
 
 
-class HostRunner(RunnerBackend):
+class HostRunner(RunBackend):
     def is_available(self) -> bool:
         return shutil.which("desmume") or shutil.which("desmume-cli")
 

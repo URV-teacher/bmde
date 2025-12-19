@@ -1,6 +1,6 @@
 import shutil
 
-from .base import PatchBackend
+from .backend import PatchBackend
 from ..spec import PatchSpec
 from ...core.exec import run_cmd, ExecOptions
 
