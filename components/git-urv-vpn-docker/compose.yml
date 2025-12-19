@@ -1,0 +1,85 @@
+services:
+  forti-vpn:
+    image: aleixmt/forticlient:latest
+    container_name: forti-vpn
+    build:
+      context: .
+      dockerfile: vpn.Dockerfile
+    cap_add:
+      - NET_ADMIN  # Needed or the connections through the VPN never succeed
+    devices:
+      - /dev/ppp  # Needed or the connections through the VPN never succeed
+    volumes:
+      - ./data:/data
+      - ./repos:/repos
+      - ./logs:/var/log
+    secrets:
+      - vpn_username
+      - vpn_password
+      - vpn_host
+      - vpn_realm
+      - vpn_port
+      - vpn_cert
+      - vpn_test_dns
+      - vpn_test_ip
+    healthcheck:
+      test: ["CMD", "sh", "-c", "test -f /READY || exit 1"]  # but `sh` must exist
+      interval: 5s        # check every 5 seconds
+      timeout: 2s         # give each check up to 2 seconds
+      retries: 12         # mark unhealthy after 12 failed checks (≈ 1 minute)
+      start_period: 120s   # grace period before health checks begin
+
+  git:
+    image: aleixmt/git-sshpass:latest
+    depends_on:
+      forti-vpn:
+        condition: service_healthy
+
+    container_name: git
+    build:
+      context: .
+      dockerfile: git.Dockerfile
+    volumes:
+      - ./repos:/repos
+      - ./logs:/var/log
+    secrets:
+      - ssh_username
+      - ssh_password
+      - ssh_host
+      - git_name
+      - git_email
+    network_mode: "service:forti-vpn"
+    command: [ "clone", "$DNI@$HOST:comp_44" ]
+
+
+
+
+secrets:
+  ssh_username:
+    file: secrets/SSH_USERNAME
+  ssh_password:
+    file: secrets/SSH_PASSWORD
+  ssh_host:
+    file: secrets/SSH_HOST
+
+  git_name:
+    file: secrets/GIT_NAME
+  git_email:
+    file: secrets/GIT_EMAIL
+
+  vpn_username:
+    file: secrets/VPN_USERNAME
+  vpn_password:
+    file: ./secrets/VPN_PASSWORD
+  vpn_realm:
+    file: secrets/VPN_REALM
+  vpn_host:
+    file: secrets/VPN_HOST
+  vpn_port:
+    file: ./secrets/VPN_PORT
+  vpn_cert:
+    file: ./secrets/VPN_CERT
+  vpn_test_dns:
+    file: ./secrets/VPN_TEST_DNS
+  vpn_test_ip:
+    file: ./secrets/VPN_TEST_IP

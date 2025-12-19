@@ -1,0 +1,17 @@
+services:
+  bmde-linux:
+    image: aleixmt/bmde-linux:latest
+    container_name: bmde-linux
+    # Uncomment the following lines to build from a local Dockerfile instead of pulling from Docker Hub. You may use
+    # this configuration to extend the base bmde Docker image with your own custom infrastructure.
+    #build:
+    #  context: .
+    #  dockerfile: Dockerfile
+    volumes:
+     - ./:/input/my-project  # Makefile has to be in the same directory as compose.yml
+    # Add " && dlditool /bmde/dlditool/mpcf.dldi /input/input.nds" to entrypoint to patch the rom after compiling it
+    entrypoint: sh -c "cd /input && make"  # Comment to be able to provide a custom entrypoint if extending the image
+    # Fill with the values from d -u and id -g (usually 1000 and 1000) to have the binaries owned by your user.
+    # Comment it if you do not care to have your binaries owned by root.
+    user: 1000:1000
+

@@ -1,0 +1,16 @@
+services:
+  runner-cli:
+    container_name: runner-cli
+    # Uncomment the following lines to build from a local vpn.Dockerfile instead of pulling from Docker Hub. You may use
+    # this configuration to extend the base bmde Docker image with your own custom infrastructure.
+    #build:
+    #  context: .
+    #  dockerfile: vpn.Dockerfile
+    volumes:
+      - ./:/roms/
+      - ./fs:/fs
+    #entrypoint: sh -c "desmume-cli /roms/rom.nds --disable-sound --cflash-image /fs/fat.img"
+    # Fill with the values from d -u and id -g (usually 1000 and 1000) to have the binaries owned by your user.
+    # Comment it if you do not care to have your binaries owned by root.
+    user: 1000:1000
+

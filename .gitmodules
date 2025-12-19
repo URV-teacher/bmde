@@ -1,0 +1,12 @@
+[submodule "components/devkitarm-nds-docker"]
+	path = components/devkitarm-nds-docker
+	url = https://github.com/URV-teacher/devkitarm-nds-docker
+[submodule "components/desmume-docker"]
+	path = components/desmume-docker
+	url = https://github.com/URV-teacher/desmume-docker
+[submodule "components/git-urv-vpn-docker"]
+	path = components/git-urv-vpn-docker
+	url = https://github.com/URV-teacher/git-urv-vpn-docker
+[submodule "components/dlditool-docker"]
+	path = components/dlditool-docker
+	url = https://github.com/URV-teacher/dlditool-docker

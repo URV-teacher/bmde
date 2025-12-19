@@ -1,0 +1,3 @@
+services:
+  bmde-linux-test:
+    build: .

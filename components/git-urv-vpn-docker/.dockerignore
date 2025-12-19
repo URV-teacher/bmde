@@ -1,0 +1,36 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore Git-related files
+.git
+.gitignore
+
+# Ignore editor and temporary files
+*.swp
+*.swo
+*.bak
+*~
+*.tmp
+*.log
+
+# Ignore compiled and cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore input and output directories since they are mounted as volumes
+input/
+output/
+
+# Ignore Docker-related files that should not be copied
+compose.yml
+entrypoint.sh~
+vpn.Dockerfile
+LICENSE
+README.md
+.gitignore
+
+# Ignore other project folders
+.github/
+.idea/
