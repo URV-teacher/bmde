@@ -308,4 +308,12 @@ system variables, global configuration file, specific configuration file of the
 repo, specific
 configuration args for the execution.
 
+# WIP
+Arm syntax workflow autopublish into vscode market 
+Repo vscode custom, dockerfile vscode 
+edit command
+debug command
+additional controls of desmume (needs compilation)
+
+
 # Acknowledgements

@@ -1,6 +1,0 @@
-Afegir dockerfile a desmumecli per a compilar la 0.9.11
-Arma synrax workflow autopublicació y creació d'article a botiga 
-Instalació bmde Linux amb scriot sobre màquina normal
-Repo vscode custom, dockerfile vscode 
-Fer passar gdb stubs amb desmume cli
-
