@@ -16,7 +16,7 @@ class HostRunner(GitBackend):
         entry = spec.entrypoint or (shutil.which("git"))
         if not entry:
             return 127
-        args = []
+        args = [entry]
         args += list(spec.arguments)
         log.debug("Arguments for git in host backend: " + str(args))
         return run_cmd(args, exec_opts)

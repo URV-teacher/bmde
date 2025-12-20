@@ -20,8 +20,7 @@ from .build.command import build_command
 from .config.loader import load_settings
 from .config.schema import Settings
 from .core import logging
-from .core.logging import setup_logging, get_default_log_path
-from .core.types import LogLevel
+from .core.logging import setup_logging, get_default_log_path, LogLevel
 from .git.command import git_command
 from .patch.command import patch_command
 from .run.command import run_command
@@ -53,20 +52,20 @@ def _global(ctx: typer.Context,
     """
     # Preventive creation of logger if CLI options are provided before loading settings
     if very_verbose is True:
-        log_level = LogLevel.TRACE
+        cli_log_level = LogLevel.TRACE
     elif verbose is True:
-        log_level = LogLevel.DEBUG
+        cli_log_level = LogLevel.DEBUG
     elif quiet is True:
-        log_level = LogLevel.WARNING
+        cli_log_level = LogLevel.WARNING
     elif very_quiet is True:
-        log_level = LogLevel.QUIET
+        cli_log_level = LogLevel.QUIET
     else:
-        log_level = LogLevel.INFO
+        cli_log_level = None
 
-    if log_level is not None:
-        preventive_log_level = log_level.to_logging_level()
+    if cli_log_level is not None:
+        preventive_log_level = cli_log_level.to_logging_level()
     else:
-        preventive_log_level = LogLevel.INFO.to_logging_level()  # Default if no CLI option specified
+        preventive_log_level = LogLevel.INFO.to_logging_level()
 
     if log_file is None:
         preventive_log_file = get_default_log_path()
@@ -88,8 +87,8 @@ def _global(ctx: typer.Context,
     # CLI overrides
     if log_file is not None:
         settings.logging.log_file = log_file
-    if log_level is not None:  # CLI specifies a logging level
-        settings.logging.level = log_level
+    if cli_log_level is not None:  # CLI specifies a logging level
+        settings.logging.level = cli_log_level
 
     # Global logging setup
     setup_logging(LogLevel(settings.logging.level).to_logging_level(), log_file=settings.logging.file)

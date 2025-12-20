@@ -5,7 +5,10 @@ from typing import Optional, List
 
 from pydantic import BaseModel, FilePath
 
-from bmde.core.types import BackendName, RunBackendName, RunDockerOutputName, LogLevelLiteral
+from bmde.core import logging
+from bmde.core.logging import LogLevelLiteral
+from bmde.core.types import BackendName, RunBackendName, RunDockerOutputName
+
 
 
 class LoggingSettings(BaseModel):
@@ -73,20 +76,9 @@ class PatchSettings(BaseModel):
     passthrough: Optional[List[str]] = None
 
 
-class PrepareSettings(BaseModel):
-    logging: LoggingSettings = None
-    dry_run: bool = None
-
-    test_directory: Optional[str] = None
-    target_directory: Optional[str] = None
-    image_file: FilePath = None
-    test_functions: Optional[List[str]] = None
-
-
 class Settings(BaseModel):
     logging: LoggingSettings = LoggingSettings()
     run: RunSettings = RunSettings()
     build: BuildSettings = BuildSettings()
     git: GitSettings = GitSettings()
     patch: PatchSettings = PatchSettings()
-    prepare: PrepareSettings = PrepareSettings()

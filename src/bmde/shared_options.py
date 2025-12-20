@@ -313,7 +313,7 @@ __all__ = [
     "DryRunOpt",
     "VerboseOpt",
     "QuietOpt",
-    "DockerScreenOpt"
+    "DockerScreenOpt",
     "ConfigOpt",
     "BackendOpt",
     "ArgumentsOpt",
@@ -335,5 +335,6 @@ __all__ = [
     "VpnRealmOpt",
     "VpnCertOpt",
     "VpnTestDnsOpt",
-    "VpnTestIpOpt"
+    "VpnTestIpOpt",
+    "ConfigOpt"
 ]

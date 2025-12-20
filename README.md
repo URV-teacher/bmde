@@ -314,6 +314,11 @@ Repo VS Code custom, dockerfile VS Code
 edit command
 debug command
 additional controls of desmume (needs compilation)
+icon of tot inside the devkitarm
+configuration defaults from bmde from desmume
+wesome readme with logo
+dev / test dependencies
+mount logs
 
 
 # Acknowledgements

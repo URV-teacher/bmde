@@ -5,7 +5,6 @@ from .backends.docker import DockerRunner
 from .backends.host import HostRunner
 from .spec import BuildSpec
 from ..core import logging
-from ..core.exec import ExecOptions
 from ..core.service import Service
 
 log = logging.get_logger(__name__)

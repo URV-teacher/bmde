@@ -24,6 +24,7 @@ PKG_NAME   := bmde
 
 $(VENV_DIR)/bin/python:  ## internal: create venv if missing
 	@$(PYTHON_BIN) -m venv "$(VENV_DIR)"
+	@$(PYTHON_BIN) -m pip install --upgrade pip
 
 venv: $(VENV_DIR)/bin/python  ## Create virtualenv (.venv) and upgrade pip
 	@echo "✅ venv ready at $(VENV_DIR)"
