@@ -4,12 +4,13 @@ from .backend import GitBackend
 from ..spec import GitSpec
 from ...core import logging
 from ...core.exec import run_cmd, ExecOptions
+from ...core.os_utils import is_command_available
 
 log = logging.get_logger(__name__)
 
 class HostRunner(GitBackend):
     def is_available(self) -> bool:
-        return shutil.which("git")
+        return is_command_available("git")
 
     def run(self, spec: GitSpec, exec_opts: ExecOptions) -> int:
         entry = spec.entrypoint or (shutil.which("git"))

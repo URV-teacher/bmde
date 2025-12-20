@@ -15,10 +15,12 @@ from ..core.logging import setup_logging
 
 log = logging.get_logger(__name__)
 
-def run_nds_command(
-        nds: Path, image: Path, shell: bool, arguments: list[str], settings: Settings, dry_run: bool = False
-) -> None:
 
+
+
+def run_command(
+        nds: Path, image: Path, arguments: list[str], settings: Settings, dry_run: bool = False
+) -> None:
     nds, assumed = resolve_nds(nds, cwd=Path.cwd())
     spec = RunSpec(
         nds=nds,
@@ -29,7 +31,6 @@ def run_nds_command(
         debug=settings.run.debug,
         port=settings.run.port,
         arguments=arguments,
-        shell=shell,
         dry_run=dry_run
     )
     code = run(spec, ExecOptions(dry_run=dry_run))

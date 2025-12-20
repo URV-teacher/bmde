@@ -1,7 +1,8 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
+
+from abc import ABC
+
 from ..spec import BuildSpec
-from ...core.exec import ExecOptions
 from ...core.backend import Backend
 
 

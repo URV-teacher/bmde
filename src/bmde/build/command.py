@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .service import run
+from .service import BuildService
 from .spec import BuildSpec
 from ..config.schema import Settings
 from ..core import logging
 from ..core.exec import ExecOptions
-from ..core.logging import setup_logging
 
 log = logging.get_logger(__name__)
 
@@ -21,5 +20,6 @@ def build_nds_command(
         arguments=arguments,
         dry_run=dry_run
     )
-    code = run(spec, ExecOptions(dry_run=dry_run))
+
+    code = BuildService().run(spec, ExecOptions(dry_run=dry_run))
     raise SystemExit(code)

@@ -16,7 +16,6 @@ class RunSpec:
     debug: bool
     port: int
     arguments: Sequence[str]
-    shell: bool
     dry_run: bool
 
 

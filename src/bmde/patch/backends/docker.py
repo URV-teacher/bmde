@@ -3,6 +3,7 @@ import subprocess
 
 from .backend import PatchBackend
 from ..spec import PatchSpec
+from ...core import logging
 from ...core.docker import can_run_docker
 from ...core.exec import run_cmd, ExecOptions
 
@@ -17,8 +18,6 @@ class DockerRunner(PatchBackend):
         if spec.entrypoint:
             entry = ["--entrypoint", str(spec.entrypoint)]
 
-        if spec.shell:
-            entry = ["--entrypoint", "bash"]
         docker_img = "aleixmt/dlditool:latest"
 
         dirname = os.path.basename(spec.d)

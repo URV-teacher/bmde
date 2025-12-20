@@ -11,7 +11,6 @@ class GitSpec:
     environment: Optional[BackendName]
     entrypoint: Optional[str]
     arguments: Sequence[str]
-    shell: bool
     dry_run: bool
 
     ssh_username: str      # TODO: Use more restrictive typing for these args

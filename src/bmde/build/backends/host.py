@@ -1,25 +1,21 @@
 import shutil
-from pathlib import Path
+
 from .backend import BuildBackend
 from ..spec import BuildSpec
 from ...core import logging
 from ...core.exec import run_cmd, ExecOptions
+from ...core.os_utils import is_command_available
 
 log = logging.get_logger(__name__)
 
 
 class HostRunner(BuildBackend):
     def is_available(self) -> bool:
-        return shutil.which("make")
+        return is_command_available("make")
+
 
     def run(self, spec: BuildSpec, exec_opts: ExecOptions) -> int:
         entry = spec.entrypoint or (shutil.which("make"))
-        if not entry:
-            return 127
         args = [entry, str(spec.d)]
-        #if spec.image:
-        #    args += ["--cflash-image", str(spec.image)]
-        #if spec.debug:
-        #    args += ["--arm9gdb-port", str(spec.port), "--gdb-stub"]
         args += list(spec.arguments)
         return run_cmd(args, exec_opts)

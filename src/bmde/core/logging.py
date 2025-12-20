@@ -3,15 +3,18 @@ import logging
 import os.path
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Optional
+from typing import Optional, LiteralString
 from rich.logging import RichHandler
 
-from bmde.core.types import LogLevel, PROJECT_DIR, DATE_FORMAT
+from bmde.core.types import LogLevel, PROJECT_DIR, DATE_FORMAT, NOW
 
 # ---- extend the logging module with TRACE
 TRACE_LEVEL_NUM = 1
 logging.addLevelName(TRACE_LEVEL_NUM, "TRACE")
 MESSAGE_FORMAT = "%(asctime)s | %(name)s | %(message)s"
+
+def get_default_log_path() -> LiteralString | str | bytes:
+    return os.path.join(PROJECT_DIR, "logs", NOW + ".log")
 
 
 def trace(self, message, *args, **kwargs):

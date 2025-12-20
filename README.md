@@ -1,5 +1,5 @@
 # bmde
-Operating system agnostic CLI wrapping the Bare Metal Development Environment (BMDE) and other related utlities 
+Operating system agnostic CLI wrapping the Bare Metal Development Environment (BMDE) and other related utilities 
 to manage the complete software life cycle of a NDS C and / or assembly project using 
 either host installations or Dockerized installations, plus opinionated features to be used in 
 the development of the practical exercises from the subject Computers, Operating Systems Structure and in minor cases 
@@ -22,7 +22,7 @@ Docker embedded in bmde. This allows using bmde but either using a Docker instal
 own host installations. You can do this for each module (WIP).
 
 In the same sense, some additional backends may be provided, for example, the run command which wraps desmume, also 
-provides the flathub backend. 
+provides the FlatHub (`flathub`) backend. 
 
 ## Config and arguments
 A native toml schema is included to provide default values to arguments to bmde. bmde also reads configuration from various
@@ -51,7 +51,7 @@ Wraps a git client alongside with the VPN needed to connect to the git server an
 ## build
 Entrypoint: make
 
-Wraps the whole devkitARM from devkitPro environment (make, arm-none-eabi, ndstool and other utilities) for 
+Wraps the whole devkitARM from devkitPro environment (make, `arm-none-eabi`, `ndstool` and other utilities) for 
     building the .NDS binaries from source. 
 
 ## run
@@ -65,7 +65,7 @@ Wraps desmume and desmume-cli alongside a VNC server and / or X11 client (Docker
 ## patch
 Entrypoint: dlditool
 
-Patches NDS rom to be used with MPCF FAT driver, in order to allow the NDS rom to write in a FAT disk image.
+Patches NDS rom to be used with Media Player Compact Flash (MPCF) FAT driver, in order to allow the NDS rom to write in a FAT disk image.
 
 ## debug (WIP)
 Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the run backend. 
@@ -148,7 +148,7 @@ directory as the directory where the NDS project to build is located.
 With `-e` or `--environment docker|(host|bmde)` you can choose what backend you are using to build the NDS 
 binary. 
 * With `docker`
-it uses the devkitarm-docker project to run the binary. 
+it uses the `devkitarm-docker` project to run the binary. 
 * With `host` uses the shell command `desmume` to run the binary, whatever is the implementation of the underlying 
 binary.
 
@@ -184,7 +184,7 @@ file as the file to be patched.
 With `-e` or `--environment docker|(host|bmde)` you can choose what backend you are using to build the NDS 
 binary. 
 * With `docker`
-it uses the devkitarm-docker project to run the binary. 
+it uses the `devkitarm-docker` project to run the binary. 
 * With `host` uses the shell command `desmume` to run the binary, whatever is the implementation of the underlying 
 binary.
 
@@ -285,7 +285,7 @@ directory as the directory where the NDS project to build is located.
 With `-e` or `--environment docker|(host|bmde)` you can choose what backend you are using to build the NDS 
 binary. 
 * With `docker`
-it uses the vscode-docker project to edit the project.
+it uses the `vscode-docker` project to edit the project.
 * With `host` uses the shell command `vscode` to edit the project, whatever is the implementation of the underlying 
 binary.
 
@@ -309,8 +309,8 @@ repo, specific
 configuration args for the execution.
 
 # WIP
-Arm syntax workflow autopublish into vscode market 
-Repo vscode custom, dockerfile vscode 
+Arm syntax workflow auto-publish into VS Code market 
+Repo VS Code custom, dockerfile VS Code 
 edit command
 debug command
 additional controls of desmume (needs compilation)

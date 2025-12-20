@@ -4,18 +4,18 @@ from .backend import RunBackend
 from ..spec import RunSpec
 from ...core import logging
 from ...core.exec import run_cmd, ExecOptions
+from ...core.os_utils import is_command_available
 
 log = logging.get_logger(__name__)
 
 
 class HostRunner(RunBackend):
     def is_available(self) -> bool:
-        return shutil.which("desmume") or shutil.which("desmume-cli")
+        return is_command_available("desmume") or is_command_available("desmume-cli")
+
 
     def run(self, spec: RunSpec, exec_opts: ExecOptions) -> int:
-        entry = spec.entrypoint or (shutil.which("desmume") or shutil.which("desmume-cli"))
-        if not entry:
-            return 127
+        entry = spec.entrypoint or shutil.which("desmume") or shutil.which("desmume-cli")
         args = [entry, str(spec.nds)]
         if spec.image:
             args += ["--cflash-image", str(spec.image)]

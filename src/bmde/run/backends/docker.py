@@ -13,9 +13,7 @@ class DockerRunner(RunBackend):
         return can_run_docker()
 
     def run(self, spec: RunSpec, exec_opts: ExecOptions) -> int:
-        entry = str(spec.entrypoint) or "desmume"
-        if spec.shell:
-            entry = "bash"
+        entry = str(spec.entrypoint)
         docker_img = "aleixmt/desmume:latest"
         mounts = ["-v", f"{spec.nds.parent}:/roms:ro"]
         envs = []

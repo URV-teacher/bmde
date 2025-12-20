@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .service import run
+from .service import GitService
 from .spec import GitSpec
 from ..config.schema import Settings
 from ..core import logging
@@ -11,14 +11,13 @@ from ..core.exec import ExecOptions
 log = logging.get_logger(__name__)
 
 def git_nds_command(
-        d: Path, shell: bool, arguments: list[str], settings: Settings, dry_run: bool = False
+        d: Path, arguments: list[str], settings: Settings, dry_run: bool = False
 ) -> int:
     spec = GitSpec(
         d=d,
         environment=settings.git.backend,
         entrypoint=settings.git.entrypoint,
         arguments=arguments,
-        shell=shell,
         dry_run=dry_run,
 
         ssh_username=settings.git.ssh.username,
@@ -37,4 +36,4 @@ def git_nds_command(
         vpn_test_dns=settings.git.vpn.test_dns,
         vpn_test_ip=settings.git.vpn.test_ip
     )
-    return run(spec, ExecOptions(dry_run=dry_run))
+    return GitService().run(spec, ExecOptions(dry_run=dry_run))

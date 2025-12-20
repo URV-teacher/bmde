@@ -11,7 +11,6 @@ class PatchSpec:
     environment: Optional[BackendName]
     entrypoint: Optional[str]
     arguments: Sequence[str]
-    shell: bool
     dry_run: bool
 
 

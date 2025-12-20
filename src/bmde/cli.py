@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Optional, Annotated, LiteralString
+from typing import Optional, Annotated
 
 import typer
 from pygments.lexers import shell
@@ -19,21 +19,19 @@ from rich.console import Console
 from .config.loader import load_settings
 from .config.schema import Settings
 from .core import logging
-from .core.logging import setup_logging
-from .core.types import PROJECT_DIR, LogLevel, NOW
+from .core.logging import setup_logging, get_default_log_path
+from .core.types import LogLevel
 from .git.command import git_nds_command
 from .shared_options import (
     RunBackendOpt, EntrypointOpt, DebugOpt, PortOpt,
-    DryRunOpt, VerboseOpt, QuietOpt, DockerScreenOpt, BackendOpt, ArgumentsOpt, DirectoryOpt, ShellOpt,
-    VeryVerboseOpt, VeryQuietOpt, LogFileOpt, InfoOpt,
+    DryRunOpt, VerboseOpt, QuietOpt, DockerScreenOpt, BackendOpt, ArgumentsOpt, DirectoryOpt,
+    VeryVerboseOpt, VeryQuietOpt, LogFileOpt, NdsRomOpt, FatImageOpt
 )
 
 console = Console()
-app = typer.Typer(add_completion=False, help="bmde – BMDE CLI", no_args_is_help=True)  # TODO Completion does not work
+app = typer.Typer(add_completion=False, help="BMDE CLI", no_args_is_help=True)  # TODO Completion does not work
 log = logging.get_logger(__name__)
 
-def get_default_log_path() -> LiteralString | str | bytes:
-    return os.path.join(PROJECT_DIR, "logs", NOW + ".log")
 
 @app.callback()
 def _global(ctx: typer.Context,
@@ -41,7 +39,6 @@ def _global(ctx: typer.Context,
                 help="Execution-specific config file (highest file priority)"),
             verbose: VerboseOpt = False,
             very_verbose: VeryVerboseOpt = False,
-            info: InfoOpt = False,
             quiet: QuietOpt = False,
             very_quiet: VeryQuietOpt = False,
             log_file: LogFileOpt = None,
@@ -50,7 +47,6 @@ def _global(ctx: typer.Context,
     Global option callback. Executed if no command is provided.
     """
     # Preventive creation of logger if CLI options are provided before loading settings
-    log_level = None
     if very_verbose is True:
         log_level = LogLevel.TRACE
     elif verbose is True:
@@ -59,10 +55,9 @@ def _global(ctx: typer.Context,
         log_level = LogLevel.WARNING
     elif very_quiet is True:
         log_level = LogLevel.QUIET
-    elif info is True:
+    else:
         log_level = LogLevel.INFO
 
-    preventive_log_level = None
     if log_level is not None:
         preventive_log_level = log_level.to_logging_level()
     else:
@@ -75,6 +70,13 @@ def _global(ctx: typer.Context,
 
     setup_logging(preventive_log_level, log_file=preventive_log_file)  # Preventive creation of log for logging the loading of settings
 
+    flag_counter = 0
+    for flag in (very_verbose, verbose, quiet, very_quiet):
+        if flag is True:
+            flag_counter += 1
+    if flag_counter > 1:
+        log.warning("You can not use more than one verbosity flag at the same time. The most verbose flag you specified "
+                    "will be applied.")
     # Load settings
     settings = load_settings(explicit_config=config)
 
@@ -94,18 +96,8 @@ def _global(ctx: typer.Context,
 @app.command("run")
 def run_command(
     ctx: typer.Context,
-
-    nds: Optional[Path] = typer.Option(
-        None, "-n", "--nds",
-        exists=True, file_okay=True, dir_okay=False, readable=True, resolve_path=True,
-        help="Path to the .nds binary (optional). If omitted, bmde searches the current directory.",
-    ),
-    image: Optional[Path] = typer.Option(
-        None, "-i", "--image",
-        exists=True, file_okay=True, dir_okay=False, readable=True, resolve_path=True,
-        help="Path to FAT image (optional)",
-    ),
-    shell: ShellOpt = False,
+    nds: NdsRomOpt,
+    image: FatImageOpt,
     arguments: ArgumentsOpt = (),
     docker_screen: Optional[DockerScreenOpt] = typer.Option(None, "--docker-screen", help="Selects the method to show the desmume "
                                                                    "screen. "
@@ -120,23 +112,17 @@ def run_command(
 ):
 
     """desmume wrapper. Runs an NDS ROM."""
-    from .run.command import run_nds_command
+    from .run.command import run_command
 
     settings: Settings = ctx.obj["settings"]
 
     log.debug("CLI options provided:\n"
               f"- Arguments: {str(arguments)}\n"
-              f"- Shell: {str(shell)}\n"
               f"- Backend: {str(backend)}\n"
               f"- Entrypoint: {str(entrypoint)}\n"
-              f"- Dry run: {str(dry_run)}\n"
               f"- Docker screen: {str(docker_screen)}\n"
               f"- NDS ROM: {str(nds)}\n"
               )
-
-    # CLI logic
-    if entrypoint is not None and shell is True:
-        log.warning("The --entrypoint option is incompatible with --shell, entrypoint will be ignored")
 
     # CLI overrides
     if backend is not None:
@@ -152,15 +138,14 @@ def run_command(
 
     log.debug("Settings override:\n"
               f"- Arguments: {str(arguments)}\n"
-              f"- Shell: {str(shell)}\n"
               f"- Backend: {str(settings.run.backend)}\n"
               f"- Entrypoint: {str(settings.run.entrypoint)}\n"
               f"- Dry run: {str(dry_run)}\n"
               f"- Docker screen: {str(settings.run.docker_screen)}\n"
               f"- NDS ROM: {str(nds)}\n"
               )
-    run_nds_command(
-        nds=nds, image=image, shell=shell,
+    run_command(
+        nds=nds, image=image,
         arguments=arguments or [], settings=settings, dry_run=dry_run
     )
 
@@ -216,7 +201,6 @@ def patch_command(
         ctx: typer.Context,
         arguments: ArgumentsOpt = (),
         directory: DirectoryOpt = os.getcwd(),
-        shell: ShellOpt = False,
         backend: BackendOpt = None,
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False,
@@ -230,15 +214,10 @@ def patch_command(
     log.debug("CLI options provided:\n"
               f"- Arguments: {str(arguments)}\n"
               f"- Directory: {str(directory)}\n"
-              f"- Shell: {str(shell)}\n"
               f"- Backend: {str(backend)}\n"
               f"- Entrypoint: {str(entrypoint)}\n"
               f"- Dry run: {str(dry_run)}\n"
               )
-
-    # CLI logic
-    if entrypoint is not None and shell is True:
-        log.warning("The --entrypoint option is incompatible with --shell, entrypoint will be ignored")
 
     # CLI overrides
     if backend is not None:
@@ -249,14 +228,13 @@ def patch_command(
     log.debug("Final settings for build command:\n"
               f"- Arguments: {str(arguments)}\n"
               f"- Directory: {str(directory)}\n"
-              f"- Shell: {str(shell)}\n"
               f"- Dry run: {str(dry_run)}\n"
               f"- Backend: {str(settings.patch.backend)}\n"
               f"- Entrypoint: {str(settings.patch.entrypoint)}\n"
               )
 
     patch_nds_command(
-        d=directory, shell=shell,
+        d=directory,
         arguments=arguments or [], settings=settings, dry_run=dry_run
     )
 
@@ -266,17 +244,7 @@ def patch_command(
 def git_command(
         ctx: typer.Context,
         arguments: ArgumentsOpt = (),
-        clone: Annotated[str, typer.Option(
-            "--clone",
-            help="Repos to clone, specified as REPO_NAME1@SHAID1,REPO_NAME2@SHAID2,REPO_NAME3@SHAID3... The SHAIDX are"
-                 " optional. If present ignores arguments.",
-        )] = None, # TODO
-        json_file: Annotated[Path, typer.Option(
-            "--json",
-            help="Deliveries to clone and checkout, in JSON delivery format. If present ignores arguments.",
-        )] = None,
         directory: DirectoryOpt = os.getcwd(),
-        shell: ShellOpt = False,
         backend: BackendOpt = None,
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False,
@@ -357,10 +325,7 @@ def git_command(
 
     log.debug("CLI options provided:\n"
               f"- Arguments: {str(arguments)}\n"
-              f"- Clone: {str(clone)}\n"
               f"- Directory: {str(directory)}\n"
-              f"- Json: {str(json_file)}\n"
-              f"- Shell: {str(shell)}\n"
               f"- Backend: {str(backend)}\n"
               f"- Entrypoint: {str(entrypoint)}\n"
               f"- Dry run: {str(dry_run)}\n"
@@ -379,12 +344,6 @@ def git_command(
               f"- VPN test DNS: {str(vpn_test_dns)}\n"
               f"- VPN test IP: {str(vpn_test_ip)}\n"
               )
-
-    # CLI logic
-    if entrypoint is not None and shell is True:
-        log.warning("The --entrypoint option is incompatible with --shell, entrypoint will be ignored")
-    if arguments is not None and clone is not None:
-        log.warning("The --arguments option is incompatible with --clone, arguments will be ignored")
 
     # CLI overrides
     if backend is not None:
@@ -419,101 +378,35 @@ def git_command(
     if vpn_test_ip is not None:
         settings.git.vpn.test_ip = vpn_test_ip
 
-    if clone is None and json_file is None:
-        log.debug("Final settings for git command:\n"
-                  f"- Arguments: {str(arguments)}\n"
-                  
-                  f"- Directory: {str(directory)}\n"
-                  f"- Shell: {str(shell)}\n"
-                  f"- Dry run: {str(dry_run)}\n"
-                  
-                  f"- Backend: {str(settings.git.backend)}\n"
-                  f"- Entrypoint: {str(settings.git.entrypoint)}\n"
-    
-                  f"- SSH username: {str(settings.git.ssh.username)}\n"
-                  f"- SSH password: {str(settings.git.ssh.password)}\n"
-                  f"- SSH server: {str(settings.git.ssh.host)}\n"
-                  f"- git name: {str(settings.git.git.name)}\n"
-                  f"- git email: {str(settings.git.git.email)}\n"
-                  f"- VPN username: {str(settings.git.vpn.username)}\n"
-                  f"- VPN password: {str(settings.git.vpn.password)}\n"
-                  f"- VPN host: {str(settings.git.vpn.host)}\n"
-                  f"- VPN port: {str(settings.git.vpn.port)}\n"
-                  f"- VPN realm: {str(settings.git.vpn.realm)}\n"
-                  f"- VPN cert: {str(settings.git.vpn.cert)}\n"
-                  f"- VPN test DNS: {str(settings.git.vpn.test_dns)}\n"
-                  f"- VPN test IP: {str(settings.git.vpn.test_ip)}\n"
-                  )
+    log.debug("Final settings for git command:\n"
+              f"- Arguments: {str(arguments)}\n"
+              
+              f"- Directory: {str(directory)}\n"
+              f"- Shell: {str(shell)}\n"
+              f"- Dry run: {str(dry_run)}\n"
+              
+              f"- Backend: {str(settings.git.backend)}\n"
+              f"- Entrypoint: {str(settings.git.entrypoint)}\n"
 
-        git_nds_command(
-            d=directory, shell=shell,
-            arguments=arguments or [], settings=settings, dry_run=dry_run
-        )
-    else:
+              f"- SSH username: {str(settings.git.ssh.username)}\n"
+              f"- SSH password: {str(settings.git.ssh.password)}\n"
+              f"- SSH server: {str(settings.git.ssh.host)}\n"
+              f"- git name: {str(settings.git.git.name)}\n"
+              f"- git email: {str(settings.git.git.email)}\n"
+              f"- VPN username: {str(settings.git.vpn.username)}\n"
+              f"- VPN password: {str(settings.git.vpn.password)}\n"
+              f"- VPN host: {str(settings.git.vpn.host)}\n"
+              f"- VPN port: {str(settings.git.vpn.port)}\n"
+              f"- VPN realm: {str(settings.git.vpn.realm)}\n"
+              f"- VPN cert: {str(settings.git.vpn.cert)}\n"
+              f"- VPN test DNS: {str(settings.git.vpn.test_dns)}\n"
+              f"- VPN test IP: {str(settings.git.vpn.test_ip)}\n"
+              )
 
-        clone_tasks = []
-
-        if clone is not None:
-            for repo_shaid in clone.split(","):
-                if "@" in repo_shaid:
-                    name = repo_shaid.split("@")[0]
-                    shaid = repo_shaid.split("@")[1]
-                else:
-                    name = repo_shaid
-                    shaid = None
-                clone_tasks.append((name, shaid, name))
-        if json_file is not None:
-            import json
-            obj = json.loads("".join(open(json_file).readlines()))
-            base_name = f"{obj['repo']}-{obj['role']}-phase{obj['phase']}-call{obj['call']}"
-            clone_tasks.append((obj["repo"], obj["test"], base_name + "-test"))
-            clone_tasks.append((obj["repo"], obj["fusion"], base_name + "-fusion"))
-
-        log.debug("Final settings for git command in clone mode:\n"
-                  f"- Clone tasks: {str(clone_tasks)}\n"
-
-                  f"- Directory: {str(directory)}\n"
-                  f"- Shell: {str(shell)}\n"
-                  f"- Dry run: {str(dry_run)}\n"
-
-                  f"- Backend: {str(settings.git.backend)}\n"
-                  f"- Entrypoint: {str(settings.git.entrypoint)}\n"
-
-                  f"- SSH username: {str(settings.git.ssh.username)}\n"
-                  f"- SSH password: {str(settings.git.ssh.password)}\n"
-                  f"- SSH server: {str(settings.git.ssh.host)}\n"
-                  f"- git name: {str(settings.git.git.name)}\n"
-                  f"- git email: {str(settings.git.git.email)}\n"
-                  f"- VPN username: {str(settings.git.vpn.username)}\n"
-                  f"- VPN password: {str(settings.git.vpn.password)}\n"
-                  f"- VPN host: {str(settings.git.vpn.host)}\n"
-                  f"- VPN port: {str(settings.git.vpn.port)}\n"
-                  f"- VPN realm: {str(settings.git.vpn.realm)}\n"
-                  f"- VPN cert: {str(settings.git.vpn.cert)}\n"
-                  f"- VPN test DNS: {str(settings.git.vpn.test_dns)}\n"
-                  f"- VPN test IP: {str(settings.git.vpn.test_ip)}\n"
-                  )
-
-        for clone_task in clone_tasks:
-            log.debug(f"Executing clone task for cloning repo {clone_task[0]}")
-            git_nds_command(
-                d=directory, shell=shell,
-                arguments=["clone", settings.git.ssh.username + "@" + settings.git.ssh.host + ":" + clone_task[0]], settings=settings, dry_run=dry_run
-            )
-            if clone_task[0] != clone_task[2]:  # Name has been specified different from repo name, rename
-                log.debug(f"Renaming {clone_task[0]} into {clone_task[2]}")
-                os.rename(clone_task[0], clone_task[2])
-                repo_directory = os.path.join(directory, clone_task[2])
-            else:
-                repo_directory = os.path.join(directory, clone_tasks[1])
-
-
-            if clone_tasks[1] is not None:
-                log.debug(f"Checking out SHA ID {clone_task[1]} from repo {clone_task[0]} in folder {repo_directory}")
-                git_nds_command(
-                    d=repo_directory, shell=shell,
-                    arguments=["checkout", clone_task[1]], settings=settings, dry_run=dry_run
-                )
+    git_nds_command(
+        d=directory,
+        arguments=arguments or [], settings=settings, dry_run=dry_run
+    )
 
 
 
