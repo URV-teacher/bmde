@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .service import run, resolve_nds
+from .service import resolve_nds, RunService
 from .spec import RunSpec
 from ..config.schema import Settings
 from ..core import logging
@@ -33,5 +33,5 @@ def run_command(
         arguments=arguments,
         dry_run=dry_run
     )
-    code = run(spec, ExecOptions(dry_run=dry_run))
+    code = RunService().run(spec, ExecOptions(dry_run=dry_run))
     raise SystemExit(code)

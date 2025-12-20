@@ -10,7 +10,7 @@ from ..core.exec import ExecOptions
 
 log = logging.get_logger(__name__)
 
-def patch_nds_command(
+def patch_command(
         d: Path, arguments: list[str], settings: Settings, dry_run: bool = False
 ) -> None:
     spec = PatchSpec(

@@ -6,26 +6,31 @@ settings, which will be passed to the function and run a command.
 Each function will also be responsible for aborting execution with CLI arguments that are impossible. This only applies
 to data coming from the CLI, the syntax of the overrides is not responsibility of the function of these files.
 """
+
+# Debug
 from __future__ import annotations
 
 import os
-from pathlib import Path
-from typing import Optional, Annotated
 
 import typer
 from pygments.lexers import shell
 from rich.console import Console
 
+from .build.command import build_command
 from .config.loader import load_settings
 from .config.schema import Settings
 from .core import logging
 from .core.logging import setup_logging, get_default_log_path
 from .core.types import LogLevel
-from .git.command import git_nds_command
+from .git.command import git_command
+from .patch.command import patch_command
+from .run.command import run_command
 from .shared_options import (
     RunBackendOpt, EntrypointOpt, DebugOpt, PortOpt,
     DryRunOpt, VerboseOpt, QuietOpt, DockerScreenOpt, BackendOpt, ArgumentsOpt, DirectoryOpt,
-    VeryVerboseOpt, VeryQuietOpt, LogFileOpt, NdsRomOpt, FatImageOpt
+    VeryVerboseOpt, VeryQuietOpt, LogFileOpt, NdsRomOpt, FatImageOpt, SshUsernameOpt,
+    VpnCertOpt, VpnTestDnsOpt, VpnTestIpOpt, VpnPortOpt, VpnRealmOpt, VpnHostOpt, VpnPasswordOpt, VpnUsernameOpt,
+    GitEmailOpt, GitNameOpt, SshPasswordOpt, SshHostOpt, ConfigOpt
 )
 
 console = Console()
@@ -33,10 +38,10 @@ app = typer.Typer(add_completion=False, help="BMDE CLI", no_args_is_help=True)  
 log = logging.get_logger(__name__)
 
 
+
 @app.callback()
 def _global(ctx: typer.Context,
-            config: Optional[Path] = typer.Option(None, "-c", "--config",
-                help="Execution-specific config file (highest file priority)"),
+            config: ConfigOpt = None,
             verbose: VerboseOpt = False,
             very_verbose: VeryVerboseOpt = False,
             quiet: QuietOpt = False,
@@ -94,15 +99,12 @@ def _global(ctx: typer.Context,
 
 
 @app.command("run")
-def run_command(
+def run_controller(
     ctx: typer.Context,
-    nds: NdsRomOpt,
-    image: FatImageOpt,
+    nds: NdsRomOpt = None,
+    image: FatImageOpt = None,
     arguments: ArgumentsOpt = (),
-    docker_screen: Optional[DockerScreenOpt] = typer.Option(None, "--docker-screen", help="Selects the method to show the desmume "
-                                                                   "screen. "
-                                                                   "Can be vnc or host",
-                                                      show_default=False),
+    docker_screen: DockerScreenOpt = None,
     # common flags
     backend: RunBackendOpt = None,
     entrypoint: EntrypointOpt = None,
@@ -110,9 +112,7 @@ def run_command(
     port: PortOpt = 1000,
     dry_run: DryRunOpt = False,
 ):
-
     """desmume wrapper. Runs an NDS ROM."""
-    from .run.command import run_command
 
     settings: Settings = ctx.obj["settings"]
 
@@ -149,10 +149,8 @@ def run_command(
         arguments=arguments or [], settings=settings, dry_run=dry_run
     )
 
-
-
 @app.command("build")
-def build_command(
+def build_controller(
         ctx: typer.Context,
         arguments: ArgumentsOpt = (),
         directory: DirectoryOpt = os.getcwd(),
@@ -160,10 +158,7 @@ def build_command(
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False
 ):
-
-
     """devkitARM make wrapper. Builds NDS ROM from source code."""
-    from .build.command import build_nds_command
 
     settings: Settings = ctx.obj["settings"]
 
@@ -189,7 +184,7 @@ def build_command(
               f"- Entrypoint: {str(settings.build.entrypoint)}\n"
               )
 
-    build_nds_command(
+    build_command(
         d=directory,
         arguments=arguments or [], settings=settings, dry_run=dry_run
     )
@@ -197,7 +192,7 @@ def build_command(
 
 
 @app.command("patch")
-def patch_command(
+def patch_controller(
         ctx: typer.Context,
         arguments: ArgumentsOpt = (),
         directory: DirectoryOpt = os.getcwd(),
@@ -205,9 +200,7 @@ def patch_command(
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False,
 ):
-
     """dlditool wrapper. Patches a NDS ROM for FAT usage."""
-    from .patch.command import patch_nds_command
 
     settings: Settings = ctx.obj["settings"]
 
@@ -228,12 +221,11 @@ def patch_command(
     log.debug("Final settings for build command:\n"
               f"- Arguments: {str(arguments)}\n"
               f"- Directory: {str(directory)}\n"
-              f"- Dry run: {str(dry_run)}\n"
               f"- Backend: {str(settings.patch.backend)}\n"
               f"- Entrypoint: {str(settings.patch.entrypoint)}\n"
               )
 
-    patch_nds_command(
+    patch_command(
         d=directory,
         arguments=arguments or [], settings=settings, dry_run=dry_run
     )
@@ -241,7 +233,7 @@ def patch_command(
 
 
 @app.command("git")
-def git_command(
+def git_controller(
         ctx: typer.Context,
         arguments: ArgumentsOpt = (),
         directory: DirectoryOpt = os.getcwd(),
@@ -249,76 +241,21 @@ def git_command(
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False,
 
-        ssh_username: Annotated[str, typer.Option(
-            "--ssh-user",
-            help="User name for the SSH authentication of git",
-        )] = None,
+        ssh_username: SshUsernameOpt = None,
+        ssh_password: SshPasswordOpt = None,
+        ssh_host: SshHostOpt = None,
+        git_name: GitNameOpt = None,
+        git_email: GitEmailOpt = None,
+        vpn_username: VpnUsernameOpt = None,
+        vpn_password: VpnPasswordOpt = None,
+        vpn_host: VpnHostOpt = None,
 
-        ssh_password: Annotated[str, typer.Option(
-            "--ssh-password",
-            help="User password for the SSH authentication of git",
-        )] = None,
-
-        ssh_host: Annotated[str, typer.Option(
-            "--ssh-server",
-            help="Hostname of the ssh server",
-        )] = None,
-
-        git_name: Annotated[str, typer.Option(
-            "--git-password",
-            help="User name for git commit signature",
-        )] = None,
-
-        git_email: Annotated[str, typer.Option(
-            "--git-email",
-            help="User email for git commit signature",
-        )] = None,
-
-        vpn_username: Annotated[str, typer.Option(
-            "--vpn-user",
-            help="User name for forticlient authentication",
-        )] = None,
-
-        vpn_password: Annotated[str, typer.Option(
-            "--vpn-password",
-            help="User password for forticlient authentication",
-        )] = None,
-
-        vpn_host: Annotated[str, typer.Option(
-            "--vpn-gateway",
-            help="VPN gateway for forticlient",
-        )] = None,
-
-        vpn_port: Annotated[str, typer.Option(
-            "--vpn-port",
-            help="VPN port for forticlient",
-        )] = None,
-
-        vpn_realm: Annotated[str, typer.Option(
-            "--vpn-realm",
-            help="VPN realm for forticlient",
-        )] = None,
-
-        vpn_cert: Annotated[str, typer.Option(
-            "--vpn-cert",
-            help="VPN cert for forticlient",
-        )] = None,
-
-        vpn_test_dns: Annotated[str, typer.Option(
-            "--vpn-test-dns",
-            help="DNS direction that will be tested with an HTTP GET request to validate that we can access the "
-                 "internal "
-                 "services granted by the VPN and its implicit DNS resolution",
-        )] = None,
-
-        vpn_test_ip: Annotated[str, typer.Option(
-            "--vpn-test-ip",
-            help="IP direction that will be tested with an HTTP GET request to validate that we can access the internal "
-                 "services granted by the VPN",
-        )] = None
+        vpn_port: VpnPortOpt = None,
+        vpn_realm: VpnRealmOpt = None,
+        vpn_cert: VpnCertOpt = None,
+        vpn_test_dns: VpnTestDnsOpt = None,
+        vpn_test_ip: VpnTestIpOpt = None
 ):
-
-
     """git wrapper with SSH password bypass and VPN management. git is a distributed version control system."""
 
     settings: Settings = ctx.obj["settings"]
@@ -403,7 +340,7 @@ def git_command(
               f"- VPN test IP: {str(settings.git.vpn.test_ip)}\n"
               )
 
-    git_nds_command(
+    git_command(
         d=directory,
         arguments=arguments or [], settings=settings, dry_run=dry_run
     )

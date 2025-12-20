@@ -130,6 +130,15 @@ VeryQuietOpt = Annotated[
     )
 ]
 
+ConfigOpt = Annotated[
+    Optional[Path],
+    typer.Option(
+        "-c",
+        "--config",
+        help="Execution-specific config file (highest file priority)"
+    )
+]
+
 #--- Run options ---
 # To specify debug in run options
 DebugOpt = Annotated[
@@ -164,7 +173,7 @@ DockerScreenOpt = Annotated[
 NdsRomOpt = Annotated[
     Optional[Path],
     typer.Option(
-    None, "-n", "--nds",
+    "-n", "--nds",
     exists=True, file_okay=True, dir_okay=False, readable=True, resolve_path=True,
     help="Path to the .nds binary (optional). If omitted, searches the current directory."
     )
@@ -173,7 +182,6 @@ NdsRomOpt = Annotated[
 FatImageOpt = Annotated[
     Optional[Path],
     typer.Option(
-    None,
         "-i",
         "--image",
         exists=True,
@@ -182,6 +190,116 @@ FatImageOpt = Annotated[
         readable=True,
         resolve_path=True,
         help="Path to FAT image (optional)"
+    )
+]
+
+# Git
+
+
+SshUsernameOpt = Annotated[
+    str,
+    typer.Option(
+        "--ssh-user",
+        help="User name for the SSH authentication of git"
+    )
+]
+
+SshPasswordOpt = Annotated[
+    str,
+    typer.Option(
+        "--ssh-password",
+        help="User password for the SSH authentication of git"
+    )
+]
+
+SshHostOpt = Annotated[
+    str,
+    typer.Option(
+        "--ssh-server",
+        help="Hostname of the ssh server"
+    )
+]
+
+GitNameOpt = Annotated[
+    str,
+    typer.Option(
+        "--git-password",
+        help="User name for git commit signature"
+    )
+]
+
+GitEmailOpt = Annotated[
+    str,
+    typer.Option(
+        "--git-email",
+        help="User email for git commit signature"
+    )
+]
+
+VpnUsernameOpt = Annotated[
+    str,
+    typer.Option(
+        "--vpn-user",
+        help="User name for forticlient authentication"
+    )
+]
+
+VpnPasswordOpt = Annotated[
+    str,
+    typer.Option(
+        "--vpn-password",
+        help="User password for forticlient authentication"
+    )
+]
+
+VpnHostOpt = Annotated[
+    str,
+    typer.Option(
+        "--vpn-gateway",
+        help="VPN gateway for forticlient"
+    )
+]
+
+VpnPortOpt = Annotated[
+    str,
+    typer.Option(
+        "--vpn-port",
+        help="VPN port for forticlient"
+    )
+]
+
+VpnRealmOpt = Annotated[
+    str,
+    typer.Option(
+        "--vpn-realm",
+        help="VPN realm for forticlient"
+    )
+]
+
+VpnCertOpt = Annotated[
+    str,
+    typer.Option(
+        "--vpn-cert",
+        help="VPN cert for forticlient"
+    )
+]
+
+VpnTestDnsOpt = Annotated[
+    str,
+    typer.Option(
+        "--vpn-test-dns",
+        help="DNS direction that will be tested with an HTTP GET request to validate that we can access the "
+         "internal "
+         "services granted by the VPN and its implicit DNS resolution"
+    )
+]
+
+VpnTestIpOpt = Annotated[
+    str,
+    typer.Option(
+        "--vpn-test-ip",
+        help="IP direction that will be tested with an HTTP GET request to validate that we can access the internal "
+         "services granted by the VPN"
     )
 ]
 
@@ -195,7 +313,8 @@ __all__ = [
     "DryRunOpt",
     "VerboseOpt",
     "QuietOpt",
-    "DockerScreenOpt",
+    "DockerScreenOpt"
+    "ConfigOpt",
     "BackendOpt",
     "ArgumentsOpt",
     "DirectoryOpt",
@@ -203,5 +322,18 @@ __all__ = [
     "VeryQuietOpt",
     "LogFileOpt",
     "NdsRomOpt",
-    "FatImageOpt"
+    "FatImageOpt",
+    "SshUsernameOpt",
+    "SshPasswordOpt",
+    "SshHostOpt",
+    "GitNameOpt",
+    "GitEmailOpt",
+    "VpnUsernameOpt",
+    "VpnPasswordOpt",
+    "VpnHostOpt",
+    "VpnPortOpt",
+    "VpnRealmOpt",
+    "VpnCertOpt",
+    "VpnTestDnsOpt",
+    "VpnTestIpOpt"
 ]
