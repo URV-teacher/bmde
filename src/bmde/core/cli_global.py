@@ -4,19 +4,28 @@ from bmde.cli import app
 from bmde.config.loader import load_settings
 from bmde.core import logging
 from bmde.core.logging import LogLevel, setup_logging, get_default_log_path
-from bmde.core.shared_options import ConfigOpt, VerboseOpt, VeryVerboseOpt, QuietOpt, VeryQuietOpt, LogFileOpt
+from bmde.core.shared_options import (
+    ConfigOpt,
+    VerboseOpt,
+    VeryVerboseOpt,
+    QuietOpt,
+    VeryQuietOpt,
+    LogFileOpt,
+)
 
 log = logging.get_logger(__name__)
 
+
 @app.callback()
-def _global(ctx: typer.Context,
-            config: ConfigOpt = None,
-            verbose: VerboseOpt = False,
-            very_verbose: VeryVerboseOpt = False,
-            quiet: QuietOpt = False,
-            very_quiet: VeryQuietOpt = False,
-            log_file: LogFileOpt = None,
-            ) -> None:
+def _global(
+    ctx: typer.Context,
+    config: ConfigOpt = None,
+    verbose: VerboseOpt = False,
+    very_verbose: VeryVerboseOpt = False,
+    quiet: QuietOpt = False,
+    very_quiet: VeryQuietOpt = False,
+    log_file: LogFileOpt = None,
+) -> None:
     """
     Global option callback. Executed if no command is provided.
     """
@@ -42,15 +51,19 @@ def _global(ctx: typer.Context,
     else:
         preventive_log_file = log_file
 
-    setup_logging(preventive_log_level, log_file=preventive_log_file)  # Preventive creation of log for logging the loading of settings
+    setup_logging(
+        preventive_log_level, log_file=preventive_log_file
+    )  # Preventive creation of log for logging the loading of settings
 
     flag_counter = 0
     for flag in (very_verbose, verbose, quiet, very_quiet):
         if flag is True:
             flag_counter += 1
     if flag_counter > 1:
-        log.warning("You can not use more than one verbosity flag at the same time. The most verbose flag you specified "
-                    "will be applied.")
+        log.warning(
+            "You can not use more than one verbosity flag at the same time. The most verbose flag you specified "
+            "will be applied."
+        )
     # Load settings
     settings = load_settings(explicit_config=config)
 
@@ -61,7 +74,10 @@ def _global(ctx: typer.Context,
         settings.logging.level = cli_log_level
 
     # Global logging setup
-    setup_logging(LogLevel(settings.logging.level).to_logging_level(), log_file=settings.logging.file)
+    setup_logging(
+        LogLevel(settings.logging.level).to_logging_level(),
+        log_file=settings.logging.file,
+    )
 
     # Load settings into global context
     ctx.obj = {"settings": settings}

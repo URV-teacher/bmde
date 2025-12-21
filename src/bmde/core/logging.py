@@ -14,21 +14,23 @@ TRACE_LEVEL_NUM = 1
 logging.addLevelName(TRACE_LEVEL_NUM, "TRACE")
 MESSAGE_FORMAT = "%(asctime)s | %(name)s | %(message)s"
 
+
 class ExtendedLogger(logging.Logger):
     def trace(self: Logger, message: str, *args: Any, **kwargs: Any) -> None:
         self._log(TRACE_LEVEL_NUM, message, args, **kwargs)
 
+
 # Tell the logging system to use your new class
 logging.setLoggerClass(ExtendedLogger)
+
 
 def get_default_log_path() -> Path:
     return Path(str(os.path.join(PROJECT_DIR, "logs", NOW + ".log")))
 
 
-
-
-
-def setup_logging(level: Optional[int | None], log_file: Optional[str | Path] = None) -> None:
+def setup_logging(
+    level: Optional[int | None], log_file: Optional[str | Path] = None
+) -> None:
     # Default level is INFO
     if level is None:
         level = logging.INFO
@@ -51,9 +53,7 @@ def setup_logging(level: Optional[int | None], log_file: Optional[str | Path] = 
     if log_file:
         path = Path(log_file)
         path.parent.mkdir(parents=True, exist_ok=True)
-        file_handler = logging.FileHandler(
-            path, encoding="utf-8"
-        )
+        file_handler = logging.FileHandler(path, encoding="utf-8")
         file_handler.setLevel(level)
         file_handler.setFormatter(common_formatter)
         handlers.append(file_handler)
@@ -78,6 +78,7 @@ class LogLevel(str, Enum):
     Includes a custom TRACE (more verbose than DEBUG) and QUIET
     (suppresses all output beyond CRITICAL).
     """
+
     TRACE = "trace"
     DEBUG = "debug"
     INFO = "info"
@@ -114,7 +115,5 @@ class LogLevel(str, Enum):
         # Fallback
         return logging.INFO
 
+
 LogLevelLiteral = Literal.__getitem__(tuple(v.value for v in LogLevel))
-
-
-

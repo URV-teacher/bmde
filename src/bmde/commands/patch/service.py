@@ -13,4 +13,7 @@ log = logging.get_logger(__name__)
 
 class PatchService(Service[PatchSpec, PatchBackend]):
     def __init__(self) -> None:
-        super().__init__([BackendOptions.HOST, BackendOptions.DOCKER], {BackendOptions.HOST: HostRunner(), BackendOptions.DOCKER: DockerRunner()})
+        super().__init__(
+            [BackendOptions.HOST, BackendOptions.DOCKER],
+            {BackendOptions.HOST: HostRunner(), BackendOptions.DOCKER: DockerRunner()},
+        )

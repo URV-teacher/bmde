@@ -12,17 +12,26 @@ from ..core.exec import ExecOptions
 log = logging.get_logger(__name__)
 
 SpecType = TypeVar("SpecType", bound=BaseSpec)  # will be GitSpec, BuildSpec, etc.
-BackendType = TypeVar("BackendType", bound=Backend[Any], covariant=True)  # will be BuildBackend, RunBackend, etc.
+BackendType = TypeVar(
+    "BackendType", bound=Backend[Any], covariant=True
+)  # will be BuildBackend, RunBackend, etc.
+
 
 class Service(Generic[SpecType, BackendType], ABC):
-    
-    def __init__(self, order: List[RunBackendOptions | BackendOptions], mapping: Dict[RunBackendOptions | BackendOptions, BackendType]) -> None:
+
+    def __init__(
+        self,
+        order: List[RunBackendOptions | BackendOptions],
+        mapping: Dict[RunBackendOptions | BackendOptions, BackendType],
+    ) -> None:
         # We should use Any for a good generic class, but I prefer to break inheritance and restrict certain types
         # because I can not use a parent, since Enums are final (RunBackendOptions and BackendOptions
         self.order = order
         self.mapping = mapping
 
-    def choose_backend(self, env: RunBackendOptions | BackendOptions | None) -> list[BackendType]:
+    def choose_backend(
+        self, env: RunBackendOptions | BackendOptions | None
+    ) -> list[BackendType]:
         order = self.order
         if env:
             order = [env]  # force
@@ -33,4 +42,3 @@ class Service(Generic[SpecType, BackendType], ABC):
             if backend.is_available():
                 return backend.run(spec, exec_opts)
         raise RuntimeError("No suitable backend available")
-

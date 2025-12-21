@@ -8,6 +8,7 @@ from ..spec import GitSpec
 
 log = logging.get_logger(__name__)
 
+
 class HostRunner(GitBackend):
     def is_available(self) -> bool:
         return is_command_available("git")

@@ -1,6 +1,7 @@
 """
 Defines the schema of settings of the application
 """
+
 from pathlib import Path
 from typing import Optional, List
 

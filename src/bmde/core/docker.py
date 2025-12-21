@@ -5,6 +5,7 @@ from bmde.core import logging
 
 log = logging.get_logger(__name__)
 
+
 def can_run_docker() -> bool:
     """
     Return True if the current user can run Docker containers, False otherwise.
@@ -34,12 +35,12 @@ def can_run_docker() -> bool:
 def docker_container_exists(container_name: str) -> bool:
     try:
         subprocess.check_output(
-            ["docker", "inspect", container_name],
-            stderr=subprocess.DEVNULL
+            ["docker", "inspect", container_name], stderr=subprocess.DEVNULL
         )
         return True
     except subprocess.CalledProcessError:
         return False
+
 
 def docker_inspect_health(container_name: str) -> Optional[str]:
     """
@@ -48,7 +49,8 @@ def docker_inspect_health(container_name: str) -> Optional[str]:
     try:
         out = subprocess.check_output(
             ["docker", "inspect", "-f", "{{.State.Health.Status}}", container_name],
-            text=True, stderr=subprocess.STDOUT
+            text=True,
+            stderr=subprocess.STDOUT,
         ).strip()
         return out if out else None
     except subprocess.CalledProcessError:

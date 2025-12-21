@@ -21,6 +21,7 @@ def validate_nds_file(p: Path) -> Path:
         raise ValueError(f"Expected a .nds file, got: {p.name}")
     return p
 
+
 def discover_nds_in_dir(search_dir: Path) -> tuple[Path, bool]:
     files = sorted(search_dir.glob("*.nds"))
     if not files:
@@ -28,10 +29,12 @@ def discover_nds_in_dir(search_dir: Path) -> tuple[Path, bool]:
     if len(files) > 1:
         log.warning(
             "Multiple .nds files found in %s; assuming '%s'.",
-            search_dir, files[0].name,
+            search_dir,
+            files[0].name,
         )
     log.info(f"Found {len(files)} .nds files in {search_dir}")
     return files[0], True
+
 
 def resolve_nds(maybe_nds: Path | None, cwd: Path) -> tuple[Path, bool]:
     """
@@ -42,7 +45,13 @@ def resolve_nds(maybe_nds: Path | None, cwd: Path) -> tuple[Path, bool]:
     return discover_nds_in_dir(cwd)
 
 
-
 class RunService(Service[RunSpec, RunBackend]):
     def __init__(self) -> None:
-        super().__init__([RunBackendName.HOST, RunBackendName.DOCKER, RunBackendName.FLATPAK], {RunBackendName.HOST: HostRunner(), RunBackendName.DOCKER: DockerRunner(), RunBackendName.FLATPAK: FlatpakRunner()})
+        super().__init__(
+            [RunBackendName.HOST, RunBackendName.DOCKER, RunBackendName.FLATPAK],
+            {
+                RunBackendName.HOST: HostRunner(),
+                RunBackendName.DOCKER: DockerRunner(),
+                RunBackendName.FLATPAK: FlatpakRunner(),
+            },
+        )

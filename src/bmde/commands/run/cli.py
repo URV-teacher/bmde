@@ -4,8 +4,17 @@ from bmde.cli import app
 from bmde.commands.run.command import run_command
 from bmde.config.schema import Settings
 from bmde.core import logging
-from bmde.core.shared_options import NdsRomOpt, FatImageOpt, ArgumentsOpt, DockerScreenOpt, RunBackendOpt, \
-    EntrypointOpt, DebugOpt, PortOpt, DryRunOpt
+from bmde.core.shared_options import (
+    NdsRomOpt,
+    FatImageOpt,
+    ArgumentsOpt,
+    DockerScreenOpt,
+    RunBackendOpt,
+    EntrypointOpt,
+    DebugOpt,
+    PortOpt,
+    DryRunOpt,
+)
 
 log = logging.get_logger(__name__)
 
@@ -28,13 +37,14 @@ def run_controller(
 
     settings: Settings = ctx.obj["settings"]
 
-    log.debug("CLI options provided:\n"
-              f"- Arguments: {str(arguments)}\n"
-              f"- Backend: {str(backend)}\n"
-              f"- Entrypoint: {str(entrypoint)}\n"
-              f"- Docker screen: {str(docker_screen)}\n"
-              f"- NDS ROM: {str(nds)}\n"
-              )
+    log.debug(
+        "CLI options provided:\n"
+        f"- Arguments: {str(arguments)}\n"
+        f"- Backend: {str(backend)}\n"
+        f"- Entrypoint: {str(entrypoint)}\n"
+        f"- Docker screen: {str(docker_screen)}\n"
+        f"- NDS ROM: {str(nds)}\n"
+    )
 
     # CLI overrides
     if backend is not None:
@@ -48,18 +58,15 @@ def run_controller(
     if docker_screen:
         settings.run.docker_screen = docker_screen
 
-    log.debug("Settings override:\n"
-              f"- Arguments: {str(arguments)}\n"
-              f"- Backend: {str(settings.run.backend)}\n"
-              f"- Entrypoint: {str(settings.run.entrypoint)}\n"
-              f"- Dry run: {str(dry_run)}\n"
-              f"- Docker screen: {str(settings.run.docker_screen)}\n"
-              f"- NDS ROM: {str(nds)}\n"
-              )
+    log.debug(
+        "Settings override:\n"
+        f"- Arguments: {str(arguments)}\n"
+        f"- Backend: {str(settings.run.backend)}\n"
+        f"- Entrypoint: {str(settings.run.entrypoint)}\n"
+        f"- Dry run: {str(dry_run)}\n"
+        f"- Docker screen: {str(settings.run.docker_screen)}\n"
+        f"- NDS ROM: {str(nds)}\n"
+    )
     run_command(
-        nds=nds,
-        image=image,
-        arguments=arguments,
-        settings=settings,
-        dry_run=dry_run
+        nds=nds, image=image, arguments=arguments, settings=settings, dry_run=dry_run
     )

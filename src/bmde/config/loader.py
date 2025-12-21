@@ -11,6 +11,7 @@ from ..core.paths import find_upwards
 
 log = logging.get_logger(__name__)
 
+
 def read_toml(path: Path) -> dict[str, str]:
     """
     Reads .toml file with its paths and returns a dictionary with its values.
@@ -31,7 +32,7 @@ def read_toml(path: Path) -> dict[str, str]:
         return settings
 
 
-def env_config(prefix: str ="TOT_") -> dict[str, dict[str, str]]:
+def env_config(prefix: str = "TOT_") -> dict[str, dict[str, str]]:
     """
     Reads the configuration from the environment and returns it as a nested dictionary of the read subcommands.
 
@@ -49,7 +50,7 @@ def env_config(prefix: str ="TOT_") -> dict[str, dict[str, str]]:
     for k, v in os.environ.items():
         if not k.startswith(prefix):
             continue
-        parts = k[len(prefix):].lower().split("_")
+        parts = k[len(prefix) :].lower().split("_")
         if len(parts) >= 2:
             section, key = parts[0], "_".join(parts[1:])
             if section not in result.keys():
@@ -107,7 +108,9 @@ def load_settings(explicit_config: Path | None = None) -> Settings:
 
     global_paths = [
         Path("/etc/bmde/bmde.toml"),  # 2) system-wide global config
-        Path(os.path.expanduser("~/.config/bmde/bmde.toml")),  # 3) user-specific global config
+        Path(
+            os.path.expanduser("~/.config/bmde/bmde.toml")
+        ),  # 3) user-specific global config
     ]
     for gp in global_paths:
         log.debug(f"Trying to read global config from {gp}")
@@ -115,7 +118,9 @@ def load_settings(explicit_config: Path | None = None) -> Settings:
 
     # 4) repo config (closest bmde.toml up-tree)
     start_path = Path.cwd()
-    log.debug(f"Trying to find repo config \"bmde.toml\" starting from {start_path} and upwards.")
+    log.debug(
+        f'Trying to find repo config "bmde.toml" starting from {start_path} and upwards.'
+    )
     repo_cfg = find_upwards("bmde.toml", start=start_path)
     if repo_cfg:
         log.debug(f"Trying to read repo config found in {repo_cfg}")

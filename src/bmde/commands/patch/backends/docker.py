@@ -8,6 +8,7 @@ from ..spec import PatchSpec
 
 log = logging.get_logger(__name__)
 
+
 class DockerRunner(PatchBackend):
     def is_available(self) -> bool:
         return can_run_docker()
@@ -27,8 +28,18 @@ class DockerRunner(PatchBackend):
         if spec.arguments is not None:
             arguments = list(spec.arguments)
 
-        run_args = ["docker", "run", "--pull=always", "--rm", "-it", *mounts, *entry, *workdir_opt, docker_img,
-                    *arguments]
+        run_args = [
+            "docker",
+            "run",
+            "--pull=always",
+            "--rm",
+            "-it",
+            *mounts,
+            *entry,
+            *workdir_opt,
+            docker_img,
+            *arguments,
+        ]
 
         log.debug("Patch arguments for Docker backend" + str(run_args))
         return run_cmd(run_args, exec_opts)

@@ -13,7 +13,6 @@ class HostRunner(RunBackend):
     def is_available(self) -> bool:
         return is_command_available("desmume") or is_command_available("desmume-cli")
 
-
     def run(self, spec: RunSpec, exec_opts: ExecOptions) -> int:
         if spec.entrypoint is not None:
             entry = str(spec.entrypoint)

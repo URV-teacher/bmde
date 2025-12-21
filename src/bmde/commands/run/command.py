@@ -2,6 +2,7 @@
 The responsibility of this file and the similar ones under each command, is to translate the logic of the bmde interface
 into the specification of the pure logic of the command, for example, translating shell into a corresponding entrypoint
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -16,10 +17,12 @@ from .spec import RunSpec
 log = logging.get_logger(__name__)
 
 
-
-
 def run_command(
-        nds: Optional[Path], image: Optional[Path], arguments: Optional[tuple[str]], settings: Settings, dry_run: bool = False
+    nds: Optional[Path],
+    image: Optional[Path],
+    arguments: Optional[tuple[str]],
+    settings: Settings,
+    dry_run: bool = False,
 ) -> None:
     nds, assumed = resolve_nds(nds, cwd=Path.cwd())
     spec = RunSpec(
@@ -31,7 +34,7 @@ def run_command(
         debug=settings.run.debug,
         port=settings.run.port,
         arguments=arguments,
-        dry_run=dry_run
+        dry_run=dry_run,
     )
     code = RunService().run(spec, ExecOptions(dry_run=dry_run))
     raise SystemExit(code)

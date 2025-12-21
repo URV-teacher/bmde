@@ -14,16 +14,6 @@ import typer
 from rich.console import Console
 
 console = Console()
-app = typer.Typer(add_completion=False, help="BMDE CLI", no_args_is_help=True)  # TODO Completion does not work
-
-
-
-
-
-
-
-
-
-
-
-
+app = typer.Typer(
+    add_completion=False, help="BMDE CLI", no_args_is_help=True
+)  # TODO Completion does not work

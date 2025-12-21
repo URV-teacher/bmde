@@ -14,7 +14,7 @@ class GitSpec(BaseSpec):
     arguments: Optional[tuple[str]]
     dry_run: bool
 
-    ssh_username: Optional[str]      # TODO: Use more restrictive typing for these args
+    ssh_username: Optional[str]  # TODO: Use more restrictive typing for these args
     ssh_password: Optional[str]
     ssh_host: Optional[str]
 
@@ -29,5 +29,3 @@ class GitSpec(BaseSpec):
     vpn_cert: Optional[str]
     vpn_test_dns: Optional[str]
     vpn_test_ip: Optional[str]
-
-

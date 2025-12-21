@@ -15,8 +15,12 @@ class DockerRunner(RunBackend):
 
     def run(self, spec: RunSpec, exec_opts: ExecOptions) -> int:
         docker_img = "aleixmt/desmume:latest"
-        mounts = ["-v", f"{spec.nds.parent}:/roms:ro",
-                  "-v", "desmume_docker_config:/home/desmume/.config/desmume"]
+        mounts = [
+            "-v",
+            f"{spec.nds.parent}:/roms:ro",
+            "-v",
+            "desmume_docker_config:/home/desmume/.config/desmume",
+        ]
         envs = ["-e", f"ROM=/roms/{spec.nds.name}"]
         ports = []
         img_opt = []
@@ -26,25 +30,45 @@ class DockerRunner(RunBackend):
 
         if spec.docker_screen == "host":
             mounts += ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
-            envs += ["-e", "MODE=host",
-                     "-e", "DISPLAY=:0",
-                     "-e", "XVFB_DISPLAY=:99",
-                     "-e", "GEOMETRY=1024x768x24",
-                     "-e", "VNC_PORT=5900"]
+            envs += [
+                "-e",
+                "MODE=host",
+                "-e",
+                "DISPLAY=:0",
+                "-e",
+                "XVFB_DISPLAY=:99",
+                "-e",
+                "GEOMETRY=1024x768x24",
+                "-e",
+                "VNC_PORT=5900",
+            ]
         if spec.docker_screen == "vnc":
-            ports += ["-p", "3000:3000",
-                      "-p", "3001:3001"]
-            envs += ["-e", "MODE=vnc",
-                     "-e", "DISPLAY=:0"]
+            ports += ["-p", "3000:3000", "-p", "3001:3001"]
+            envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
         entry = []
         if spec.entrypoint:
             entry = ["--entrypoint", str(spec.entrypoint)]
 
-        debug_opt = ["--gdb-stub", "--arm9gdb-port", str(spec.port)] if spec.debug else []
+        debug_opt = (
+            ["--gdb-stub", "--arm9gdb-port", str(spec.port)] if spec.debug else []
+        )
         arguments: list[str] = []
         if spec.arguments is not None:
             arguments = List(spec.arguments)
-        run_args = ["docker", "run", "--pull=always", "--rm", "-it", *mounts, *envs, *ports, *entry, docker_img, *img_opt,
-                    *debug_opt, *arguments]
+        run_args = [
+            "docker",
+            "run",
+            "--pull=always",
+            "--rm",
+            "-it",
+            *mounts,
+            *envs,
+            *ports,
+            *entry,
+            docker_img,
+            *img_opt,
+            *debug_opt,
+            *arguments,
+        ]
 
         return run_cmd(run_args, exec_opts)

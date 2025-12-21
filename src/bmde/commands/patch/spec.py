@@ -13,5 +13,3 @@ class PatchSpec(BaseSpec):
     entrypoint: Optional[Path]
     arguments: Optional[tuple[str]]
     dry_run: bool
-
-
