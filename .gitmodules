@@ -10,3 +10,6 @@
 [submodule "components/dlditool-docker"]
 	path = components/dlditool-docker
 	url = https://github.com/URV-teacher/dlditool-docker
+[submodule "components/insight-docker"]
+	path = components/insight-docker
+	url = https://github.com/URV-teacher/insight-docker
