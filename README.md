@@ -638,11 +638,13 @@ Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the
 - [ ] edit command
 - [ ] debug command
 - [ ] additional controls of desmume (needs compilation)
-- [ ] icon of tot inside the devkitarm
+- [x] icon of tot inside the devkitarm
 - [ ] configuration defaults from bmde from desmume
-- [ ] wesome readme with logo
+- [x] awesome readme with logo
 - [ ] dev / test dependencies
 - [ ] mount logs
+- [ ] Explore linting tools black and ruff and automate them
+- [ ] Reestructure CLI.py in a folder with a file for each command
 
 See the [open issues](https://github.com/URV-teacher/bmde/issues) for a full list of proposed features (and known issues).
 

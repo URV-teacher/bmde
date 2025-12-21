@@ -20,7 +20,6 @@ class RunSettings(BaseModel):
     backend: Optional[RunBackendName] = "docker"
     docker_screen: Optional[RunDockerOutputName] = None
     entrypoint: Optional[str] = "desmume"
-    logging: LoggingSettings = None
     passthrough: Optional[List[str]] = None
 
     debug: bool = False
@@ -31,7 +30,6 @@ class RunSettings(BaseModel):
 class BuildSettings(BaseModel):
     backend: Optional[BackendName] = None
     entrypoint: Optional[str] = "make"
-    logging: LoggingSettings = None
     passthrough: Optional[List[str]] = None
 
 
@@ -72,7 +70,6 @@ class GitSettings(BaseModel):
 class PatchSettings(BaseModel):
     backend: Optional[BackendName] = None
     entrypoint: Optional[str] = None
-    logging: LoggingSettings = None
     passthrough: Optional[List[str]] = None
 
 
