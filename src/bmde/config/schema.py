@@ -1,5 +1,5 @@
 """
-Defines the schema of settings of the application.
+Defines the schema of settings of the application
 """
 from typing import Optional, List
 
