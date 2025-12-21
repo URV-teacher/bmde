@@ -15,8 +15,9 @@ class DockerRunner(RunBackend):
     def run(self, spec: RunSpec, exec_opts: ExecOptions) -> int:
         entry = str(spec.entrypoint)
         docker_img = "aleixmt/desmume:latest"
-        mounts = ["-v", f"{spec.nds.parent}:/roms:ro"]
-        envs = []
+        mounts = ["-v", f"{spec.nds.parent}:/roms:ro",
+                  "-v", f"desmume_docker_config:/home/desmume/.config/desmume"]
+        envs = ["-e", f"ROM=/roms/{spec.nds.name}"]
         ports = []
         img_opt = []
         if spec.image:
@@ -39,7 +40,7 @@ class DockerRunner(RunBackend):
             entry = ["--entrypoint", str(spec.entrypoint)]
 
         debug_opt = ["--gdb-stub", "--arm9gdb-port", str(spec.port)] if spec.debug else []
-        run_args = ["docker", "run", "--pull=always", "--rm", "-it", *mounts, *envs, *ports, *entry, docker_img, f"/roms/{spec.nds.name}", *img_opt,
+        run_args = ["docker", "run", "--pull=always", "--rm", "-it", *mounts, *envs, *ports, *entry, docker_img, *img_opt,
                     *debug_opt, *spec.arguments]
 
         return run_cmd(run_args, exec_opts)

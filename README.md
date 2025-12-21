@@ -649,7 +649,7 @@ Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the
 
 <!-- ROADMAP -->
 ## Roadmap
-- [ ] Arm syntax workflow auto-publish into VS Code market 
+- [x] Arm syntax workflow auto-publish into VS Code market 
 - [ ] Repo VS Code custom, dockerfile VS Code 
 - [ ] edit command
 - [ ] debug command

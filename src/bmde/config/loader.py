@@ -110,7 +110,9 @@ def load_settings(explicit_config: Path | None = None) -> Settings:
         acc = merge(acc, read_toml(gp))
 
     # 4) repo config (closest bmde.toml up-tree)
-    repo_cfg = find_upwards("bmde.toml", start=Path.cwd())
+    start_path = Path.cwd()
+    log.debug(f"Trying to find repo config \"bmde.toml\" starting from {start_path} and upwards.")
+    repo_cfg = find_upwards("bmde.toml", start=start_path)
     if repo_cfg:
         log.debug(f"Trying to read repo config found in {repo_cfg}")
         acc = merge(acc, read_toml(repo_cfg))
