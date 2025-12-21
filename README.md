@@ -118,7 +118,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]]
 
 Operating system agnostic CLI wrapping the Bare Metal Development Environment (BMDE) and other related utilities 
 to manage the complete software life-cycle of a NDS C and / or assembly project using 
@@ -168,7 +168,7 @@ configuration args for the execution.
 
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+This section lists any major languages/frameworks/libraries/tools used in this project. 
 
 * [![Python][Python]][python-url]
 * [![Docker][Docker]][Docker-url]
@@ -189,6 +189,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 * [![dlditool][dlditool]][dlditool-url]
 * [![X11][X11]][X11-url]
 * [![x11vnc][x11vnc]][x11vnc-url]
+* [![Flathub][Flathub]][flathub-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -237,7 +238,7 @@ install all components of the same type. Exceptionally, `flathub` is another pos
 run command. 
 
 ##### `flathub`
-Follow the [oficial installation guide](https://flathub.org/en/setup).
+Follow the [oficial installation guide][flathub-setup-url].
 
 In Ubuntu, you can do:
 ```shell
@@ -249,7 +250,7 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 Docker components are easier to use because they do not need an installation and are recommended backend to use for all 
 components.
 
-You should install Docker by following the [official Docker installation guide](https://docs.docker.com/engine/install/ubuntu/).
+You should install Docker by following the [official Docker installation guide][docker-installation-guide].
 
 In Ubuntu, you can install the latest version of Docker using `apt` with the following:
 ```shell
@@ -295,8 +296,8 @@ You can also install and use the components of the BMDE manually and use them in
 ###### devkitARM
 This is the most complex component to install manually, but it can be done. 
 
-You will need to download [`libnds`](https://raw.githubusercontent.com/URV-teacher/devkitarm-nds-docker/master/data/libnds.tar.bz2) 
-and [`devkitARMv46`](https://wii.leseratte10.de/devkitPro/devkitARM/r46%20%282017%29/devkitARM_r46-x86_64-linux.tar.bz2), 
+You will need to download [`libnds`][libnds-bin] 
+and [`devkitARMv46`][devkitarm-bin], 
 decompress them in a folder of your machine and create 
 environment variables that point to your installation.
 
@@ -312,10 +313,10 @@ A script for the installation of this component will be bundled in the CLI in fu
 ###### `dlditool`
 You will need to install `dlditool` only if you want to mount FAT images to your NDS ROMs.
 
-You can download it from [here](https://www.chishm.com/DLDI/downloads/dlditool-linux-x86_64.zip).
+You can download it from [here][dlditool-bin].
 
 You may need a patch file for your ROMs. We have found that MPCF is the only one that works in desmume. You can download
-the MPCF patch from [here](https://www.chishm.com/DLDI/downloads/mpcf.dldi).
+the MPCF patch from [here][dlditool-patch].
 
 
 ###### Rest of manual installed components
@@ -661,7 +662,7 @@ Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the
 - [ ] Explore linting tools black and ruff and automate them
 - [ ] Reestructure CLI.py in a folder with a file for each command
 
-See the [open issues](https://github.com/URV-teacher/bmde/issues) for a full list of proposed features (and known issues).
+See the [open issues][issues-url] for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -705,7 +706,7 @@ Proudly distributed with love under the GNU GPLv3 License. See `LICENSE` for mor
 <!-- CONTACT -->
 ## Contact
 
-[@AleixMT](https://github.com/AleixMT) - aleix.marine@urv.cat
+[@AleixMT][aleixmt-github-profile] - aleix.marine@urv.cat
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -737,7 +738,15 @@ The teachers of URV who have collaborated.
 [linkedin-url]: https://linkedin.com/in/aleixmt
 [product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/screenshot.png
 
-
+[flathub-setup-url]: https://flathub.org/en/setup
+[Flathub]: https://img.shields.io/badge/Flathub-%234a90d9.svg?style=for-the-badge&logo=flathub&logoColor=white
+[flathub-url]: https://flathub.org/apps/details/YOUR_APP_ID
+[dlditool-bin]: https://www.chishm.com/DLDI/downloads/dlditool-linux-x86_64.zip
+[dlditool-patch]: https://www.chishm.com/DLDI/downloads/mpcf.dldi
+[libnds-bin]: https://raw.githubusercontent.com/URV-teacher/devkitarm-nds-docker/master/data/libnds.tar.bz2
+[docker-installation-guide]: https://docs.docker.com/engine/install/ubuntu/
+[devkitarm-bin]: https://wii.leseratte10.de/devkitPro/devkitARM/r46%20%282017%29/devkitARM_r46-x86_64-linux.tar.bz2
+[aleixmt-github-profile]: https://github.com/AleixMT
 
 [Python]: https://img.shields.io/badge/Python-%230db7ed.svg?style=for-the-badge&logo=python&logoColor=blue
 [python-url]: https://www.python.org/
