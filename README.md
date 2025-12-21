@@ -8,7 +8,8 @@
 [![Issues][issues-shield]][issues-url]
 [![Unlicense License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
-
+[![Testing (PyTest)][pytest-shield]][pytest-url]
+[![Style (Ruff)][ruff-shield]][ruff-url]
 
 
 <!-- PROJECT LOGO -->
@@ -736,6 +737,10 @@ The teachers of URV who have collaborated.
 [license-url]: https://github.com/URV-teacher/bmde/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/aleixmt
+[pytest-shield]: https://github.com/AleixMT/bmde/actions/workflows/test.yml/badge.svg
+[pytest-url]: https://docs.pytest.org/en/stable/
+[ruff-shield]: https://github.com/AleixMT/bmde/actions/workflows/lint.yml/badge.svg
+[ruff-url]: https://docs.astral.sh/ruff/
 [product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/screenshot.png
 
 [flathub-setup-url]: https://flathub.org/en/setup
