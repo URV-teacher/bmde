@@ -1,9 +1,10 @@
+from typing import List
 
-from .backend import RunBackend
-from ..spec import RunSpec
 from bmde.core import logging
 from bmde.core.docker import can_run_docker
 from bmde.core.exec import run_cmd, ExecOptions
+from .backend import RunBackend
+from ..spec import RunSpec
 
 log = logging.get_logger(__name__)
 
@@ -13,10 +14,9 @@ class DockerRunner(RunBackend):
         return can_run_docker()
 
     def run(self, spec: RunSpec, exec_opts: ExecOptions) -> int:
-        entry = str(spec.entrypoint)
         docker_img = "aleixmt/desmume:latest"
         mounts = ["-v", f"{spec.nds.parent}:/roms:ro",
-                  "-v", f"desmume_docker_config:/home/desmume/.config/desmume"]
+                  "-v", "desmume_docker_config:/home/desmume/.config/desmume"]
         envs = ["-e", f"ROM=/roms/{spec.nds.name}"]
         ports = []
         img_opt = []
@@ -36,11 +36,15 @@ class DockerRunner(RunBackend):
                       "-p", "3001:3001"]
             envs += ["-e", "MODE=vnc",
                      "-e", "DISPLAY=:0"]
+        entry = []
         if spec.entrypoint:
             entry = ["--entrypoint", str(spec.entrypoint)]
 
         debug_opt = ["--gdb-stub", "--arm9gdb-port", str(spec.port)] if spec.debug else []
+        arguments: list[str] = []
+        if spec.arguments is not None:
+            arguments = List(spec.arguments)
         run_args = ["docker", "run", "--pull=always", "--rm", "-it", *mounts, *envs, *ports, *entry, docker_img, *img_opt,
-                    *debug_opt, *spec.arguments]
+                    *debug_opt, *arguments]
 
         return run_cmd(run_args, exec_opts)

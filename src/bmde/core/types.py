@@ -4,11 +4,10 @@ Helpers to parse strings & map log levels.
 from __future__ import annotations
 
 import datetime
+import logging
 import pathlib
 from enum import Enum
-from typing import Iterable, List, Optional, Literal
-
-import logging
+from typing import Optional
 
 log = logging.getLogger(__name__)  # Types cannot use logging module to avoid circular imports
 
@@ -17,7 +16,7 @@ DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 NOW = datetime.datetime.now().strftime(DATE_FORMAT)
 
 
-class Backend(str, Enum):
+class BackendOptions(str, Enum):
     """
     Common environment backends.
 
@@ -28,7 +27,7 @@ class Backend(str, Enum):
     DOCKER = "docker"
 
     @classmethod
-    def parse(cls, value: Optional[str]) -> Optional["Backend"]:
+    def parse(cls, value: Optional[str]) -> Optional["BackendOptions"]:
         """Parse case-insensitively; returns None if value is falsy."""
         log.debug("Executing function parse from Backend")
         if not value:
@@ -42,20 +41,20 @@ class Backend(str, Enum):
 
 
 
-class RunBackend(str, Enum):
+class RunBackendOptions(str, Enum):
     """
     Execution environment backends. Obtained by composition with Backend class
     """
-    HOST = Backend.HOST.value
-    DOCKER = Backend.DOCKER.value
+    HOST = str(BackendOptions.HOST.value)
+    DOCKER = str(BackendOptions.DOCKER.value)
     FLATPAK = "flatpak"
 
     @classmethod
-    def parse(cls, value: Optional[str]) -> Optional[Backend]:
-        return Backend.parse(value)
+    def parse(cls, value: Optional[str]) -> Optional[BackendOptions]:
+        return BackendOptions.parse(value)
 
 
-class DockerOutputName(str, Enum):
+class DockerOutputOptions(str, Enum):
     """
     Execution environment backends. Obtained by composition with Backend class
     """
@@ -63,7 +62,7 @@ class DockerOutputName(str, Enum):
     HOST = "host"
 
     @classmethod
-    def parse(cls, value: Optional[str]) -> Optional[DockerOutputName]:
+    def parse(cls, value: Optional[str]) -> Optional[DockerOutputOptions]:
         """Parse case-insensitively; returns None if value is falsy."""
         log.debug("Executing function parse from DockerOutputName")
         if not value:
@@ -75,10 +74,7 @@ class DockerOutputName(str, Enum):
             valid = ", ".join(v.value for v in cls)
             raise ValueError(f"Unknown environment '{value}'. Valid: {valid}") from exc
 
-BackendName = Literal[Backend.HOST, Backend.DOCKER]
-RunBackendName = Literal[RunBackend.HOST, RunBackend.DOCKER, RunBackend.FLATPAK]
-# The possible backends that we have on the submodules
-RunDockerOutputName = Literal[DockerOutputName.VNC, DockerOutputName.HOST]
+
 
 
 

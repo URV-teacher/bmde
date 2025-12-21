@@ -43,7 +43,7 @@ lint:  ## Run static checks (ruff + mypy)
 
 fmt:  ## Auto-format (black + ruff --fix)
 	@$(VENV_DIR)/bin/black src tests
-	@$(VENV_DIR)/bin/ruff check --fix .
+	@$(VENV_DIR)/bin/ruff check #--fix .
 
 test:  ## Run tests
 	@$(VENV_DIR)/bin/pytest -q

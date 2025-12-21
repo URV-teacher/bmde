@@ -1,21 +1,21 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Sequence, Literal
+from typing import Optional
 
-from bmde.core.types import RunBackendName
+from bmde.core.spec import BaseSpec
+from bmde.core.types import RunBackendOptions, DockerOutputOptions
 
-RunDockerOutputName = Literal["vnc", "host"]
 
 @dataclass
-class RunSpec:
+class RunSpec(BaseSpec):
     nds: Path
     image: Optional[Path]
-    environment: Optional[RunBackendName]
-    docker_screen: Optional[RunDockerOutputName]
-    entrypoint: Optional[str]
+    environment: Optional[RunBackendOptions]
+    docker_screen: Optional[DockerOutputOptions]
+    entrypoint: Optional[Path]
     debug: bool
     port: int
-    arguments: Sequence[str]
+    arguments: Optional[tuple[str]]
     dry_run: bool
 
 

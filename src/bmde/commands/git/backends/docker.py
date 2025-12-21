@@ -1,15 +1,15 @@
 import os
-import time
 import subprocess
+import time
 from pathlib import Path
 from typing import Optional
 
-from .backend import GitBackend
-from ..spec import GitSpec
 from bmde.core import logging
 from bmde.core.docker import docker_inspect_health, docker_container_exists, can_run_docker
 from bmde.core.exec import run_cmd, ExecOptions
 from bmde.core.os_utils import host_uid_gid
+from .backend import GitBackend
+from ..spec import GitSpec
 
 log = logging.get_logger(__name__)
 
@@ -54,7 +54,7 @@ def _run_vpn(spec: GitSpec, exec_opts: ExecOptions, container_name: str) -> Opti
         docker_img,
     ]
 
-    run_cmd(run_args, exec_opts)
+    return run_cmd(run_args, exec_opts)
 
 
 
@@ -68,7 +68,7 @@ def _ensure_vpn_healthy(spec: GitSpec, exec_opts: ExecOptions, timeout_s: int = 
 
     log.debug("VPN container status: " + str(status))
     if status == "healthy":
-        log.debug(f"VPN is healthy")
+        log.debug("VPN is healthy")
         return
     elif docker_container_exists(container_name):
         log.debug(f"Container '{container_name}' exists but is not healthy ({status}); removing it...")
@@ -90,7 +90,7 @@ def _ensure_vpn_healthy(spec: GitSpec, exec_opts: ExecOptions, timeout_s: int = 
     while time.time() < deadline:
         status = docker_inspect_health(container_name)
         if status == "healthy":
-            log.info(f"VPN is healthy.")
+            log.info("VPN is healthy.")
             return
         elif status == "starting":
             log.info(f"VPN health: {status}. Please, wait. The VPN connection usually takes 120 seconds.")
@@ -128,9 +128,6 @@ class DockerRunner(GitBackend):
         entry = []
         if spec.entrypoint:
             entry = ["--entrypoint", str(spec.entrypoint)]
-        if spec.shell:
-            entry = ["--entrypoint", "bash"]
-
 
         # primary project mount (writable)
         host_path = str(Path(spec.d).resolve())
@@ -138,7 +135,6 @@ class DockerRunner(GitBackend):
 
         # TODO mount logs
         mounts = ["-v", f"{spec.d}:/repos/{dirname}:rw"]
-        img_opt = []
         workdir_opt = ["-w", f"/repos/{dirname}"]
 
         # share network namespace with the running VPN container
@@ -160,7 +156,7 @@ class DockerRunner(GitBackend):
             *user_opt,
             *net,
             *mounts, *envs, *entry, *workdir_opt,
-            docker_img, *img_opt,
+            docker_img,
             *getattr(spec, "arguments", []),
         ]
 

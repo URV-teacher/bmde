@@ -1,23 +1,28 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import List, TypeVar, Generic, Dict
+from typing import List, TypeVar, Generic, Dict, Any
 
+from .backend import Backend
+from .spec import BaseSpec
+from .types import RunBackendOptions, BackendOptions
 from ..core import logging
 from ..core.exec import ExecOptions
 
 log = logging.get_logger(__name__)
 
-SpecType = TypeVar("SpecType")  # will be GitSpec, BuildSpec, etc.
-BackendType = TypeVar("BackendType")  # will be BuildBackend, RunBackend, etc.
+SpecType = TypeVar("SpecType", bound=BaseSpec)  # will be GitSpec, BuildSpec, etc.
+BackendType = TypeVar("BackendType", bound=Backend[Any], covariant=True)  # will be BuildBackend, RunBackend, etc.
 
 class Service(Generic[SpecType, BackendType], ABC):
     
-    def __init__(self, order: List[str], mapping: Dict[str, BackendType]) -> None:
+    def __init__(self, order: List[RunBackendOptions | BackendOptions], mapping: Dict[RunBackendOptions | BackendOptions, BackendType]) -> None:
+        # We should use Any for a good generic class, but I prefer to break inheritance and restrict certain types
+        # because I can not use a parent, since Enums are final (RunBackendOptions and BackendOptions
         self.order = order
         self.mapping = mapping
 
-    def choose_backend(self, env: str | None) -> list:
+    def choose_backend(self, env: RunBackendOptions | BackendOptions | None) -> list[BackendType]:
         order = self.order
         if env:
             order = [env]  # force

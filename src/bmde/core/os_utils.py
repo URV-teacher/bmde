@@ -1,6 +1,6 @@
 import os
-import subprocess
 import shutil
+import subprocess
 
 
 def is_command_available(cmd: str) -> bool:
@@ -16,18 +16,18 @@ def is_command_available(cmd: str) -> bool:
     return shutil.which(cmd) is not None
 
 
-def host_uid_gid() -> tuple[int, int] | None:
+def host_uid_gid() -> tuple[int, int]:
     """Return (uid, gid) if available on this OS; otherwise None."""
     # Prefer Python stdlib where available (POSIX)
     if hasattr(os, "getuid") and hasattr(os, "getgid"):
         try:
             return os.getuid(), os.getgid()
         except Exception:
-            pass
+            return 1000, 1000
     # Fallback to `id` command (e.g., inside POSIX shells without getuid support).
     try:
         uid = subprocess.check_output(["id", "-u"], text=True).strip()
         gid = subprocess.check_output(["id", "-g"], text=True).strip()
         return int(uid), int(gid)
     except Exception:
-        return None
+        return 1000, 1000

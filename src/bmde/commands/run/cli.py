@@ -15,7 +15,7 @@ def run_controller(
     ctx: typer.Context,
     nds: NdsRomOpt = None,
     image: FatImageOpt = None,
-    arguments: ArgumentsOpt = (),
+    arguments: ArgumentsOpt = None,
     docker_screen: DockerScreenOpt = None,
     # common flags
     backend: RunBackendOpt = None,
@@ -23,7 +23,7 @@ def run_controller(
     debug: DebugOpt = False,
     port: PortOpt = 1000,
     dry_run: DryRunOpt = False,
-):
+) -> None:
     """desmume wrapper. Runs an NDS ROM."""
 
     settings: Settings = ctx.obj["settings"]
@@ -57,6 +57,9 @@ def run_controller(
               f"- NDS ROM: {str(nds)}\n"
               )
     run_command(
-        nds=nds, image=image,
-        arguments=arguments or [], settings=settings, dry_run=dry_run
+        nds=nds,
+        image=image,
+        arguments=arguments,
+        settings=settings,
+        dry_run=dry_run
     )

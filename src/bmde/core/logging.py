@@ -1,8 +1,9 @@
 import logging
 import os.path
 from enum import Enum
+from logging import Logger
 from pathlib import Path
-from typing import Optional, LiteralString, Literal
+from typing import Optional, Literal, Any
 
 from rich.logging import RichHandler
 
@@ -13,20 +14,24 @@ TRACE_LEVEL_NUM = 1
 logging.addLevelName(TRACE_LEVEL_NUM, "TRACE")
 MESSAGE_FORMAT = "%(asctime)s | %(name)s | %(message)s"
 
-def get_default_log_path() -> LiteralString | str | bytes:
-    return os.path.join(PROJECT_DIR, "logs", NOW + ".log")
+class ExtendedLogger(logging.Logger):
+    def trace(self: Logger, message: str, *args: Any, **kwargs: Any) -> None:
+        self._log(TRACE_LEVEL_NUM, message, args, **kwargs)
+
+# Tell the logging system to use your new class
+logging.setLoggerClass(ExtendedLogger)
+
+def get_default_log_path() -> Path:
+    return Path(str(os.path.join(PROJECT_DIR, "logs", NOW + ".log")))
 
 
-def trace(self, message, *args, **kwargs):
-    self._log(TRACE_LEVEL_NUM, message, args, **kwargs)
+
 
 
 def setup_logging(level: Optional[int | None], log_file: Optional[str | Path] = None) -> None:
     # Default level is INFO
     if level is None:
         level = logging.INFO
-
-    logging.Logger.trace = trace
 
     handlers: list[logging.Handler] = []
 
@@ -61,9 +66,9 @@ def setup_logging(level: Optional[int | None], log_file: Optional[str | Path] = 
     )
 
 
-def get_logger(name: str) -> logging.Logger:
+def get_logger(name: str) -> ExtendedLogger:
     """Return a logger with trace() method available."""
-    return logging.getLogger(name)
+    return ExtendedLogger(name)
 
 
 class LogLevel(str, Enum):

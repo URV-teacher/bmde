@@ -1,8 +1,9 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from ..spec import PatchSpec
+
+from abc import ABC
+
 from bmde.core.backend import Backend
-from bmde.core.exec import ExecOptions
+from ..spec import PatchSpec
 
 
 class PatchBackend(Backend[PatchSpec], ABC):

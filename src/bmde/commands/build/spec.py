@@ -1,16 +1,17 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Optional
 
-from bmde.core.types import BackendName
+from bmde.core.spec import BaseSpec
+from bmde.core.types import BackendOptions
 
 
 @dataclass
-class BuildSpec:
+class BuildSpec(BaseSpec):
     d: Path
-    environment: Optional[BackendName]
-    entrypoint: Optional[str]
-    arguments: Optional[Sequence[str]]
+    environment: Optional[BackendOptions]
+    entrypoint: Optional[Path]
+    arguments: Optional[tuple[str]]
     dry_run: Optional[bool]
 
 

@@ -16,7 +16,7 @@ def _global(ctx: typer.Context,
             quiet: QuietOpt = False,
             very_quiet: VeryQuietOpt = False,
             log_file: LogFileOpt = None,
-            ):
+            ) -> None:
     """
     Global option callback. Executed if no command is provided.
     """
@@ -56,7 +56,7 @@ def _global(ctx: typer.Context,
 
     # CLI overrides
     if log_file is not None:
-        settings.logging.log_file = log_file
+        settings.logging.file = log_file
     if cli_log_level is not None:  # CLI specifies a logging level
         settings.logging.level = cli_log_level
 

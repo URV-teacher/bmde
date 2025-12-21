@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import typer
 
@@ -14,12 +15,12 @@ log = logging.get_logger(__name__)
 @app.command("patch")
 def patch_controller(
         ctx: typer.Context,
-        arguments: ArgumentsOpt = (),
-        directory: DirectoryOpt = os.getcwd(),
+        arguments: ArgumentsOpt = None,
+        directory: DirectoryOpt = Path(os.getcwd()),
         backend: BackendOpt = None,
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False,
-):
+) -> None:
     """dlditool wrapper. Patches a NDS ROM for FAT usage."""
 
     settings: Settings = ctx.obj["settings"]
@@ -47,5 +48,7 @@ def patch_controller(
 
     patch_command(
         d=directory,
-        arguments=arguments or [], settings=settings, dry_run=dry_run
+        arguments=arguments,
+        settings=settings,
+        dry_run=dry_run
     )

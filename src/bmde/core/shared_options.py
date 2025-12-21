@@ -4,15 +4,15 @@ Reusable CLI argument definition.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional, List, Annotated
+from typing import Optional, Annotated
 
 import typer
 
-from bmde.core.types import Backend, RunBackend, RunDockerOutputName
+from bmde.core.types import BackendOptions, RunBackendOptions, DockerOutputOptions
 
 # Backend options for run command
 RunBackendOpt = Annotated[
-    Optional[RunBackend],
+    Optional[RunBackendOptions],
     typer.Option(
         "-b",
         "--backend",
@@ -24,7 +24,7 @@ RunBackendOpt = Annotated[
 
 # Backend option for the rest of commands other than run
 BackendOpt = Annotated[
-    Optional[Backend],
+    Optional[BackendOptions],
     typer.Option(
         "-b",
         "--backend",
@@ -36,7 +36,7 @@ BackendOpt = Annotated[
 
 # Arguments passed directly to the entrypoint
 ArgumentsOpt = Annotated[
-    List[str],
+    Optional[tuple[str]],
     typer.Argument(help="Arguments that are passed to the backend entrypoint.")]
 
 # Argument to send a directory
@@ -77,7 +77,7 @@ DryRunOpt = Annotated[
 ]
 
 LogFileOpt = Annotated[
-    Path,
+    Optional[Path],
     typer.Option(
         "-l",
         "--log-file",
@@ -161,7 +161,7 @@ PortOpt = Annotated[
 ]
 
 DockerScreenOpt = Annotated[
-    Optional[RunDockerOutputName],
+    Optional[DockerOutputOptions],
     typer.Option(
         "-s",
         "--screen",
@@ -197,7 +197,7 @@ FatImageOpt = Annotated[
 
 
 SshUsernameOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--ssh-user",
         help="User name for the SSH authentication of git"
@@ -205,7 +205,7 @@ SshUsernameOpt = Annotated[
 ]
 
 SshPasswordOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--ssh-password",
         help="User password for the SSH authentication of git"
@@ -213,7 +213,7 @@ SshPasswordOpt = Annotated[
 ]
 
 SshHostOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--ssh-server",
         help="Hostname of the ssh server"
@@ -221,7 +221,7 @@ SshHostOpt = Annotated[
 ]
 
 GitNameOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--git-password",
         help="User name for git commit signature"
@@ -229,7 +229,7 @@ GitNameOpt = Annotated[
 ]
 
 GitEmailOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--git-email",
         help="User email for git commit signature"
@@ -237,7 +237,7 @@ GitEmailOpt = Annotated[
 ]
 
 VpnUsernameOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--vpn-user",
         help="User name for forticlient authentication"
@@ -245,7 +245,7 @@ VpnUsernameOpt = Annotated[
 ]
 
 VpnPasswordOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--vpn-password",
         help="User password for forticlient authentication"
@@ -253,7 +253,7 @@ VpnPasswordOpt = Annotated[
 ]
 
 VpnHostOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--vpn-gateway",
         help="VPN gateway for forticlient"
@@ -261,7 +261,7 @@ VpnHostOpt = Annotated[
 ]
 
 VpnPortOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--vpn-port",
         help="VPN port for forticlient"
@@ -269,7 +269,7 @@ VpnPortOpt = Annotated[
 ]
 
 VpnRealmOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--vpn-realm",
         help="VPN realm for forticlient"
@@ -277,7 +277,7 @@ VpnRealmOpt = Annotated[
 ]
 
 VpnCertOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--vpn-cert",
         help="VPN cert for forticlient"
@@ -285,7 +285,7 @@ VpnCertOpt = Annotated[
 ]
 
 VpnTestDnsOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--vpn-test-dns",
         help="DNS direction that will be tested with an HTTP GET request to validate that we can access the "
@@ -295,7 +295,7 @@ VpnTestDnsOpt = Annotated[
 ]
 
 VpnTestIpOpt = Annotated[
-    str,
+    Optional[str],
     typer.Option(
         "--vpn-test-ip",
         help="IP direction that will be tested with an HTTP GET request to validate that we can access the internal "

@@ -1,17 +1,18 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
-from .service import GitService
-from .spec import GitSpec
 from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
+from .service import GitService
+from .spec import GitSpec
 
 log = logging.get_logger(__name__)
 
 def git_command(
-        d: Path, arguments: list[str], settings: Settings, dry_run: bool = False
+        d: Path, arguments: Optional[tuple[str]], settings: Settings, dry_run: bool = False
 ) -> int:
     spec = GitSpec(
         d=d,

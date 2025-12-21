@@ -11,18 +11,10 @@ to data coming from the CLI, the syntax of the overrides is not responsibility o
 from __future__ import annotations
 
 import typer
-from pygments.lexers import shell
 from rich.console import Console
-
 
 console = Console()
 app = typer.Typer(add_completion=False, help="BMDE CLI", no_args_is_help=True)  # TODO Completion does not work
-
-import bmde.core.cli_global
-import bmde.commands.build.cli
-import bmde.commands.run.cli
-import bmde.commands.git.cli
-import bmde.commands.patch.cli
 
 
 

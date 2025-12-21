@@ -1,9 +1,9 @@
 import shutil
 
-from .backend import PatchBackend
-from ..spec import PatchSpec
 from bmde.core.exec import run_cmd, ExecOptions
 from bmde.core.os_utils import is_command_available
+from .backend import PatchBackend
+from ..spec import PatchSpec
 
 
 class HostRunner(PatchBackend):
@@ -11,9 +11,15 @@ class HostRunner(PatchBackend):
         return is_command_available("dlditool")
 
     def run(self, spec: PatchSpec, exec_opts: ExecOptions) -> int:
-        entry = spec.entrypoint or (shutil.which("dlditool"))
-        if not entry:
-            return 127
+        if spec.entrypoint is not None:
+            entry = str(spec.entrypoint)
+        else:
+            dlditool_path = shutil.which("dlditool")
+            if dlditool_path is None:
+                entry = "dlditool"
+            else:
+                entry = dlditool_path
         args = [entry, str(spec.d)]
-        args += list(spec.arguments)
+        if spec.arguments is not None:
+            args += list(spec.arguments)
         return run_cmd(args, exec_opts)

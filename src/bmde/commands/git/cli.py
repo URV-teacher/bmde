@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import typer
 
@@ -16,8 +17,8 @@ log = logging.get_logger(__name__)
 @app.command("git")
 def git_controller(
         ctx: typer.Context,
-        arguments: ArgumentsOpt = (),
-        directory: DirectoryOpt = os.getcwd(),
+        arguments: ArgumentsOpt = None,
+        directory: DirectoryOpt = Path(os.getcwd()),
         backend: BackendOpt = None,
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False,
@@ -36,7 +37,7 @@ def git_controller(
         vpn_cert: VpnCertOpt = None,
         vpn_test_dns: VpnTestDnsOpt = None,
         vpn_test_ip: VpnTestIpOpt = None
-):
+) -> None:
     """git wrapper with SSH password bypass and VPN management. git is a distributed version control system."""
 
     settings: Settings = ctx.obj["settings"]
@@ -122,5 +123,7 @@ def git_controller(
 
     git_command(
         d=directory,
-        arguments=arguments or [], settings=settings, dry_run=dry_run
+        arguments=arguments,
+        settings=settings,
+        dry_run=dry_run
     )

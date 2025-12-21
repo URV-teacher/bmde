@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from bmde.core import logging
+from bmde.core.service import Service
+from bmde.commands.run.backends.backend import RunBackend
+from bmde.core.types import RunBackendOptions as RunBackendName
 from .backends.docker import DockerRunner
 from .backends.flatpak import FlatpakRunner
 from .backends.host import HostRunner
 from .spec import RunSpec
-from bmde.core import logging
-from bmde.core.exec import ExecOptions
-from bmde.core.service import Service
-from bmde.core.types import RunBackend
 
 log = logging.get_logger(__name__)
 
@@ -45,4 +45,4 @@ def resolve_nds(maybe_nds: Path | None, cwd: Path) -> tuple[Path, bool]:
 
 class RunService(Service[RunSpec, RunBackend]):
     def __init__(self) -> None:
-        super().__init__(["host", "docker"], {"host": HostRunner(), "docker": DockerRunner(), "flathub": FlatpakRunner()})
+        super().__init__([RunBackendName.HOST, RunBackendName.DOCKER, RunBackendName.FLATPAK], {RunBackendName.HOST: HostRunner(), RunBackendName.DOCKER: DockerRunner(), RunBackendName.FLATPAK: FlatpakRunner()})

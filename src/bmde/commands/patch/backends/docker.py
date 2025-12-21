@@ -1,11 +1,10 @@
 import os
-import subprocess
 
-from .backend import PatchBackend
-from ..spec import PatchSpec
 from bmde.core import logging
 from bmde.core.docker import can_run_docker
 from bmde.core.exec import run_cmd, ExecOptions
+from .backend import PatchBackend
+from ..spec import PatchSpec
 
 log = logging.get_logger(__name__)
 
@@ -22,12 +21,14 @@ class DockerRunner(PatchBackend):
 
         dirname = os.path.basename(spec.d)
         mounts = ["-v", f"{spec.d}:/input/{dirname}:rw"]
-        envs = []
-        ports = []
         workdir_opt = ["-w", f"/input/{dirname}"]  # Workdir
 
-        run_args = ["docker", "run", "--pull=always", "--rm", "-it", *mounts, *envs, *ports, *entry, *workdir_opt, docker_img,
-                    *spec.arguments]
+        arguments = []
+        if spec.arguments is not None:
+            arguments = list(spec.arguments)
+
+        run_args = ["docker", "run", "--pull=always", "--rm", "-it", *mounts, *entry, *workdir_opt, docker_img,
+                    *arguments]
 
         log.debug("Patch arguments for Docker backend" + str(run_args))
         return run_cmd(run_args, exec_opts)

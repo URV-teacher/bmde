@@ -1,25 +1,24 @@
 """
 Defines the schema of settings of the application
 """
+from pathlib import Path
 from typing import Optional, List
 
 from pydantic import BaseModel, FilePath
 
-from bmde.core import logging
-from bmde.core.logging import LogLevelLiteral
-from bmde.core.types import BackendName, RunBackendName, RunDockerOutputName
-
+from bmde.core.logging import LogLevel
+from bmde.core.types import BackendOptions, RunBackendOptions, DockerOutputOptions
 
 
 class LoggingSettings(BaseModel):
-    level: LogLevelLiteral = "info"
+    level: LogLevel = LogLevel("info")
     file: Optional[FilePath] = None
 
 
 class RunSettings(BaseModel):
-    backend: Optional[RunBackendName] = "docker"
-    docker_screen: Optional[RunDockerOutputName] = None
-    entrypoint: Optional[str] = "desmume"
+    backend: Optional[RunBackendOptions] = None
+    docker_screen: Optional[DockerOutputOptions] = None
+    entrypoint: Optional[Path] = Path("desmume")
     passthrough: Optional[List[str]] = None
 
     debug: bool = False
@@ -28,8 +27,8 @@ class RunSettings(BaseModel):
 
 
 class BuildSettings(BaseModel):
-    backend: Optional[BackendName] = None
-    entrypoint: Optional[str] = "make"
+    backend: Optional[BackendOptions] = None
+    entrypoint: Optional[Path] = None
     passthrough: Optional[List[str]] = None
 
 
@@ -57,9 +56,8 @@ class GitConfigSettings(BaseModel):
 
 
 class GitSettings(BaseModel):
-    backend: Optional[BackendName] = "docker"
-    entrypoint: Optional[str] = None
-    logging: LoggingSettings = "debug"
+    backend: Optional[BackendOptions] = BackendOptions("docker")
+    entrypoint: Optional[Path] = None
     passthrough: Optional[List[str]] = None
 
     git: GitConfigSettings = GitConfigSettings()
@@ -68,8 +66,8 @@ class GitSettings(BaseModel):
 
 
 class PatchSettings(BaseModel):
-    backend: Optional[BackendName] = None
-    entrypoint: Optional[str] = None
+    backend: Optional[BackendOptions] = None
+    entrypoint: Optional[Path] = None
     passthrough: Optional[List[str]] = None
 
 

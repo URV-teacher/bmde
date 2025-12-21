@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import tomllib
+from pathlib import Path
+from typing import Any
+
 from .schema import Settings
 from ..core import logging
 from ..core.paths import find_upwards
 
 log = logging.get_logger(__name__)
 
-def read_toml(path: Path) -> dict:
+def read_toml(path: Path) -> dict[str, str]:
     """
     Reads .toml file with its paths and returns a dictionary with its values.
 
@@ -29,7 +31,7 @@ def read_toml(path: Path) -> dict:
         return settings
 
 
-def env_config(prefix="TOT_") -> dict:
+def env_config(prefix: str ="TOT_") -> dict[str, dict[str, str]]:
     """
     Reads the configuration from the environment and returns it as a nested dictionary of the read subcommands.
 
@@ -43,19 +45,21 @@ def env_config(prefix="TOT_") -> dict:
         env[RUN][ENVIRONMENT] = docker)
 
     """
-    result: dict = {}
+    result: dict[str, dict[str, str]] = {}
     for k, v in os.environ.items():
         if not k.startswith(prefix):
             continue
         parts = k[len(prefix):].lower().split("_")
         if len(parts) >= 2:
             section, key = parts[0], "_".join(parts[1:])
-            result.setdefault(section, {})[key] = v
+            if section not in result.keys():
+                result[section] = {}
+            result[section][key] = v
     log.debug(f"Parsed environment variables: {str(result)}")
     return result
 
 
-def merge(a: dict, b: dict) -> dict:
+def merge(a: dict[Any, Any], b: dict[Any, Any]) -> dict[Any, Any]:
     """
     Merges two dictionaries by setting the values of the first dictionary a with the values of the second dictionary b
     for all the coinciding keys.
@@ -98,7 +102,7 @@ def load_settings(explicit_config: Path | None = None) -> Settings:
 
     """
     # 1) system env (lowest)
-    log.debug(f"Trying to read global config from Environment Variables")
+    log.debug("Trying to read global config from Environment Variables")
     acc = env_config()
 
     global_paths = [

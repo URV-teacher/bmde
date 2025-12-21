@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import typer
 
@@ -14,12 +15,12 @@ log = logging.get_logger(__name__)
 @app.command("build")
 def build_controller(
         ctx: typer.Context,
-        arguments: ArgumentsOpt = (),
-        directory: DirectoryOpt = os.getcwd(),
+        arguments: ArgumentsOpt,
+        directory: DirectoryOpt = Path(os.getcwd()),
         backend: BackendOpt = None,
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False
-):
+) -> None:
     """devkitARM make wrapper. Builds NDS ROM from source code."""
 
     settings: Settings = ctx.obj["settings"]
@@ -48,5 +49,5 @@ def build_controller(
 
     build_command(
         d=directory,
-        arguments=arguments or [], settings=settings, dry_run=dry_run
+        arguments=arguments, settings=settings, dry_run=dry_run
     )

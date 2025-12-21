@@ -1,17 +1,18 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
-from .service import BuildService
-from .spec import BuildSpec
 from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
+from .service import BuildService
+from .spec import BuildSpec
 
 log = logging.get_logger(__name__)
 
 def build_command(
-        d: Path, arguments: list[str], settings: Settings, dry_run: bool = False
+        d: Path, arguments: Optional[tuple[str]], settings: Settings, dry_run: bool = False
 ) -> None:
     spec = BuildSpec(
         d=d,

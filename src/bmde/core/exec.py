@@ -11,11 +11,11 @@ log = logging.get_logger(__name__)
 @dataclass
 class ExecOptions:
     dry_run: bool = False
-    env: dict | None = None
+    env: dict[str, str] | None = None
     cwd: str | None = None
 
 
-def run_cmd(cmd: list[str] | str, opts: ExecOptions) -> int:
+def run_cmd(cmd: list[str], opts: ExecOptions) -> int:
     if isinstance(cmd, str):
         pretty = cmd
         args = cmd

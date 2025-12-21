@@ -5,13 +5,13 @@ into the specification of the pure logic of the command, for example, translatin
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
-from .service import resolve_nds, RunService
-from .spec import RunSpec
 from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
-from bmde.core.logging import setup_logging
+from .service import resolve_nds, RunService
+from .spec import RunSpec
 
 log = logging.get_logger(__name__)
 
@@ -19,7 +19,7 @@ log = logging.get_logger(__name__)
 
 
 def run_command(
-        nds: Path, image: Path, arguments: list[str], settings: Settings, dry_run: bool = False
+        nds: Optional[Path], image: Optional[Path], arguments: Optional[tuple[str]], settings: Settings, dry_run: bool = False
 ) -> None:
     nds, assumed = resolve_nds(nds, cwd=Path.cwd())
     spec = RunSpec(
