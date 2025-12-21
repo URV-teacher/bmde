@@ -653,14 +653,14 @@ Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the
 - [ ] Repo VS Code custom, dockerfile VS Code 
 - [ ] edit command
 - [ ] debug command
-- [ ] additional controls of desmume (needs compilation)
+- [x] additional controls of desmume (needs compilation)
 - [x] icon of tot inside the devkitarm
 - [ ] configuration defaults from bmde from desmume
 - [x] awesome readme with logo
 - [ ] dev / test dependencies
 - [ ] mount logs
 - [ ] Explore linting tools black and ruff and automate them
-- [ ] Reestructure CLI.py in a folder with a file for each command
+- [x] Reestructure CLI.py in a folder with a file for each command
 
 See the [open issues][issues-url] for a full list of proposed features (and known issues).
 

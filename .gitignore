@@ -209,7 +209,7 @@ __marimo__/
 # Own gitignore rules
 .idea
 .env
-!src/bmde/build
+!src/bmde/commands/build
 bmde.toml
 nds.nds
 src/tot.egg-info
