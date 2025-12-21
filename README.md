@@ -15,7 +15,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/URV-teacher/bmde">
-    <img src="https://raw.githubusercontent.com/URV-teacher/logos/master/logo.webp" alt="Logo">
+    <img src="https://raw.githubusercontent.com/URV-teacher/hosting/master/logo.webp" alt="Logo">
   </a>
 
   <h3 align="center">Bare Metal Development Environment (BMDE) CLI</h3>
@@ -273,6 +273,21 @@ sudo apt update
 
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
+
+Currently, the CLI calls `docker` directly, so you either need to:
+* Run the app as root by calling `sudo`
+* Run the app as root by being a privileged user, for example `root`.
+* Add your user to the Docker group.
+
+It is recommended to add your user to the `docker` group, so that you do not need to log in as another user or add
+`sudo` in front of your call to BMDE each time. 
+
+To add yourself to the Docker group you can use this command:
+```shell
+sudo usermod -aG docker $USER
+```
+
+You need to reboot or log out / log in for these changes to take effect.
 
 ##### Manual installed components
 You can also install and use the components of the BMDE manually and use them in the CLI.
@@ -690,7 +705,7 @@ Proudly distributed with love under the GNU GPLv3 License. See `LICENSE` for mor
 <!-- CONTACT -->
 ## Contact
 
-AleixMT - [@AleixMT](https://github.com/AleixMT) - aleix.marine@urv.cat
+[@AleixMT](https://github.com/AleixMT) - aleix.marine@urv.cat
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -720,7 +735,7 @@ The teachers of URV who have collaborated.
 [license-url]: https://github.com/URV-teacher/bmde/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/aleixmt
-[product-screenshot]: https://raw.githubusercontent.com/URV-teacher/logos/master/screenshot.png
+[product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/screenshot.png
 
 
 
