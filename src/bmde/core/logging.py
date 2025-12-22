@@ -3,7 +3,7 @@ import os.path
 from enum import Enum
 from logging import Logger
 from pathlib import Path
-from typing import Optional, Literal, Any
+from typing import Optional, Literal, Any, cast
 
 from rich.logging import RichHandler
 
@@ -73,9 +73,9 @@ def obfuscate_text(text: str | None) -> str:
         return "*****"
 
 
-def get_logger(name: str) -> logging.Logger:
+def get_logger(name: str) -> ExtendedLogger:
     """Return a logger with trace() method available."""
-    return logging.getLogger(name)
+    return cast(ExtendedLogger, logging.getLogger(name))
 
 
 class LogLevel(str, Enum):
