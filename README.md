@@ -738,9 +738,9 @@ The teachers of URV who have collaborated.
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/aleixmt
 [pytest-shield]: https://github.com/URV-teacher/bmde/actions/workflows/test.yml/badge.svg
-[pytest-url]: https://docs.pytest.org/en/stable/
+[pytest-url]: https://github.com/URV-teacher/bmde/actions/workflows/test.yml
 [ruff-shield]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml/badge.svg
-[ruff-url]: https://docs.astral.sh/ruff/
+[ruff-url]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml
 [product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/screenshot.png
 
 [flathub-setup-url]: https://flathub.org/en/setup
