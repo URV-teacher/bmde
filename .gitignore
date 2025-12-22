@@ -213,7 +213,6 @@ __marimo__/
 bmde.toml
 nds.nds
 src/tot.egg-info
-logs
 input
 docs/assessment_template.md
 workspace
