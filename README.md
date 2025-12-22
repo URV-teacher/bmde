@@ -8,7 +8,7 @@
 [![Issues][issues-shield]][issues-url]
 [![Unlicense License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
-[![Testing (PyTest)][pytest-shield]][pytest-url]
+[![Testing PyTest)][pytest-shield]][pytest-url]
 [![Style (Ruff)][ruff-shield]][ruff-url]
 
 
@@ -16,7 +16,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/URV-teacher/bmde">
-    <img src="https://raw.githubusercontent.com/URV-teacher/hosting/master/logo.webp" alt="Logo">
+    <img src="https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/logo.webp" alt="Logo">
   </a>
 
   <h3 align="center">Bare Metal Development Environment (BMDE) CLI</h3>
@@ -737,11 +737,11 @@ The teachers of URV who have collaborated.
 [license-url]: https://github.com/URV-teacher/bmde/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/aleixmt
-[pytest-shield]: https://github.com/AleixMT/bmde/actions/workflows/test.yml/badge.svg
+[pytest-shield]: https://github.com/URV-teacher/bmde/actions/workflows/test.yml/badge.svg
 [pytest-url]: https://docs.pytest.org/en/stable/
-[ruff-shield]: https://github.com/AleixMT/bmde/actions/workflows/lint.yml/badge.svg
+[ruff-shield]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml/badge.svg
 [ruff-url]: https://docs.astral.sh/ruff/
-[product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/screenshot.png
+[product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/screenshot.png
 
 [flathub-setup-url]: https://flathub.org/en/setup
 [Flathub]: https://img.shields.io/badge/Flathub-%234a90d9.svg?style=for-the-badge&logo=flathub&logoColor=white
