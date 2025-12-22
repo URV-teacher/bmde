@@ -656,11 +656,12 @@ Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the
 - [ ] debug command
 - [x] additional controls of desmume (needs compilation)
 - [x] icon of tot inside the devkitarm
-- [ ] configuration defaults from bmde from desmume
+- [x] configuration defaults from bmde from desmume --> retained config into named volume, but wontfix, is actually not 
+  that interesting
 - [x] awesome readme with logo
-- [ ] dev / test dependencies
+- [x] dev / test dependencies
 - [ ] mount logs
-- [ ] Explore linting tools black and ruff and automate them
+- [x] Explore linting tools black and ruff and automate them
 - [x] Reestructure CLI.py in a folder with a file for each command
 
 See the [open issues][issues-url] for a full list of proposed features (and known issues).
