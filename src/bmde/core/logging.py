@@ -73,9 +73,9 @@ def obfuscate_text(text: str | None) -> str:
         return "*****"
 
 
-def get_logger(name: str) -> ExtendedLogger:
+def get_logger(name: str) -> logging.Logger:
     """Return a logger with trace() method available."""
-    return ExtendedLogger(name)
+    return logging.getLogger(name)
 
 
 class LogLevel(str, Enum):

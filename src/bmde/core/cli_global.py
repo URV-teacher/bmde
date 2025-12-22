@@ -66,6 +66,8 @@ def _global(
         )
     # Load settings
     settings = load_settings(explicit_config=config)
+    print(settings)
+    log.debug(settings)
 
     # CLI overrides
     if log_file is not None:
