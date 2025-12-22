@@ -1,4 +1,4 @@
-name: CI Quality Check
+name: Automated linting with Ruff
 
 on:
   push:
