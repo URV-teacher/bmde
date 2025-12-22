@@ -1,5 +1,3 @@
-import pytest
-
 from bmde.commands.build.service import BuildService
 from bmde.core.types import BackendOptions
 
