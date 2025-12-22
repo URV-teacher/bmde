@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 from abc import ABC
+from subprocess import Popen
 from typing import List, TypeVar, Generic, Dict, Any
 
 from .backend import Backend
@@ -38,7 +39,7 @@ class Service(Generic[SpecType, BackendType], ABC):
             order = [env]  # force
         return [self.mapping[e] for e in order]
 
-    def run(self, spec: SpecType, exec_opts: ExecOptions) -> int:
+    def run(self, spec: SpecType, exec_opts: ExecOptions) -> int | Popen[bytes]:
         for backend in self.choose_backend(spec.environment):
             if backend.is_available():
                 ret = backend.run(spec, exec_opts)
@@ -49,7 +50,6 @@ class Service(Generic[SpecType, BackendType], ABC):
                 # Use the base class for isinstance; generic [bytes]
                 # does not exist at runtime (type erasure)
                 elif isinstance(ret, subprocess.Popen):
-                    ret.communicate()
+                    return ret
                     # returncode is guaranteed to be an int after communicate()
-                    return ret.returncode if ret.returncode is not None else 1
         raise RuntimeError("No suitable backend available")

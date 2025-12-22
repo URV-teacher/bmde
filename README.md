@@ -652,6 +652,7 @@ Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the
 ## Roadmap
 - [x] Arm syntax workflow auto-publish into VS Code market 
 - [ ] Repo VS Code custom, dockerfile VS Code 
+- [ ] Change the usage of ROM var into args, prioritize similarity to the actual binary
 - [ ] edit command
 - [ ] debug command
 - [x] additional controls of desmume (needs compilation)

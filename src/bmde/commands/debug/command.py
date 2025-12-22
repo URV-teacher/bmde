@@ -6,6 +6,7 @@ into the specification of the pure logic of the command, for example, translatin
 from __future__ import annotations
 
 from pathlib import Path
+from subprocess import Popen
 from typing import Optional
 
 from bmde.config.schema import Settings
@@ -13,7 +14,7 @@ from bmde.core import logging
 from bmde.core.exec import ExecOptions, run_cmd
 from .service import DebugService
 from .spec import DebugSpec
-from ..run.service import RunService
+from ..run.command import run_command
 from ..run.spec import RunSpec
 from ...core.file_utils import resolve_elf, resolve_nds
 
@@ -23,17 +24,18 @@ log = logging.get_logger(__name__)
 def debug_command(
     nds: Optional[Path],
     elf: Optional[Path],
-    image: Optional[Path],
     arguments: Optional[tuple[str]],
     settings: Settings,
     dry_run: bool = False,
 ) -> None:
     nds, assumed = resolve_nds(nds, cwd=Path.cwd())
+    print("nds" + str(nds))
+    print("assumed" + str(assumed))
     elf, assumed = resolve_elf(elf, cwd=Path.cwd())
     spec = DebugSpec(
         RunSpec=RunSpec(
             nds=nds,
-            image=(Path(image) if image else None),
+            image=settings.debug.run.image,
             environment=settings.debug.run.backend,
             docker_screen=settings.debug.run.docker_screen,
             entrypoint=settings.debug.run.entrypoint,
@@ -41,6 +43,7 @@ def debug_command(
             port=settings.debug.run.port,
             arguments=arguments,
             dry_run=dry_run,
+            docker_network="bmde-debug"
         ),
         elf=elf,
         environment=settings.debug.backend,
@@ -50,7 +53,10 @@ def debug_command(
         dry_run=dry_run,
     )
     run_cmd(["docker", "network", "create", "bmde-debug"], ExecOptions())
-    RunService().run(spec.RunSpec, ExecOptions(dry_run=dry_run, background=True))
+    handle = run_command(nds=nds, image=settings.debug.run.image, arguments=settings.debug.run.arguments, settings=settings, background=True)
     code = DebugService().run(spec, ExecOptions(dry_run=dry_run))
+    if isinstance(handle, Popen):
+        handle.communicate()
+
     run_cmd(["docker", "network", "rm", "bmde-debug"], ExecOptions())
     raise SystemExit(code)

@@ -6,6 +6,7 @@ into the specification of the pure logic of the command, for example, translatin
 from __future__ import annotations
 
 from pathlib import Path
+from subprocess import Popen
 from typing import Optional
 
 from bmde.config.schema import Settings
@@ -22,9 +23,11 @@ def run_command(
     nds: Optional[Path],
     image: Optional[Path],
     arguments: Optional[tuple[str]],
+    background: Optional[bool],
     settings: Settings,
     dry_run: bool = False,
-) -> None:
+    docker_network: Optional[str] = None,
+) -> int | Popen[bytes]:
     nds, assumed = resolve_nds(nds, cwd=Path.cwd())
     spec = RunSpec(
         nds=nds,
@@ -36,6 +39,6 @@ def run_command(
         port=settings.run.port,
         arguments=arguments,
         dry_run=dry_run,
+        docker_network=docker_network,
     )
-    code = RunService().run(spec, ExecOptions(dry_run=dry_run))
-    raise SystemExit(code)
+    return RunService().run(spec, ExecOptions(dry_run=dry_run, background=background))

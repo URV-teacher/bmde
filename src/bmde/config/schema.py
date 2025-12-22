@@ -77,7 +77,7 @@ class DebugSettings(BaseModel):
 
     backend: Optional[BackendOptions] = None
     docker_screen: Optional[DockerOutputOptions] = None
-    entrypoint: Optional[Path] = Path("insight")
+    entrypoint: Optional[Path] = None
     arguments: Optional[List[str]] = None
 
 

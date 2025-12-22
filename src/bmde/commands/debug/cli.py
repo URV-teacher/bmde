@@ -25,13 +25,11 @@ def debug_controller(
     ctx: typer.Context,
     nds: NdsRomOpt = None,
     elf: ElfRomOpt = None,
-    image: FatImageOpt = None,
     arguments: ArgumentsOpt = None,
     docker_screen: DockerScreenOpt = None,
     # common flags
     backend: RunBackendOpt = None,
     entrypoint: EntrypointOpt = None,
-    debug: DebugOpt = False,
     port: PortOpt = 1000,
     dry_run: DryRunOpt = False,
 ) -> None:
@@ -53,8 +51,6 @@ def debug_controller(
         settings.run.backend = backend
     if entrypoint is not None:
         settings.run.entrypoint = entrypoint
-    if debug:
-        settings.run.debug = True
     if port:
         settings.run.port = port
     if docker_screen:
@@ -72,7 +68,6 @@ def debug_controller(
     debug_command(
         nds=nds,
         elf=elf,
-        image=image,
         arguments=arguments,
         settings=settings,
         dry_run=dry_run,

@@ -17,3 +17,4 @@ class RunSpec(BaseSpec):
     port: int
     arguments: Optional[tuple[str]]
     dry_run: bool
+    docker_network: Optional[str]

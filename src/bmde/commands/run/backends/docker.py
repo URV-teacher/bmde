@@ -64,6 +64,8 @@ class DockerRunner(RunBackend):
             "--pull=always",
             "--rm",
             "-it",
+            "--network",
+            "bmde-debug",
             *mounts,
             *envs,
             *ports,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from subprocess import Popen
 from typing import Optional
 
 from bmde.config.schema import Settings
@@ -14,7 +15,7 @@ log = logging.get_logger(__name__)
 
 def git_command(
     d: Path, arguments: Optional[tuple[str]], settings: Settings, dry_run: bool = False
-) -> int:
+) -> int | Popen[bytes]:
     spec = GitSpec(
         d=d,
         environment=settings.git.backend,
