@@ -33,6 +33,14 @@ $(VENV_DIR)/bin/bmde: $(VENV_DIR)/bin/python  ## Installs package into the venv
 	@$(PIP) install -e .
 
 install: $(VENV_DIR)/bin/bmde  ## Installs package into the venv
+
+$(VENV_DIR)/bin/ruff: $(VENV_DIR)/bin/python
+	@$(PIP) install -r requirements-dev.txt
+
+$(VENV_DIR)/bin/pytest: $(VENV_DIR)/bin/python
+	@$(PIP) install -r requirements-dev.txt
+
+dev: $(VENV_DIR)/bin/bmde $(VENV_DIR)/bin/ruff $(VENV_DIR)/bin/pytest ## Installs package into the venv
 	@$(PIP) install -e .
 
 # ---- quality --------------------------------------------------------------
