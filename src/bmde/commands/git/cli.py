@@ -7,6 +7,7 @@ from bmde.cli import app
 from bmde.commands.git.command import git_command
 from bmde.config.schema import Settings
 from bmde.core import logging
+from bmde.core.logging import obfuscate_text
 from bmde.core.shared_options import (
     ArgumentsOpt,
     DirectoryOpt,
@@ -57,26 +58,26 @@ def git_controller(
 
     settings: Settings = ctx.obj["settings"]
 
-    log.debug(
+    log.trace(
         "CLI options provided:\n"
         f"- Arguments: {str(arguments)}\n"
         f"- Directory: {str(directory)}\n"
         f"- Backend: {str(backend)}\n"
         f"- Entrypoint: {str(entrypoint)}\n"
         f"- Dry run: {str(dry_run)}\n"
-        f"- SSH username: {str(ssh_username)}\n"
-        f"- SSH password: {str(ssh_password)}\n"
-        f"- SSH host: {str(ssh_host)}\n"
-        f"- git name: {str(git_name)}\n"
-        f"- git email: {str(git_email)}\n"
-        f"- VPN username: {str(vpn_username)}\n"
-        f"- VPN password: {str(vpn_password)}\n"
-        f"- VPN host: {str(vpn_host)}\n"
-        f"- VPN port: {str(vpn_port)}\n"
-        f"- VPN realm: {str(vpn_realm)}\n"
-        f"- VPN cert: {str(vpn_cert)}\n"
-        f"- VPN test DNS: {str(vpn_test_dns)}\n"
-        f"- VPN test IP: {str(vpn_test_ip)}\n"
+        f"- SSH username: {obfuscate_text(ssh_username)}\n"
+        f"- SSH password: {obfuscate_text(ssh_password)}\n"
+        f"- SSH host: {obfuscate_text(ssh_host)}\n"
+        f"- git name: {obfuscate_text(git_name)}\n"
+        f"- git email: {obfuscate_text(git_email)}\n"
+        f"- VPN username: {obfuscate_text(vpn_username)}\n"
+        f"- VPN password: {obfuscate_text(vpn_password)}\n"
+        f"- VPN host: {obfuscate_text(vpn_host)}\n"
+        f"- VPN port: {obfuscate_text(vpn_port)}\n"
+        f"- VPN realm: {obfuscate_text(vpn_realm)}\n"
+        f"- VPN cert: {obfuscate_text(vpn_cert)}\n"
+        f"- VPN test DNS: {obfuscate_text(vpn_test_dns)}\n"
+        f"- VPN test IP: {obfuscate_text(vpn_test_ip)}\n"
     )
 
     # CLI overrides
@@ -112,26 +113,26 @@ def git_controller(
     if vpn_test_ip is not None:
         settings.git.vpn.test_ip = vpn_test_ip
 
-    log.debug(
+    log.trace(
         "Final settings for git command:\n"
         f"- Arguments: {str(arguments)}\n"
         f"- Directory: {str(directory)}\n"
         f"- Dry run: {str(dry_run)}\n"
         f"- Backend: {str(settings.git.backend)}\n"
         f"- Entrypoint: {str(settings.git.entrypoint)}\n"
-        f"- SSH username: {str(settings.git.ssh.username)}\n"
-        f"- SSH password: {str(settings.git.ssh.password)}\n"
-        f"- SSH server: {str(settings.git.ssh.host)}\n"
-        f"- git name: {str(settings.git.git.name)}\n"
-        f"- git email: {str(settings.git.git.email)}\n"
-        f"- VPN username: {str(settings.git.vpn.username)}\n"
-        f"- VPN password: {str(settings.git.vpn.password)}\n"
-        f"- VPN host: {str(settings.git.vpn.host)}\n"
-        f"- VPN port: {str(settings.git.vpn.port)}\n"
-        f"- VPN realm: {str(settings.git.vpn.realm)}\n"
-        f"- VPN cert: {str(settings.git.vpn.cert)}\n"
-        f"- VPN test DNS: {str(settings.git.vpn.test_dns)}\n"
-        f"- VPN test IP: {str(settings.git.vpn.test_ip)}\n"
+        f"- SSH username: {obfuscate_text(settings.git.ssh.username)}\n"
+        f"- SSH password: {obfuscate_text(settings.git.ssh.password)}\n"
+        f"- SSH server: {obfuscate_text(settings.git.ssh.host)}\n"
+        f"- git name: {obfuscate_text(settings.git.git.name)}\n"
+        f"- git email: {obfuscate_text(settings.git.git.email)}\n"
+        f"- VPN username: {obfuscate_text(settings.git.vpn.username)}\n"
+        f"- VPN password: {obfuscate_text(settings.git.vpn.password)}\n"
+        f"- VPN host: {obfuscate_text(settings.git.vpn.host)}\n"
+        f"- VPN port: {obfuscate_text(str(settings.git.vpn.port))}\n"
+        f"- VPN realm: {obfuscate_text(settings.git.vpn.realm)}\n"
+        f"- VPN cert: {obfuscate_text(settings.git.vpn.cert)}\n"
+        f"- VPN test DNS: {obfuscate_text(settings.git.vpn.test_dns)}\n"
+        f"- VPN test IP: {obfuscate_text(settings.git.vpn.test_ip)}\n"
     )
 
     git_command(d=directory, arguments=arguments, settings=settings, dry_run=dry_run)

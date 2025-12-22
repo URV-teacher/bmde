@@ -66,6 +66,13 @@ def setup_logging(
     )
 
 
+def obfuscate_text(text: str | None) -> str:
+    if text is None:
+        return str(text)
+    else:
+        return "*****"
+
+
 def get_logger(name: str) -> ExtendedLogger:
     """Return a logger with trace() method available."""
     return ExtendedLogger(name)

@@ -8,6 +8,7 @@ def test_build_service_initialization():
     # Check if 'host' is in the mapping keys
     assert "host" in [key.value for key in service.mapping.keys()]
 
+
 def test_choose_backend_force_env():
     """Verify that passing an env overrides the default order."""
     service = BuildService()
