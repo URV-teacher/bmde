@@ -4,27 +4,28 @@ import subprocess
 from bmde.core import logging
 from bmde.core.exec import run_cmd, ExecOptions
 from bmde.core.os_utils import is_command_available
-from .backend import BuildBackend
-from ..spec import BuildSpec
+from .backend import DebugBackend
+from ..spec import DebugSpec
 
 log = logging.get_logger(__name__)
 
 
-class HostRunner(BuildBackend):
+class HostRunner(DebugBackend):
     def is_available(self) -> bool:
-        return is_command_available("make")
+        return is_command_available("insight")
 
-
-    def run(self, spec: BuildSpec, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
+    def run(
+        self, spec: DebugSpec, exec_opts: ExecOptions
+    ) -> int | subprocess.Popen[bytes]:
         if spec.entrypoint is not None:
             entry = str(spec.entrypoint)
         else:
-            make_path = shutil.which("make")
-            if make_path is None:
-                entry = "make"
+            insight_path = shutil.which("desmume")
+            if insight_path is not None:
+                entry = insight_path
             else:
-                entry = make_path
-        args = [entry, str(spec.d)]
+                entry = "insight"
+        args = [entry, str(spec.elf)]
         if spec.arguments is not None:
             args += list(spec.arguments)
         return run_cmd(args, exec_opts)

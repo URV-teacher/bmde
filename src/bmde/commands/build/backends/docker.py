@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from bmde.core import logging
 from bmde.core.docker import can_run_docker
@@ -14,7 +15,7 @@ class DockerRunner(BuildBackend):
     def is_available(self) -> bool:
         return can_run_docker()
 
-    def run(self, spec: BuildSpec, exec_opts: ExecOptions) -> int:
+    def run(self, spec: BuildSpec, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
 
         args = ["docker",
                     "run",

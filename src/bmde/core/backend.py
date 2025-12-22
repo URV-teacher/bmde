@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
@@ -19,4 +20,6 @@ class Backend(ABC, Generic[SpecType]):
     def is_available(self) -> bool: ...
 
     @abstractmethod
-    def run(self, spec: SpecType, exec_opts: ExecOptions) -> int: ...
+    def run(
+        self, spec: SpecType, exec_opts: ExecOptions
+    ) -> int | subprocess.Popen[bytes]: ...

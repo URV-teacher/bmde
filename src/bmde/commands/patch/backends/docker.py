@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from bmde.core import logging
 from bmde.core.docker import can_run_docker
@@ -13,7 +14,9 @@ class DockerRunner(PatchBackend):
     def is_available(self) -> bool:
         return can_run_docker()
 
-    def run(self, spec: PatchSpec, exec_opts: ExecOptions) -> int:
+    def run(
+        self, spec: PatchSpec, exec_opts: ExecOptions
+    ) -> int | subprocess.Popen[bytes]:
         entry = []
         if spec.entrypoint:
             entry = ["--entrypoint", str(spec.entrypoint)]

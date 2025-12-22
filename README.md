@@ -663,6 +663,13 @@ Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the
 - [ ] mount logs
 - [x] Explore linting tools black and ruff and automate them
 - [x] Reestructure CLI.py in a folder with a file for each command
+- [ ] Create common options for Exec options (entrypoint, dryrun, background), also in settings 
+- [ ] Implement sane defaults, leaving all of None in the needed parts of the code
+- [ ] Complete all arguments and options
+- [ ] Write tests, at least to check that parameters are correctly going into place
+- [ ] implement container for graphical applications and update git container, edit ontainer, desmume and insight
+- [ ] installations with ansible or similar of the components over the host, creating the methods install and uninstall 
+      in each backend
 
 See the [open issues][issues-url] for a full list of proposed features (and known issues).
 

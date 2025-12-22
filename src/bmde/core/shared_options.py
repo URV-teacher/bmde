@@ -142,6 +142,21 @@ NdsRomOpt = Annotated[
     ),
 ]
 
+
+ElfRomOpt = Annotated[
+    Optional[Path],
+    typer.Option(
+        "-e",
+        "--elf",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        resolve_path=True,
+        help="Path to the .elf binary. If omitted, searches the current directory for an elf.",
+    ),
+]
+
 FatImageOpt = Annotated[
     Optional[Path],
     typer.Option(
@@ -264,4 +279,5 @@ __all__ = [
     "VpnTestDnsOpt",
     "VpnTestIpOpt",
     "ConfigOpt",
+    "ElfRomOpt",
 ]

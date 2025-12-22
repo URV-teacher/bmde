@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 
 from bmde.core.exec import run_cmd, ExecOptions
 from .backend import RunBackend
@@ -11,7 +12,9 @@ class FlatpakRunner(RunBackend):
             return True
         return False
 
-    def run(self, spec: RunSpec, exec_opts: ExecOptions) -> int:
+    def run(
+        self, spec: RunSpec, exec_opts: ExecOptions
+    ) -> int | subprocess.Popen[bytes]:
         # Adjust to your flatpak package and args
         args = ["flatpak", "run", "org.desmume.DesmuME", str(spec.nds)]
         return run_cmd(args, exec_opts)

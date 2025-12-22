@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 
 from bmde.core.exec import run_cmd, ExecOptions
 from bmde.core.os_utils import is_command_available
@@ -10,7 +11,9 @@ class HostRunner(PatchBackend):
     def is_available(self) -> bool:
         return is_command_available("dlditool")
 
-    def run(self, spec: PatchSpec, exec_opts: ExecOptions) -> int:
+    def run(
+        self, spec: PatchSpec, exec_opts: ExecOptions
+    ) -> int | subprocess.Popen[bytes]:
         if spec.entrypoint is not None:
             entry = str(spec.entrypoint)
         else:

@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 
 from bmde.core import logging
 from bmde.core.exec import run_cmd, ExecOptions
@@ -13,7 +14,9 @@ class HostRunner(GitBackend):
     def is_available(self) -> bool:
         return is_command_available("git")
 
-    def run(self, spec: GitSpec, exec_opts: ExecOptions) -> int:
+    def run(
+        self, spec: GitSpec, exec_opts: ExecOptions
+    ) -> int | subprocess.Popen[bytes]:
         entry = str(spec.entrypoint) or (shutil.which("git"))
         if not entry:
             return 127

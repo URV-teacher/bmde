@@ -20,7 +20,7 @@ log = logging.get_logger(__name__)
 
 def _run_vpn(
     spec: GitSpec, exec_opts: ExecOptions, container_name: str
-) -> Optional[int]:
+) -> Optional[int] | subprocess.Popen[bytes]:
     docker_img = "aleixmt/forticlient:latest"
 
     envs: list[str] = [
@@ -145,7 +145,9 @@ class DockerRunner(GitBackend):
     def is_available(self) -> bool:
         return can_run_docker()
 
-    def run(self, spec: GitSpec, exec_opts: ExecOptions) -> int:
+    def run(
+        self, spec: GitSpec, exec_opts: ExecOptions
+    ) -> int | subprocess.Popen[bytes]:
         """
         1) Ensure 'forti-vpn' compose service is up & healthy (start in background if needed).
         2) Run the git container sharing the network namespace with 'forti-vpn' with the command.

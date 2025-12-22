@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 
 from bmde.core import logging
 from bmde.core.exec import run_cmd, ExecOptions
@@ -13,7 +14,9 @@ class HostRunner(RunBackend):
     def is_available(self) -> bool:
         return is_command_available("desmume") or is_command_available("desmume-cli")
 
-    def run(self, spec: RunSpec, exec_opts: ExecOptions) -> int:
+    def run(
+        self, spec: RunSpec, exec_opts: ExecOptions
+    ) -> int | subprocess.Popen[bytes]:
         if spec.entrypoint is not None:
             entry = str(spec.entrypoint)
         else:

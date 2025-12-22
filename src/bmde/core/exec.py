@@ -13,9 +13,10 @@ class ExecOptions:
     dry_run: bool = False
     env: dict[str, str] | None = None
     cwd: str | None = None
+    background: bool = False
 
 
-def run_cmd(cmd: list[str], opts: ExecOptions) -> int:
+def run_cmd(cmd: list[str], opts: ExecOptions) -> int | subprocess.Popen[bytes]:
     if isinstance(cmd, str):
         pretty = cmd
         args = cmd
@@ -27,4 +28,16 @@ def run_cmd(cmd: list[str], opts: ExecOptions) -> int:
     if opts.dry_run:
         log.info("[dry-run] %s", pretty)
         return 0
-    return subprocess.call(args, env=opts.env, cwd=opts.cwd)  # no shell injection risk
+
+    if opts.background:
+        # Non-blocking execution
+        proc = subprocess.Popen(
+            args,
+            env=opts.env,
+            cwd=opts.cwd,
+        )
+        return proc  # caller can manage it
+    else:
+        return subprocess.call(
+            args, env=opts.env, cwd=opts.cwd
+        )  # no shell injection risk

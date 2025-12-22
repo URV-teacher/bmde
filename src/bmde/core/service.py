@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 from abc import ABC
 from typing import List, TypeVar, Generic, Dict, Any
 
@@ -40,5 +41,15 @@ class Service(Generic[SpecType, BackendType], ABC):
     def run(self, spec: SpecType, exec_opts: ExecOptions) -> int:
         for backend in self.choose_backend(spec.environment):
             if backend.is_available():
-                return backend.run(spec, exec_opts)
+                ret = backend.run(spec, exec_opts)
+                # Use isinstance for type narrowing
+                if isinstance(ret, int):
+                    return ret
+
+                # Use the base class for isinstance; generic [bytes]
+                # does not exist at runtime (type erasure)
+                elif isinstance(ret, subprocess.Popen):
+                    ret.communicate()
+                    # returncode is guaranteed to be an int after communicate()
+                    return ret.returncode if ret.returncode is not None else 1
         raise RuntimeError("No suitable backend available")

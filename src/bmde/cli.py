@@ -24,3 +24,4 @@ import bmde.commands.build.cli  # noqa: F401 E402
 import bmde.commands.git.cli  # noqa: F401 E402
 import bmde.commands.patch.cli  # noqa: F401 E402
 import bmde.commands.run.cli  # noqa: F401 E402
+import bmde.commands.debug.cli  # noqa: F401 E402

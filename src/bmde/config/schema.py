@@ -20,7 +20,7 @@ class RunSettings(BaseModel):
     backend: Optional[RunBackendOptions] = None
     docker_screen: Optional[DockerOutputOptions] = None
     entrypoint: Optional[Path] = Path("desmume")
-    passthrough: Optional[List[str]] = None
+    arguments: Optional[List[str]] = None
 
     debug: bool = False
     port: int = 1000
@@ -30,7 +30,7 @@ class RunSettings(BaseModel):
 class BuildSettings(BaseModel):
     backend: Optional[BackendOptions] = None
     entrypoint: Optional[Path] = None
-    passthrough: Optional[List[str]] = None
+    arguments: Optional[List[str]] = None
 
 
 class VpnAuthSettings(BaseModel):
@@ -59,7 +59,7 @@ class GitConfigSettings(BaseModel):
 class GitSettings(BaseModel):
     backend: Optional[BackendOptions] = BackendOptions("docker")
     entrypoint: Optional[Path] = None
-    passthrough: Optional[List[str]] = None
+    arguments: Optional[List[str]] = None
 
     git: GitConfigSettings = GitConfigSettings()
     ssh: GitSshSettings = GitSshSettings()
@@ -69,7 +69,16 @@ class GitSettings(BaseModel):
 class PatchSettings(BaseModel):
     backend: Optional[BackendOptions] = None
     entrypoint: Optional[Path] = None
-    passthrough: Optional[List[str]] = None
+    arguments: Optional[List[str]] = None
+
+
+class DebugSettings(BaseModel):
+    run: RunSettings = RunSettings()
+
+    backend: Optional[BackendOptions] = None
+    docker_screen: Optional[DockerOutputOptions] = None
+    entrypoint: Optional[Path] = Path("insight")
+    arguments: Optional[List[str]] = None
 
 
 class Settings(BaseModel):
@@ -78,3 +87,4 @@ class Settings(BaseModel):
     build: BuildSettings = BuildSettings()
     git: GitSettings = GitSettings()
     patch: PatchSettings = PatchSettings()
+    debug: DebugSettings = DebugSettings()

@@ -1,7 +1,7 @@
 import typer
 
 from bmde.cli import app
-from bmde.commands.run.command import run_command
+from bmde.commands.debug.command import debug_command
 from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.shared_options import (
@@ -14,18 +14,21 @@ from bmde.core.shared_options import (
     DebugOpt,
     PortOpt,
     DryRunOpt,
+    ElfRomOpt,
 )
 
 log = logging.get_logger(__name__)
 
 
-@app.command("run")
-def run_controller(
+@app.command("debug")
+def debug_controller(
     ctx: typer.Context,
     nds: NdsRomOpt = None,
+    elf: ElfRomOpt = None,
     image: FatImageOpt = None,
     arguments: ArgumentsOpt = None,
     docker_screen: DockerScreenOpt = None,
+    # common flags
     backend: RunBackendOpt = None,
     entrypoint: EntrypointOpt = None,
     debug: DebugOpt = False,
@@ -66,6 +69,11 @@ def run_controller(
         f"- Docker screen: {str(settings.run.docker_screen)}\n"
         f"- NDS ROM: {str(nds)}\n"
     )
-    run_command(
-        nds=nds, image=image, arguments=arguments, settings=settings, dry_run=dry_run
+    debug_command(
+        nds=nds,
+        elf=elf,
+        image=image,
+        arguments=arguments,
+        settings=settings,
+        dry_run=dry_run,
     )

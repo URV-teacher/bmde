@@ -11,8 +11,9 @@ from typing import Optional
 from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
-from .service import resolve_nds, RunService
+from .service import RunService
 from .spec import RunSpec
+from ...core.file_utils import resolve_nds
 
 log = logging.get_logger(__name__)
 

@@ -4,32 +4,29 @@ from typing import List
 from bmde.core import logging
 from bmde.core.docker import can_run_docker
 from bmde.core.exec import run_cmd, ExecOptions
-from .backend import RunBackend
-from ..spec import RunSpec
+from .backend import DebugBackend
+from ..spec import DebugSpec
 
 log = logging.get_logger(__name__)
 
 
-class DockerRunner(RunBackend):
+class DockerRunner(DebugBackend):
     def is_available(self) -> bool:
         return can_run_docker()
 
     def run(
-        self, spec: RunSpec, exec_opts: ExecOptions
+        self, spec: DebugSpec, exec_opts: ExecOptions
     ) -> int | subprocess.Popen[bytes]:
-        docker_img = "aleixmt/desmume:latest"
+
+        docker_img = "aleixmt/insight:latest"
         mounts = [
             "-v",
-            f"{spec.nds.parent}:/roms:ro",
+            f"{spec.elf.parent}:/roms:ro",
             "-v",
             "desmume_docker_config:/home/desmume/.config/desmume",
         ]
-        envs = ["-e", f"ROM=/roms/{spec.nds.name}"]
+        envs = ["-e", f"ROM=/roms/{spec.elf.name}"]
         ports = []
-        img_opt = []
-        if spec.image:
-            mounts += ["-v", f"{spec.image}:/fs/fat.img:rw"]
-            img_opt += ["--cflash-image", "/fs/fat.img"]
 
         if spec.docker_screen == "host":
             mounts += ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
@@ -52,9 +49,6 @@ class DockerRunner(RunBackend):
         if spec.entrypoint:
             entry = ["--entrypoint", str(spec.entrypoint)]
 
-        debug_opt = (
-            ["--gdb-stub", "--arm9gdb-port", str(spec.port)] if spec.debug else []
-        )
         arguments: list[str] = []
         if spec.arguments is not None:
             arguments = List(spec.arguments)
@@ -69,8 +63,6 @@ class DockerRunner(RunBackend):
             *ports,
             *entry,
             docker_img,
-            *img_opt,
-            *debug_opt,
             *arguments,
         ]
 

@@ -3,23 +3,21 @@ from __future__ import annotations
 
 from bmde.core import logging
 from bmde.core.service import Service
-from bmde.commands.run.backends.backend import RunBackend
 from bmde.core.types import RunBackendOptions as RunBackendName
+from .backends.backend import DebugBackend
 from .backends.docker import DockerRunner
-from .backends.flatpak import FlatpakRunner
 from .backends.host import HostRunner
-from .spec import RunSpec
+from .spec import DebugSpec
 
 log = logging.get_logger(__name__)
 
 
-class RunService(Service[RunSpec, RunBackend]):
+class DebugService(Service[DebugSpec, DebugBackend]):
     def __init__(self) -> None:
         super().__init__(
-            [RunBackendName.HOST, RunBackendName.DOCKER, RunBackendName.FLATPAK],
+            [RunBackendName.HOST, RunBackendName.DOCKER],
             {
                 RunBackendName.HOST: HostRunner(),
                 RunBackendName.DOCKER: DockerRunner(),
-                RunBackendName.FLATPAK: FlatpakRunner(),
             },
         )

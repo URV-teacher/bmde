@@ -15,14 +15,14 @@ log = logging.get_logger(__name__)
 @app.command("build")
 def build_controller(
         ctx: typer.Context,
-        arguments: ArgumentsOpt,
+        arguments: ArgumentsOpt = None,
         directory: DirectoryOpt = Path(os.getcwd()),
         backend: BackendOpt = None,
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False
 ) -> None:
     """devkitARM make wrapper. Builds NDS ROM from source code."""
-
+    print("eve")
     settings: Settings = ctx.obj["settings"]
 
     log.debug("CLI options provided:\n"
