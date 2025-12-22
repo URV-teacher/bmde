@@ -2,9 +2,12 @@ name: Automated testing with PyTest
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - '**'        # matches every branch
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - '**'        # matches every branch
+
 
 permissions:
   contents: read
