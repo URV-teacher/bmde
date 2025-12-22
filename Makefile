@@ -13,7 +13,7 @@ SHELL := bash
 
 # ---- config ---------------------------------------------------------------
 
-PYTHON_BIN ?= python3.11
+PYTHON_BIN ?= python
 VENV_DIR   ?= venv
 PYTHON     := $(VENV_DIR)/bin/$(PYTHON_BIN)
 PIP        := $(VENV_DIR)/bin/pip
