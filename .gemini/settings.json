@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "agent": {
+    "autoApprove": {
+      "file_read": true,
+      "file_write": false,
+      "terminal_run": false
+    }
+  },
+  "context": {
+    "includeGitHistory": true,
+    "searchDepth": 3
+  }
+}

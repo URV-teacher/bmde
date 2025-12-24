@@ -22,8 +22,6 @@ class DockerRunner(DebugBackend):
         mounts = [
             "-v",
             f"{spec.elf.parent}:/roms:ro",
-            "-v",
-            "desmume_docker_config:/home/desmume/.config/desmume",
         ]
         envs = ["-e", f"ROM=/roms/{spec.elf.name}"]
         ports = []

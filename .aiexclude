@@ -1,0 +1,5 @@
+workspace
+logs
+bmde.toml
+.git
+src/bmde.egg-info

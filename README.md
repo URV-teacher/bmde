@@ -671,6 +671,7 @@ Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the
 - [ ] implement container for graphical applications and update git container, edit ontainer, desmume and insight
 - [ ] installations with ansible or similar of the components over the host, creating the methods install and uninstall 
       in each backend
+- [x] AI coding agent
 
 See the [open issues][issues-url] for a full list of proposed features (and known issues).
 
