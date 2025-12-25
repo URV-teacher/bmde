@@ -48,8 +48,12 @@ class DockerRunner(DebugBackend):
             entry = ["--entrypoint", str(spec.entrypoint)]
 
         arguments: list[str] = []
+        if spec.elf is not None:
+            arguments += [f"/roms/{spec.elf.name}"]
+
         if spec.arguments is not None:
-            arguments = List(spec.arguments)
+            arguments += List(spec.arguments)
+
         run_args = [
             "docker",
             "run",
@@ -60,6 +64,9 @@ class DockerRunner(DebugBackend):
             "insight",
             "--network",
             "bmde-debug",
+            "--cap-add=SYS_PTRACE",
+            "--security-opt",
+            "seccomp=unconfined",
             *mounts,
             *envs,
             *ports,

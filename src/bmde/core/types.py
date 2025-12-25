@@ -17,6 +17,8 @@ log = logging.getLogger(
 PROJECT_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 NOW = datetime.datetime.now().strftime(DATE_FORMAT)
+# Only used by run and debug modules in Docker mode
+DOCKER_DESMUME_DEBUG_NETWORK = "bmde-debug"
 
 
 class BackendOptions(str, Enum):

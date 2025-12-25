@@ -11,7 +11,7 @@ class BuildSpec(BaseSpec):
     d: Path
     environment: Optional[BackendOptions]
     entrypoint: Optional[Path]
-    arguments: Optional[tuple[str]]
+    arguments: Optional[list[str]]
     dry_run: Optional[bool]
 
 

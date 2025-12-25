@@ -67,5 +67,10 @@ def run_controller(
         f"- NDS ROM: {str(nds)}\n"
     )
     run_command(
-        nds=nds, image=image, arguments=arguments, settings=settings, dry_run=dry_run
+        nds=nds,
+        image=image,
+        arguments=arguments,
+        settings=settings,
+        dry_run=dry_run,
+        background=False,
     )

@@ -15,6 +15,6 @@ class RunSpec(BaseSpec):
     entrypoint: Optional[Path]
     debug: bool
     port: int
-    arguments: Optional[tuple[str]]
+    arguments: Optional[list[str]]
     dry_run: bool
     docker_network: Optional[str]

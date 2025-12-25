@@ -6,12 +6,10 @@ from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.shared_options import (
     NdsRomOpt,
-    FatImageOpt,
     ArgumentsOpt,
     DockerScreenOpt,
     RunBackendOpt,
     EntrypointOpt,
-    DebugOpt,
     PortOpt,
     DryRunOpt,
     ElfRomOpt,

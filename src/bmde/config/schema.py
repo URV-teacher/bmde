@@ -24,7 +24,7 @@ class RunSettings(BaseModel):
 
     debug: bool = False
     port: int = 1000
-    image: Optional[str] = None
+    image: Optional[Path] = None
 
 
 class BuildSettings(BaseModel):

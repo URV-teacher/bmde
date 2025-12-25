@@ -14,7 +14,7 @@ log = logging.get_logger(__name__)
 
 
 def git_command(
-    d: Path, arguments: Optional[tuple[str]], settings: Settings, dry_run: bool = False
+    d: Path, arguments: Optional[list[str]], settings: Settings, dry_run: bool = False
 ) -> int | Popen[bytes]:
     spec = GitSpec(
         d=d,

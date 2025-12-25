@@ -11,12 +11,14 @@ from typing import Optional
 
 from bmde.config.schema import Settings
 from bmde.core import logging
-from bmde.core.exec import ExecOptions, run_cmd
+from bmde.core.exec import ExecOptions
 from .service import DebugService
 from .spec import DebugSpec
 from ..run.command import run_command
 from ..run.spec import RunSpec
+from ...core.docker import ensure_network_is_present, docker_remove_network
 from ...core.file_utils import resolve_elf, resolve_nds
+from ...core.types import DOCKER_DESMUME_DEBUG_NETWORK
 
 log = logging.get_logger(__name__)
 
@@ -24,7 +26,7 @@ log = logging.get_logger(__name__)
 def debug_command(
     nds: Optional[Path],
     elf: Optional[Path],
-    arguments: Optional[tuple[str]],
+    arguments: Optional[list[str]],
     settings: Settings,
     dry_run: bool = False,
 ) -> None:
@@ -39,11 +41,11 @@ def debug_command(
             environment=settings.debug.run.backend,
             docker_screen=settings.debug.run.docker_screen,
             entrypoint=settings.debug.run.entrypoint,
-            debug=settings.debug.run.debug,
+            debug=True,
             port=settings.debug.run.port,
             arguments=arguments,
             dry_run=dry_run,
-            docker_network="bmde-debug"
+            docker_network=DOCKER_DESMUME_DEBUG_NETWORK,
         ),
         elf=elf,
         environment=settings.debug.backend,
@@ -52,11 +54,17 @@ def debug_command(
         arguments=arguments,
         dry_run=dry_run,
     )
-    run_cmd(["docker", "network", "create", "bmde-debug"], ExecOptions())
-    handle = run_command(nds=nds, image=settings.debug.run.image, arguments=settings.debug.run.arguments, settings=settings, background=True)
+    ensure_network_is_present(DOCKER_DESMUME_DEBUG_NETWORK)
+    handle = run_command(
+        nds=nds,
+        image=settings.debug.run.image,
+        arguments=settings.debug.run.arguments,
+        settings=settings,
+        background=True,
+    )
     code = DebugService().run(spec, ExecOptions(dry_run=dry_run))
     if isinstance(handle, Popen):
         handle.communicate()
 
-    run_cmd(["docker", "network", "rm", "bmde-debug"], ExecOptions())
+    docker_remove_network(DOCKER_DESMUME_DEBUG_NETWORK)
     raise SystemExit(code)

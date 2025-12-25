@@ -24,7 +24,9 @@ class DockerRunner(RunBackend):
             "-v",
             "desmume_docker_config:/home/desmume/.config/desmume",
         ]
-        envs = ["-e", f"ROM=/roms/{spec.nds.name}"]
+        envs = (
+            []
+        )  # TODO: Balance logic with desmume docker entrypoint ["-e", f"ROM=/roms/{spec.nds.name}"]
         ports = []
         img_opt = []
         if spec.image:
@@ -52,12 +54,23 @@ class DockerRunner(RunBackend):
         if spec.entrypoint:
             entry = ["--entrypoint", str(spec.entrypoint)]
 
-        debug_opt = (
-            ["--gdb-stub", "--arm9gdb-port", str(spec.port)] if spec.debug else []
-        )
+        debug_opt = []
+        if spec.debug is not None:
+            if spec.port is not None:
+                debug_opt = [f"--arm9gdb-port={str(spec.port)}"]
+            else:
+                debug_opt = ["--arm9gdb-port=1000"]
+
         arguments: list[str] = []
         if spec.arguments is not None:
             arguments = List(spec.arguments)
+
+        if spec.nds is not None:
+            arguments += [f"/roms/{spec.nds.name}"]
+
+        if spec.arguments is not None:
+            arguments += List(spec.arguments)
+
         run_args = [
             "docker",
             "run",

@@ -14,7 +14,9 @@ from bmde.core import logging
 from bmde.core.exec import ExecOptions
 from .service import RunService
 from .spec import RunSpec
+from ...core.docker import ensure_network_is_present, docker_remove_network
 from ...core.file_utils import resolve_nds
+from ...core.types import DOCKER_DESMUME_DEBUG_NETWORK
 
 log = logging.get_logger(__name__)
 
@@ -22,7 +24,7 @@ log = logging.get_logger(__name__)
 def run_command(
     nds: Optional[Path],
     image: Optional[Path],
-    arguments: Optional[tuple[str]],
+    arguments: Optional[list[str]],
     background: Optional[bool],
     settings: Settings,
     dry_run: bool = False,
@@ -41,4 +43,9 @@ def run_command(
         dry_run=dry_run,
         docker_network=docker_network,
     )
-    return RunService().run(spec, ExecOptions(dry_run=dry_run, background=background))
+    ensure_network_is_present(DOCKER_DESMUME_DEBUG_NETWORK)
+    handle = RunService().run(spec, ExecOptions(dry_run=dry_run, background=background))
+
+    if not background:
+        docker_remove_network(DOCKER_DESMUME_DEBUG_NETWORK)
+    return handle

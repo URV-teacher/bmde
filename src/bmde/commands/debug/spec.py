@@ -14,5 +14,5 @@ class DebugSpec(BaseSpec):
     environment: Optional[BackendOptions]
     docker_screen: Optional[DockerOutputOptions]
     entrypoint: Optional[Path]
-    arguments: Optional[tuple[str]]
+    arguments: Optional[list[str]]
     dry_run: bool

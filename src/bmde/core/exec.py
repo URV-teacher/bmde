@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 from dataclasses import dataclass
+from typing import Optional
 
 from bmde.core import logging
 
@@ -10,10 +11,10 @@ log = logging.get_logger(__name__)
 
 @dataclass
 class ExecOptions:
-    dry_run: bool = False
-    env: dict[str, str] | None = None
-    cwd: str | None = None
-    background: bool = False
+    dry_run: Optional[bool] | None = False
+    env: Optional[dict[str, str]] = None
+    cwd: Optional[str] = None
+    background: Optional[bool] = False
 
 
 def run_cmd(cmd: list[str], opts: ExecOptions) -> int | subprocess.Popen[bytes]:

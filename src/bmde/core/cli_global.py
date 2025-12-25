@@ -81,3 +81,4 @@ def _global(
 
     # Load settings into global context
     ctx.obj = {"settings": settings}
+    log.debug("Ended global callback")

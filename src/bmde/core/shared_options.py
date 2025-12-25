@@ -35,7 +35,7 @@ BackendOpt = Annotated[
 
 # Arguments passed directly to the entrypoint
 ArgumentsOpt = Annotated[
-    Optional[tuple[str]],
+    Optional[list[str]],
     typer.Argument(help="Arguments that are passed to the backend entrypoint."),
 ]
 

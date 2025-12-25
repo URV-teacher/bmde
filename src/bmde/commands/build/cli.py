@@ -15,8 +15,8 @@ log = logging.get_logger(__name__)
 @app.command("build")
 def build_controller(
         ctx: typer.Context,
-        arguments: ArgumentsOpt = None,
         directory: DirectoryOpt = Path(os.getcwd()),
+        arguments: ArgumentsOpt = None,
         backend: BackendOpt = None,
         entrypoint: EntrypointOpt = None,
         dry_run: DryRunOpt = False

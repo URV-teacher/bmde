@@ -12,7 +12,7 @@ from .spec import BuildSpec
 log = logging.get_logger(__name__)
 
 def build_command(
-        d: Path, arguments: Optional[tuple[str]], settings: Settings, dry_run: bool = False
+        d: Path, arguments: Optional[list[str]], settings: Settings, dry_run: bool = False
 ) -> None:
     spec = BuildSpec(
         d=d,

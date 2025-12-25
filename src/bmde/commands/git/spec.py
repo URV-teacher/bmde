@@ -11,7 +11,7 @@ class GitSpec(BaseSpec):
     d: Path
     environment: Optional[BackendOptions]
     entrypoint: Optional[Path]
-    arguments: Optional[tuple[str]]
+    arguments: Optional[list[str]]
     dry_run: bool
 
     ssh_username: Optional[str]  # TODO: Use more restrictive typing for these args
