@@ -5,7 +5,7 @@ from bmde.core import logging
 from bmde.core.exec import run_cmd, ExecOptions
 from bmde.core.os_utils import is_command_available
 from .backend import DebugBackend
-from ..spec import DebugSpec
+from ..spec import DebugSpecOpts
 
 log = logging.get_logger(__name__)
 
@@ -15,10 +15,10 @@ class HostRunner(DebugBackend):
         return is_command_available("insight")
 
     def run(
-        self, spec: DebugSpec, exec_opts: ExecOptions
+        self, spec: DebugSpecOpts, exec_opts: ExecOptions
     ) -> int | subprocess.Popen[bytes]:
-        if spec.entrypoint is not None:
-            entry = str(spec.entrypoint)
+        if exec_opts.entrypoint is not None:
+            entry = str(exec_opts.entrypoint)
         else:
             insight_path = shutil.which("desmume")
             if insight_path is not None:
@@ -26,6 +26,6 @@ class HostRunner(DebugBackend):
             else:
                 entry = "insight"
         args = [entry, str(spec.elf)]
-        if spec.arguments is not None:
-            args += list(spec.arguments)
+        if exec_opts.arguments is not None:
+            args += list(exec_opts.arguments)
         return run_cmd(args, exec_opts)

@@ -1,5 +1,4 @@
 import subprocess
-from typing import List
 
 from bmde.core import logging
 from bmde.core.docker import (
@@ -10,7 +9,7 @@ from bmde.core.docker import (
 from bmde.core.exec import run_cmd, ExecOptions
 from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK
 from .backend import DebugBackend
-from ..spec import DebugSpec
+from ..spec import DebugSpecOpts
 
 log = logging.get_logger(__name__)
 
@@ -20,7 +19,7 @@ class DockerRunner(DebugBackend):
         return can_run_docker()
 
     def run(
-        self, spec: DebugSpec, exec_opts: ExecOptions
+        self, spec: DebugSpecOpts, exec_opts: ExecOptions
     ) -> int | subprocess.Popen[bytes]:
 
         docker_img = "aleixmt/insight:latest"
@@ -49,15 +48,15 @@ class DockerRunner(DebugBackend):
             ports += ["-p", "3000:3000", "-p", "3001:3001"]
             envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
         entry = []
-        if spec.entrypoint:
-            entry = ["--entrypoint", str(spec.entrypoint)]
+        if exec_opts.entrypoint:
+            entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
         arguments: list[str] = []
         if spec.elf is not None:
             arguments += [f"/roms/{spec.elf.name}"]
 
-        if spec.arguments is not None:
-            arguments += List(spec.arguments)
+        if exec_opts.arguments is not None:
+            arguments += list(exec_opts.arguments)
 
         run_args = [
             "docker",

@@ -7,12 +7,12 @@ from bmde.core.types import BackendOptions as RunBackendName
 from .backends.backend import DebugBackend
 from .backends.docker import DockerRunner
 from .backends.host import HostRunner
-from .spec import DebugSpec
+from .spec import DebugSpecOpts
 
 log = logging.get_logger(__name__)
 
 
-class DebugService(Service[DebugSpec, DebugBackend]):
+class DebugService(Service[DebugSpecOpts, DebugBackend]):
     def __init__(self) -> None:
         super().__init__(
             [RunBackendName.HOST, RunBackendName.DOCKER],

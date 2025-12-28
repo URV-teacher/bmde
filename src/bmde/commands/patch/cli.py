@@ -10,6 +10,7 @@ from bmde.core.shared_options import (
     BackendOpt,
     EntrypointOpt,
     DryRunOpt,
+    BackgroundOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -21,6 +22,7 @@ def patch_controller(
     arguments: ArgumentsOpt = None,
     directory: DirectoryOpt = None,
     backend: BackendOpt = None,
+    background: BackgroundOpt = False,
     entrypoint: EntrypointOpt = None,
     dry_run: DryRunOpt = False,
 ) -> None:
@@ -31,24 +33,31 @@ def patch_controller(
         f"- Arguments: {str(arguments)}\n"
         f"- Directory: {str(directory)}\n"
         f"- Backend: {str(backend)}\n"
+        f"- Background: {str(background)}\n"
         f"- Entrypoint: {str(entrypoint)}\n"
         f"- Dry run: {str(dry_run)}\n"
     )
 
     settings: Settings = ctx.obj["settings"]
 
-    # CLI overrides
-    if backend is not None:
-        settings.patch.backend = backend
-    if entrypoint is not None:
-        settings.patch.execution_settings.entrypoint = entrypoint
-
     log.debug(
         "Final settings for build command:\n"
         f"- Arguments: {str(arguments)}\n"
         f"- Directory: {str(directory)}\n"
-        f"- Backend: {str(settings.patch.backend)}\n"
-        f"- Entrypoint: {str(settings.patch.execution_settings.entrypoint)}\n"
+        f"- Backend: {str(backend if backend is not None else settings.patch.backend)}\n"
+        f"- Background: {str(background)}\n"
+        f"- Entrypoint: {str(entrypoint if entrypoint is not None else settings.patch.execution_settings.entrypoint)}\n"
     )
 
-    patch_command(d=directory, arguments=arguments, settings=settings, dry_run=dry_run)
+    ret = patch_command(
+        d=directory,
+        arguments=arguments,
+        backend=backend,
+        background=background,
+        entrypoint=entrypoint,
+        dry_run=dry_run,
+        settings=settings.patch,
+    )
+
+    if isinstance(ret, int):
+        raise typer.Exit(ret)

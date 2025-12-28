@@ -13,6 +13,7 @@ from bmde.core.shared_options import (
     DryRunOpt,
     ElfRomOpt,
     BackendOpt,
+    BackgroundOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -27,6 +28,7 @@ def debug_controller(
     docker_screen: DockerScreenOpt = None,
     # common flags
     backend: BackendOpt = None,
+    background: BackgroundOpt = False,
     entrypoint: EntrypointOpt = None,
     port: PortOpt = 1000,
     dry_run: DryRunOpt = False,
@@ -39,34 +41,35 @@ def debug_controller(
         "CLI options provided:\n"
         f"- Arguments: {str(arguments)}\n"
         f"- Backend: {str(backend)}\n"
+        f"- Background: {str(background)}\n"
         f"- Entrypoint: {str(entrypoint)}\n"
         f"- Docker screen: {str(docker_screen)}\n"
         f"- NDS ROM: {str(nds)}\n"
     )
 
-    # CLI overrides
-    if backend is not None:
-        settings.run.execution_settings.backend = backend
-    if entrypoint is not None:
-        settings.run.execution_settings.entrypoint = entrypoint
-    if port:
-        settings.run.arm9_debug_port = port
-    if docker_screen:
-        settings.run.graphical_output = docker_screen
-
     log.debug(
-        "Settings override:\n"
+        "Final settings for debug command:\n"
         f"- Arguments: {str(arguments)}\n"
-        f"- Backend: {str(settings.run.execution_settings.backend)}\n"
-        f"- Entrypoint: {str(settings.run.execution_settings.entrypoint)}\n"
+        f"- Backend: {str(backend if backend is not None else settings.debug.backend)}\n"
+        f"- Background: {str(background)}\n"
+        f"- Entrypoint: {str(entrypoint if entrypoint is not None else settings.debug.execution_settings.entrypoint)}\n"
         f"- Dry run: {str(dry_run)}\n"
-        f"- Docker screen: {str(settings.run.graphical_output)}\n"
+        f"- Docker screen: {str(docker_screen if docker_screen is not None else settings.debug.docker_screen)}\n"
         f"- NDS ROM: {str(nds)}\n"
     )
-    debug_command(
+
+    ret = debug_command(
         nds=nds,
         elf=elf,
         arguments=arguments,
-        settings=settings,
+        backend=backend,
+        background=background,
+        docker_screen=docker_screen,
         dry_run=dry_run,
+        entrypoint=entrypoint,
+        port=port,
+        settings=settings.debug,
     )
+
+    if isinstance(ret, int):
+        raise typer.Exit(ret)

@@ -5,13 +5,13 @@ from bmde.core.service import Service
 from .backends.backend import PatchBackend
 from .backends.docker import DockerRunner
 from .backends.host import HostRunner
-from .spec import PatchSpec
+from .spec import PatchSpecOpts
 from ...core.types import BackendOptions
 
 log = logging.get_logger(__name__)
 
 
-class PatchService(Service[PatchSpec, PatchBackend]):
+class PatchService(Service[PatchSpecOpts, PatchBackend]):
     def __init__(self) -> None:
         super().__init__(
             [BackendOptions.HOST, BackendOptions.DOCKER],

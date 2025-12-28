@@ -5,7 +5,7 @@ from bmde.core import logging
 from bmde.core.docker import can_run_docker
 from bmde.core.exec import run_cmd, ExecOptions
 from .backend import PatchBackend
-from ..spec import PatchSpec
+from ..spec import PatchSpecOpts
 
 log = logging.get_logger(__name__)
 
@@ -15,11 +15,11 @@ class DockerRunner(PatchBackend):
         return can_run_docker()
 
     def run(
-        self, spec: PatchSpec, exec_opts: ExecOptions
+        self, spec: PatchSpecOpts, exec_opts: ExecOptions
     ) -> int | subprocess.Popen[bytes]:
         entry = []
-        if spec.entrypoint:
-            entry = ["--entrypoint", str(spec.entrypoint)]
+        if exec_opts.entrypoint:
+            entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
         docker_img = "aleixmt/dlditool:latest"
 
@@ -28,8 +28,8 @@ class DockerRunner(PatchBackend):
         workdir_opt = ["-w", f"/input/{dirname}"]  # Workdir
 
         arguments = []
-        if spec.arguments is not None:
-            arguments = list(spec.arguments)
+        if exec_opts.arguments is not None:
+            arguments = list(exec_opts.arguments)
 
         run_args = [
             "docker",
