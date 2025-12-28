@@ -5,4 +5,4 @@ from bmde.core.types import BackendOptions, RunBackendOptions
 
 
 class BaseSpec(ABC):
-    environment: Optional[BackendOptions | RunBackendOptions]
+    backend: Optional[BackendOptions | RunBackendOptions]

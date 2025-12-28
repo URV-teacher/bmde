@@ -14,6 +14,9 @@ from bmde.core.shared_options import (
     DebugOpt,
     PortOpt,
     DryRunOpt,
+    DirectoryOpt,
+    DockerNetworkOpt,
+    BackgroundOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -22,55 +25,53 @@ log = logging.get_logger(__name__)
 @app.command("run")
 def run_controller(
     ctx: typer.Context,
-    nds: NdsRomOpt = None,
-    image: FatImageOpt = None,
+    nds_rom: NdsRomOpt = None,
+    directory: DirectoryOpt = None,
     arguments: ArgumentsOpt = None,
-    docker_screen: DockerScreenOpt = None,
+    arm9_debug_port: PortOpt = 1000,
     backend: RunBackendOpt = None,
-    entrypoint: EntrypointOpt = None,
+    background: BackgroundOpt = False,
     debug: DebugOpt = False,
-    port: PortOpt = 1000,
+    docker_network: DockerNetworkOpt = None,
     dry_run: DryRunOpt = False,
+    entrypoint: EntrypointOpt = None,
+    fat_image: FatImageOpt = None,
+    graphical_output: DockerScreenOpt = None,
 ) -> None:
-    """desmume wrapper. Runs an NDS ROM."""
-
-    settings: Settings = ctx.obj["settings"]
 
     log.debug(
         "CLI options provided:\n"
+        "- Arguments:\n"
+        f"- NDS ROM: {str(nds_rom)}\n"
+        f"- Rom directory: {str(directory)}\n"
+        "- Behavioural parameters:\n"
         f"- Arguments: {str(arguments)}\n"
+        f"- ARM 9 debug port: {str(arm9_debug_port)}\n"
         f"- Backend: {str(backend)}\n"
-        f"- Entrypoint: {str(entrypoint)}\n"
-        f"- Docker screen: {str(docker_screen)}\n"
-        f"- NDS ROM: {str(nds)}\n"
-    )
-
-    # CLI overrides
-    if backend is not None:
-        settings.run.backend = backend
-    if entrypoint is not None:
-        settings.run.entrypoint = entrypoint
-    if debug:
-        settings.run.debug = True
-    if port:
-        settings.run.port = port
-    if docker_screen:
-        settings.run.docker_screen = docker_screen
-
-    log.debug(
-        "Settings override:\n"
-        f"- Arguments: {str(arguments)}\n"
-        f"- Backend: {str(settings.run.backend)}\n"
-        f"- Entrypoint: {str(settings.run.entrypoint)}\n"
+        f"- Background: {str(background)}\n"
+        f"- Debug: {str(debug)}\n"
+        f"- Docker Network: {str(docker_network)}\n"
         f"- Dry run: {str(dry_run)}\n"
-        f"- Docker screen: {str(settings.run.docker_screen)}\n"
-        f"- NDS ROM: {str(nds)}\n"
+        f"- Entrypoint: {str(entrypoint)}\n"
+        f"- FAT image: {str(fat_image)}\n"
+        f"- Graphical output: {str(graphical_output)}\n"
     )
+
+    settings: Settings = ctx.obj["settings"]
+
+    log.debug("Loaded settings:\n" f"{str(settings.run)}\n")
     run_command(
-        nds=nds,
-        image=image,
+        nds_rom=nds_rom,
+        directory=directory,
         arguments=arguments,
-        settings=settings,
+        arm9_debug_port=arm9_debug_port,
+        backend=backend,
+        background=background,
+        debug=debug,
+        docker_network=docker_network,
         dry_run=dry_run,
-        background=False,
+        entrypoint=entrypoint,
+        fat_image=fat_image,
+        graphical_output=graphical_output,
+        settings=settings.run,
     )

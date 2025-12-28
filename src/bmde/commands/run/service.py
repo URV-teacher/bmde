@@ -8,12 +8,12 @@ from bmde.core.types import RunBackendOptions as RunBackendName
 from .backends.docker import DockerRunner
 from .backends.flatpak import FlatpakRunner
 from .backends.host import HostRunner
-from .spec import RunSpec
+from .spec import RunSpecOpts
 
 log = logging.get_logger(__name__)
 
 
-class RunService(Service[RunSpec, RunBackend]):
+class RunService(Service[RunSpecOpts, RunBackend]):
     def __init__(self) -> None:
         super().__init__(
             [RunBackendName.HOST, RunBackendName.DOCKER, RunBackendName.FLATPAK],

@@ -9,7 +9,7 @@ from bmde.core.types import BackendOptions
 @dataclass
 class PatchSpec(BaseSpec):
     d: Path
-    environment: Optional[BackendOptions]
+    backend: Optional[BackendOptions]
     entrypoint: Optional[Path]
     arguments: Optional[list[str]]
     dry_run: bool

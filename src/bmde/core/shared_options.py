@@ -41,7 +41,7 @@ ArgumentsOpt = Annotated[
 
 # Argument to send a directory
 DirectoryOpt = Annotated[
-    Path,
+    Optional[Path],
     typer.Option(
         "-d",
         "--directory",
@@ -118,6 +118,18 @@ PortOpt = Annotated[
     int, typer.Option("-p", "--port", help="Debug port (implies --debug)")
 ]
 
+DockerNetworkOpt = Annotated[
+    Optional[DockerOutputOptions],
+    typer.Option(
+        "-n",
+        "--docker-network",
+        "--network",
+        help='Name of the Docker network to use when using the "docker" environment',
+        is_flag=True,
+    ),
+]
+
+
 DockerScreenOpt = Annotated[
     Optional[DockerOutputOptions],
     typer.Option(
@@ -126,6 +138,12 @@ DockerScreenOpt = Annotated[
         help='Method to show the screen when using the "docker" environment',
         is_flag=True,
     ),
+]
+
+
+BackgroundOpt = Annotated[
+    bool,
+    typer.Option("-b", "--background", help="Run background", is_flag=True),
 ]
 
 NdsRomOpt = Annotated[
@@ -280,4 +298,6 @@ __all__ = [
     "VpnTestIpOpt",
     "ConfigOpt",
     "ElfRomOpt",
+    "DockerNetworkOpt",
+    "BackgroundOpt",
 ]

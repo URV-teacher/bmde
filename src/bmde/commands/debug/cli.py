@@ -48,19 +48,19 @@ def debug_controller(
     if backend is not None:
         settings.run.backend = backend
     if entrypoint is not None:
-        settings.run.entrypoint = entrypoint
+        settings.run.execution_settings.entrypoint = entrypoint
     if port:
-        settings.run.port = port
+        settings.run.arm9_debug_port = port
     if docker_screen:
-        settings.run.docker_screen = docker_screen
+        settings.run.graphical_output = docker_screen
 
     log.debug(
         "Settings override:\n"
         f"- Arguments: {str(arguments)}\n"
         f"- Backend: {str(settings.run.backend)}\n"
-        f"- Entrypoint: {str(settings.run.entrypoint)}\n"
+        f"- Entrypoint: {str(settings.run.execution_settings.entrypoint)}\n"
         f"- Dry run: {str(dry_run)}\n"
-        f"- Docker screen: {str(settings.run.docker_screen)}\n"
+        f"- Docker screen: {str(settings.run.graphical_output)}\n"
         f"- NDS ROM: {str(nds)}\n"
     )
     debug_command(

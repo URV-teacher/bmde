@@ -11,7 +11,7 @@ from bmde.core.types import DockerOutputOptions, BackendOptions
 class DebugSpec(BaseSpec):
     RunSpec: RunSpec
     elf: Path
-    environment: Optional[BackendOptions]
+    backend: Optional[BackendOptions]
     docker_screen: Optional[DockerOutputOptions]
     entrypoint: Optional[Path]
     arguments: Optional[list[str]]

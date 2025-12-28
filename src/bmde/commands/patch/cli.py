@@ -44,14 +44,14 @@ def patch_controller(
     if backend is not None:
         settings.patch.backend = backend
     if entrypoint is not None:
-        settings.patch.entrypoint = entrypoint
+        settings.patch.execution_settings.entrypoint = entrypoint
 
     log.debug(
         "Final settings for build command:\n"
         f"- Arguments: {str(arguments)}\n"
         f"- Directory: {str(directory)}\n"
         f"- Backend: {str(settings.patch.backend)}\n"
-        f"- Entrypoint: {str(settings.patch.entrypoint)}\n"
+        f"- Entrypoint: {str(settings.patch.execution_settings.entrypoint)}\n"
     )
 
     patch_command(d=directory, arguments=arguments, settings=settings, dry_run=dry_run)

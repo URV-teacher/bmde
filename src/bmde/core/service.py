@@ -40,7 +40,7 @@ class Service(Generic[SpecType, BackendType], ABC):
         return [self.mapping[e] for e in order]
 
     def run(self, spec: SpecType, exec_opts: ExecOptions) -> int | Popen[bytes]:
-        for backend in self.choose_backend(spec.environment):
+        for backend in self.choose_backend(spec.backend):
             if backend.is_available():
                 ret = backend.run(spec, exec_opts)
                 # Use isinstance for type narrowing

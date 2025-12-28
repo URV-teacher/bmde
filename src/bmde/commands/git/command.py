@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional
@@ -14,12 +15,15 @@ log = logging.get_logger(__name__)
 
 
 def git_command(
-    d: Path, arguments: Optional[list[str]], settings: Settings, dry_run: bool = False
+    d: Optional[Path],
+    arguments: Optional[list[str]],
+    settings: Settings,
+    dry_run: bool = False,
 ) -> int | Popen[bytes]:
     spec = GitSpec(
-        d=d,
-        environment=settings.git.backend,
-        entrypoint=settings.git.entrypoint,
+        d=d if d is not None else Path(os.getcwd()),
+        backend=settings.git.backend,
+        entrypoint=settings.git.execution_settings.entrypoint,
         arguments=arguments,
         dry_run=dry_run,
         ssh_username=settings.git.ssh.username,

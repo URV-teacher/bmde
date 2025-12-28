@@ -84,7 +84,7 @@ def git_controller(
     if backend is not None:
         settings.git.backend = backend
     if entrypoint is not None:
-        settings.git.entrypoint = entrypoint
+        settings.git.execution_settings.entrypoint = entrypoint
 
     if ssh_username is not None:
         settings.git.ssh.username = ssh_username
@@ -119,7 +119,7 @@ def git_controller(
         f"- Directory: {str(directory)}\n"
         f"- Dry run: {str(dry_run)}\n"
         f"- Backend: {str(settings.git.backend)}\n"
-        f"- Entrypoint: {str(settings.git.entrypoint)}\n"
+        f"- Entrypoint: {str(settings.git.execution_settings.entrypoint)}\n"
         f"- SSH username: {obfuscate_text(settings.git.ssh.username)}\n"
         f"- SSH password: {obfuscate_text(settings.git.ssh.password)}\n"
         f"- SSH server: {obfuscate_text(settings.git.ssh.host)}\n"

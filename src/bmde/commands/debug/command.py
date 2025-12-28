@@ -14,10 +14,10 @@ from bmde.core import logging
 from bmde.core.exec import ExecOptions
 from .service import DebugService
 from .spec import DebugSpec
-from ..run.command import run_command
-from ..run.spec import RunSpec
-from ...core.docker import ensure_network_is_present, docker_remove_network
+from ..run.service import RunService
+from ..run.spec import RunSpec, RunSpecOpts
 from ...core.file_utils import resolve_elf, resolve_nds
+from ...core.opts import RunSpecExecOpts
 from ...core.types import DOCKER_DESMUME_DEBUG_NETWORK
 
 log = logging.get_logger(__name__)
@@ -30,41 +30,37 @@ def debug_command(
     settings: Settings,
     dry_run: bool = False,
 ) -> None:
-    nds, assumed = resolve_nds(nds, cwd=Path.cwd())
-    print("nds" + str(nds))
-    print("assumed" + str(assumed))
     elf, assumed = resolve_elf(elf, cwd=Path.cwd())
+    nds, assumed = resolve_nds(nds, cwd=Path.cwd())
     spec = DebugSpec(
         RunSpec=RunSpec(
-            nds=nds,
-            image=settings.debug.run.image,
-            environment=settings.debug.run.backend,
-            docker_screen=settings.debug.run.docker_screen,
-            entrypoint=settings.debug.run.entrypoint,
-            debug=True,
-            port=settings.debug.run.port,
-            arguments=arguments,
-            dry_run=dry_run,
-            docker_network=DOCKER_DESMUME_DEBUG_NETWORK,
+            RunSpecOpts=RunSpecOpts(
+                nds_rom=nds,
+                fat_image=settings.debug.run.fat_image,
+                graphical_output=settings.debug.run.graphical_output,
+                entrypoint=settings.debug.run.execution_settings.entrypoint,
+                debug=True,
+                arm9_debug_port=settings.debug.run.arm9_debug_port,
+                arguments=arguments,
+                docker_network=DOCKER_DESMUME_DEBUG_NETWORK,
+            ),
+            RunSpecExecOpts=RunSpecExecOpts(
+                dry_run=dry_run,
+                backend=settings.debug.run.backend,
+                background=True,
+            ),
         ),
         elf=elf,
-        environment=settings.debug.backend,
+        backend=settings.debug.backend,
         docker_screen=settings.debug.docker_screen,
-        entrypoint=settings.debug.entrypoint,
+        entrypoint=settings.debug.execution_settings.entrypoint,
         arguments=arguments,
         dry_run=dry_run,
     )
-    ensure_network_is_present(DOCKER_DESMUME_DEBUG_NETWORK)
-    handle = run_command(
-        nds=nds,
-        image=settings.debug.run.image,
-        arguments=settings.debug.run.arguments,
-        settings=settings,
-        background=True,
-    )
+
+    handle = RunService().run(spec.RunSpec.RunSpecOpts, ExecOptions(dry_run=dry_run))
     code = DebugService().run(spec, ExecOptions(dry_run=dry_run))
     if isinstance(handle, Popen):
         handle.communicate()
 
-    docker_remove_network(DOCKER_DESMUME_DEBUG_NETWORK)
     raise SystemExit(code)

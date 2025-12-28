@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -12,12 +13,16 @@ from .spec import BuildSpec
 log = logging.get_logger(__name__)
 
 def build_command(
-        d: Path, arguments: Optional[list[str]], settings: Settings, dry_run: bool = False
+        d: Optional[Path], arguments: Optional[list[str]], settings: Settings, dry_run: bool = False
 ) -> None:
+
+    if d is None:
+        d = Path(os.getcwd())
+
     spec = BuildSpec(
         d=d,
-        environment=settings.build.backend,
-        entrypoint=settings.build.entrypoint,
+        backend=settings.build.backend,
+        entrypoint=settings.build.execution_settings.entrypoint,
         arguments=arguments,
         dry_run=dry_run
     )

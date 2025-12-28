@@ -22,7 +22,6 @@ def build_controller(
         dry_run: DryRunOpt = False
 ) -> None:
     """devkitARM make wrapper. Builds NDS ROM from source code."""
-    print("eve")
     settings: Settings = ctx.obj["settings"]
 
     log.debug("CLI options provided:\n"
@@ -37,14 +36,14 @@ def build_controller(
     if backend is not None:
         settings.build.backend = backend
     if entrypoint is not None:
-        settings.build.entrypoint = entrypoint
+        settings.build.execution_settings.entrypoint = entrypoint
 
     log.debug("Final settings for build command:\n"
               f"- Arguments: {str(arguments)}\n"
               f"- Directory: {str(directory)}\n"
               f"- Dry run: {str(dry_run)}\n"
               f"- Backend: {str(settings.build.backend)}\n"
-              f"- Entrypoint: {str(settings.build.entrypoint)}\n"
+              f"- Entrypoint: {str(settings.build.execution_settings.entrypoint)}\n"
               )
 
     build_command(

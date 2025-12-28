@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -13,12 +14,15 @@ log = logging.get_logger(__name__)
 
 
 def patch_command(
-    d: Path, arguments: Optional[list[str]], settings: Settings, dry_run: bool = False
+    d: Optional[Path],
+    arguments: Optional[list[str]],
+    settings: Settings,
+    dry_run: bool = False,
 ) -> None:
     spec = PatchSpec(
-        d=d,
-        environment=settings.patch.backend,
-        entrypoint=settings.patch.entrypoint,
+        d=d if d is not None else Path(os.getcwd()),
+        backend=settings.patch.backend,
+        entrypoint=settings.patch.execution_settings.entrypoint,
         arguments=arguments,
         dry_run=dry_run,
     )

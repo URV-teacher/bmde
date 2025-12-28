@@ -2,19 +2,24 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+from bmde.core.opts import RunSpecExecOpts
 from bmde.core.spec import BaseSpec
-from bmde.core.types import RunBackendOptions, DockerOutputOptions
+from bmde.core.types import DockerOutputOptions
+
+
+@dataclass
+class RunSpecOpts(BaseSpec):
+    nds_rom: Path
+    arguments: Optional[list[str]]
+    arm9_debug_port: Optional[int]
+    debug: bool
+    docker_network: Optional[str]
+    entrypoint: Optional[Path]
+    fat_image: Optional[Path]
+    graphical_output: Optional[DockerOutputOptions]
 
 
 @dataclass
 class RunSpec(BaseSpec):
-    nds: Path
-    image: Optional[Path]
-    environment: Optional[RunBackendOptions]
-    docker_screen: Optional[DockerOutputOptions]
-    entrypoint: Optional[Path]
-    debug: bool
-    port: int
-    arguments: Optional[list[str]]
-    dry_run: bool
-    docker_network: Optional[str]
+    RunSpecExecOpts: RunSpecExecOpts
+    RunSpecOpts: RunSpecOpts

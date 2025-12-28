@@ -2,8 +2,13 @@ import subprocess
 from typing import List
 
 from bmde.core import logging
-from bmde.core.docker import can_run_docker
+from bmde.core.docker import (
+    can_run_docker,
+    ensure_network_is_present,
+    docker_remove_network,
+)
 from bmde.core.exec import run_cmd, ExecOptions
+from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK
 from .backend import DebugBackend
 from ..spec import DebugSpec
 
@@ -24,7 +29,7 @@ class DockerRunner(DebugBackend):
             f"{spec.elf.parent}:/roms:ro",
         ]
         envs = ["-e", f"ROM=/roms/{spec.elf.name}"]
-        ports = []
+        ports = ["-p", "1000:1000"]
 
         if spec.docker_screen == "host":
             mounts += ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
@@ -60,8 +65,6 @@ class DockerRunner(DebugBackend):
             "--pull=always",
             "--rm",
             "-it",
-            "--name",
-            "insight",
             "--network",
             "bmde-debug",
             "--cap-add=SYS_PTRACE",
@@ -75,4 +78,10 @@ class DockerRunner(DebugBackend):
             *arguments,
         ]
 
-        return run_cmd(run_args, exec_opts)
+        ensure_network_is_present(DOCKER_DESMUME_DEBUG_NETWORK)
+
+        handle = run_cmd(run_args, exec_opts)
+
+        docker_remove_network(DOCKER_DESMUME_DEBUG_NETWORK)
+
+        return handle
