@@ -9,6 +9,7 @@ from typing import Optional, Annotated
 
 import typer
 
+from bmde.config.show_config import show_config_callback, show_default_config_callback
 from bmde.core.types import BackendOptions, DockerOutputOptions
 
 # Backend option for the rest of commands other than run
@@ -61,7 +62,30 @@ LogFileOpt = Annotated[
     Optional[Path], typer.Option("-l", "--log-file", help="Path to log file (optional)")
 ]
 
-# Verbose flag
+ShowConfigOpt = Annotated[
+    bool,
+    typer.Option(
+        "-s",
+        "--show-config",
+        callback=show_config_callback,
+        is_eager=True,
+        help="Show current configuration options. Can be used to freeze BMDE arguments into a bmde.toml configuration file",
+        is_flag=True,
+    ),
+]
+
+ShowDefaultConfigOpt = Annotated[
+    bool,
+    typer.Option(
+        "-d",
+        "--show-default-config",
+        callback=show_default_config_callback,
+        is_eager=True,
+        help="Show default configuration options. Can be used as template of a bmde.toml configuration file",
+        is_flag=True,
+    ),
+]
+
 VerboseOpt = Annotated[
     bool,
     typer.Option(
@@ -288,4 +312,5 @@ __all__ = [
     "ElfRomOpt",
     "DockerNetworkOpt",
     "BackgroundOpt",
+    "ShowConfigOpt",
 ]

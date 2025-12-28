@@ -8,7 +8,8 @@ authors = [{name="AleixMT"}]
 license = {text="GPL-3.0-or-later"}
 dependencies = [
   "typer",
-  "pydantic"
+  "pydantic",
+  "rtoml"
 ]
 
 [project.scripts]

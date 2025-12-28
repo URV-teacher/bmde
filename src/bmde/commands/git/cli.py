@@ -82,7 +82,7 @@ def git_controller(
         f"- Arguments: {str(arguments)}\n"
         f"- Directory: {str(directory)}\n"
         f"- Dry run: {str(dry_run)}\n"
-        f"- Backend: {str(backend if backend is not None else settings.git.backend)}\n"
+        f"- Backend: {str(backend if backend is not None else settings.git.execution_settings.backend)}\n"
         f"- Entrypoint: {str(entrypoint if entrypoint is not None else settings.git.execution_settings.entrypoint)}\n"
         f"- SSH username: {obfuscate_text(ssh_username if ssh_username is not None else settings.git.ssh.username)}\n"
         f"- SSH password: {obfuscate_text(ssh_password if ssh_password is not None else settings.git.ssh.password)}\n"

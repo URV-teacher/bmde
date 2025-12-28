@@ -46,7 +46,7 @@ def create_build_spec(
             d=d,
         ),
         SpecExecOpts=SpecExecOpts(
-            backend=backend if backend is not None else (settings.backend if settings.backend is not None else BackendOptions.DOCKER),
+            backend=backend if backend is not None else (settings.execution_settings.backend if settings.execution_settings.backend is not None else BackendOptions.DOCKER),
             entrypoint=(
                 entrypoint
                 if entrypoint is not None

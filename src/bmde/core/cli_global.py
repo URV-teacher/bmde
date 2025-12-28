@@ -11,6 +11,8 @@ from bmde.core.shared_options import (
     QuietOpt,
     VeryQuietOpt,
     LogFileOpt,
+    ShowConfigOpt,
+    ShowDefaultConfigOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -25,6 +27,8 @@ def _global(
     quiet: QuietOpt = False,
     very_quiet: VeryQuietOpt = False,
     log_file: LogFileOpt = None,
+    show_config: ShowConfigOpt = False,
+    show_default_config: ShowDefaultConfigOpt = False,
 ) -> None:
     """
     Global option callback. Executed if no command is provided.

@@ -1,0 +1,85 @@
+# This file can be generated with the shell command 'bmde --show-default-config > bmde.toml'
+
+[logging]
+level = "info"
+file = "logs/bmde/2025-12-28 23:45:48.log"
+
+[run]
+graphical_output = "host"
+debug = false
+arm9_debug_port = 1000
+# fat_image = "null"
+docker_network = "bmde-debug"
+
+[run.execution_settings]
+# entrypoint = "null"
+# arguments = "null"
+background = false
+dry_run = false
+backend = "docker"
+
+[build.execution_settings]
+# entrypoint = "null"
+# arguments = "null"
+background = false
+dry_run = false
+backend = "docker"
+
+[git.execution_settings]
+# entrypoint = "null"
+# arguments = "null"
+background = false
+dry_run = false
+backend = "docker"
+
+[git.git]
+# name = "null"
+# email = "null"
+
+[git.ssh]
+# username = "null"
+# password = "null"
+# host = "null"
+
+[git.vpn]
+enabled = true
+# username = "null"
+# password = "null"
+# host = "null"
+# port = "null"
+# cert = "null"
+# realm = "null"
+# test_dns = "null"
+# test_ip = "null"
+
+[patch.execution_settings]
+# entrypoint = "null"
+# arguments = "null"
+background = false
+dry_run = false
+backend = "docker"
+
+[debug]
+# docker_screen = "null"
+# docker_network = "null"
+
+[debug.run]
+graphical_output = "host"
+debug = false
+arm9_debug_port = 1000
+# fat_image = "null"
+docker_network = "bmde-debug"
+
+[debug.run.execution_settings]
+# entrypoint = "null"
+# arguments = "null"
+background = false
+dry_run = false
+backend = "docker"
+
+[debug.execution_settings]
+# entrypoint = "null"
+# arguments = "null"
+background = false
+dry_run = false
+backend = "docker"

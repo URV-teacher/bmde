@@ -681,9 +681,9 @@ data accepts each subcommand. Data that accepts each command is classified in th
 - [ ] mount logs
 - [x] Explore linting tools black and ruff and automate them
 - [x] Reestructure CLI.py in a folder with a file for each command
-- [ ] Create common options for Exec options (entrypoint, dryrun, background), also in settings 
-- [ ] Implement sane defaults, leaving all of None in the needed parts of the code
-- [ ] Complete all arguments and options
+- [x] Create common options for Exec options (entrypoint, dryrun, background), also in settings 
+- [x] Implement sane defaults, leaving all of None in the needed parts of the code
+- [x] Complete all arguments and options
 - [ ] Write tests, at least to check that parameters are correctly going into place
 - [ ] implement container for graphical applications and update git container, edit ontainer, desmume and insight
 - [ ] installations with ansible or similar of the components over the host, creating the methods install and uninstall 

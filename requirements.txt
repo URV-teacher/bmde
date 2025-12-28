@@ -1,10 +1,10 @@
 annotated-types==0.7.0
 black==25.9.0
--e git+https://github.com/urv-teacher/bmde@67c5aeecb32b4bbc44b244a3cff4840dc61b5d80#egg=bmde
+-e git+https://github.com/urv-teacher/bmde@76ea8ab4807cd8a4196325b23a680bb72d4fe86e#egg=bmde
 cfgv==3.4.0
 click==8.3.0
 distlib==0.4.0
-filelock==3.20.1
+filelock==3.20.0
 identify==2.6.15
 iniconfig==2.3.0
 markdown-it-py==4.0.0
@@ -26,6 +26,7 @@ python-dotenv==1.1.1
 pytokens==0.2.0
 PyYAML==6.0.3
 rich==14.2.0
+rtoml==0.13.0
 ruff==0.14.2
 shellingham==1.5.4
 -e git+https://github.com/URV-teacher/tot@1a334aef03183d14e1b4f38921384fdccf01f241#egg=tot

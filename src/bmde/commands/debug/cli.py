@@ -50,7 +50,7 @@ def debug_controller(
     log.debug(
         "Final settings for debug command:\n"
         f"- Arguments: {str(arguments)}\n"
-        f"- Backend: {str(backend if backend is not None else settings.debug.backend)}\n"
+        f"- Backend: {str(backend if backend is not None else settings.debug.execution_settings.backend)}\n"
         f"- Background: {str(background)}\n"
         f"- Entrypoint: {str(entrypoint if entrypoint is not None else settings.debug.execution_settings.entrypoint)}\n"
         f"- Dry run: {str(dry_run)}\n"

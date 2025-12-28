@@ -25,7 +25,7 @@ logging.setLoggerClass(ExtendedLogger)
 
 
 def get_default_log_path() -> Path:
-    return Path(str(os.path.join(PROJECT_DIR, "logs", "bmde", NOW + ".log")))
+    return Path(str(os.path.join(".", "logs", "bmde", NOW + ".log")))
 
 
 def setup_logging(

@@ -211,6 +211,7 @@ __marimo__/
 .env
 !src/bmde/commands/build
 bmde.toml
+!examples/bmde.toml
 nds.nds
 src/tot.egg-info
 input

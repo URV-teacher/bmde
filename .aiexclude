@@ -1,5 +1,5 @@
 workspace
 logs
-bmde.toml
+examples/bmde.toml
 .git
 src/bmde.egg-info

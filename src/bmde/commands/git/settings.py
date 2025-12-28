@@ -3,7 +3,6 @@ from typing import Optional
 from pydantic import BaseModel
 
 from bmde.config.command_settings import ExecutionSettings
-from bmde.core.types import BackendOptions
 
 
 class VpnAuthSettings(BaseModel):
@@ -30,7 +29,6 @@ class GitConfigSettings(BaseModel):
 
 
 class GitSettings(BaseModel):
-    backend: Optional[BackendOptions] = BackendOptions.DOCKER
     execution_settings: ExecutionSettings = ExecutionSettings()
 
     git: GitConfigSettings = GitConfigSettings()

@@ -44,7 +44,7 @@ def patch_controller(
         "Final settings for build command:\n"
         f"- Arguments: {str(arguments)}\n"
         f"- Directory: {str(directory)}\n"
-        f"- Backend: {str(backend if backend is not None else settings.patch.backend)}\n"
+        f"- Backend: {str(backend if backend is not None else settings.patch.execution_settings.backend)}\n"
         f"- Background: {str(background)}\n"
         f"- Entrypoint: {str(entrypoint if entrypoint is not None else settings.patch.execution_settings.entrypoint)}\n"
     )

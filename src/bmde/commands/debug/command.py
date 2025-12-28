@@ -90,8 +90,8 @@ def create_debug_spec(
                 backend
                 if backend is not None
                 else (
-                    settings.backend
-                    if settings.backend is not None
+                    settings.execution_settings.backend
+                    if settings.execution_settings.backend is not None
                     else BackendOptions.DOCKER
                 )
             ),
