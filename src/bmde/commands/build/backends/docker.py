@@ -6,7 +6,7 @@ from bmde.core.docker import can_run_docker
 from bmde.core.exec import run_cmd, ExecOptions
 from bmde.core.os_utils import host_uid_gid
 from .backend import BuildBackend
-from ..spec import BuildSpec
+from ..spec import BuildSpecOpts
 
 log = logging.get_logger(__name__)
 
@@ -15,7 +15,7 @@ class DockerRunner(BuildBackend):
     def is_available(self) -> bool:
         return can_run_docker()
 
-    def run(self, spec: BuildSpec, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
+    def run(self, spec: BuildSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
 
         args = ["docker",
                     "run",
@@ -23,8 +23,8 @@ class DockerRunner(BuildBackend):
                     "--rm",  # Remove container after execution (one-off container)
                     "-it"]  # Interactive mode with the container CLI
 
-        if spec.entrypoint:
-            args += ["--entrypoint", str(spec.entrypoint)]
+        if exec_opts.entrypoint:
+            args += ["--entrypoint", str(exec_opts.entrypoint)]
 
         uid, gid = host_uid_gid()
         args += ["--user", f"{uid}:{gid}"]  # Make the generated files owned by the same user running the container
@@ -35,7 +35,7 @@ class DockerRunner(BuildBackend):
 
         args += ["aleixmt/bmde-linux:latest"]  # Base image
 
-        if spec.arguments is not None:
-            args += list(spec.arguments)
+        if exec_opts.arguments is not None:
+            args += list(exec_opts.arguments)
 
         return run_cmd(args, exec_opts)

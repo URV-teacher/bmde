@@ -15,7 +15,7 @@ from .service import RunService
 from .settings import RunSettings
 from .spec import RunSpec, RunSpecOpts
 from ...core.file_utils import resolve_nds
-from ...core.opts import RunSpecExecOpts
+from ...core.spec_opts import RunSpecExecOpts
 from ...core.types import DockerOutputOptions, RunBackendOptions
 
 log = logging.get_logger(__name__)
@@ -59,7 +59,6 @@ def create_run_spec(
     return RunSpec(
         RunSpecOpts=RunSpecOpts(
             nds_rom=nds_resolved,
-            arguments=passed_args,
             arm9_debug_port=(
                 arm9_debug_port
                 if arm9_debug_port is not None
@@ -69,11 +68,6 @@ def create_run_spec(
                 debug
                 if debug is not None
                 else (settings.debug if settings.debug is not None else False)
-            ),
-            entrypoint=(
-                entrypoint
-                if entrypoint is not None
-                else settings.execution_settings.entrypoint
             ),
             docker_network=(
                 docker_network
@@ -101,6 +95,12 @@ def create_run_spec(
             dry_run=(
                 dry_run if dry_run is not None else settings.execution_settings.dry_run
             ),
+            entrypoint=(
+                entrypoint
+                if entrypoint is not None
+                else settings.execution_settings.entrypoint
+            ),
+            arguments=passed_args,
         ),
     )
 

@@ -56,8 +56,8 @@ class DockerRunner(RunBackend):
             ports += ["-p", "3000:3000", "-p", "3001:3001"]
             envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
         entry = []
-        if spec.entrypoint:
-            entry = ["--entrypoint", str(spec.entrypoint)]
+        if exec_opts.entrypoint:
+            entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
         debug_opt = []
         print("startingdebug block. debug is: " + str(spec.debug))
@@ -69,8 +69,8 @@ class DockerRunner(RunBackend):
                 debug_opt = ["--arm9gdb-port=1000"]
 
         arguments: list[str] = []
-        if spec.arguments is not None:
-            arguments = List(spec.arguments)
+        if exec_opts.arguments is not None:
+            arguments = List(exec_opts.arguments)
 
         if spec.nds_rom is not None:
             envs += ["-e", f"ROM=/roms/{spec.nds_rom.name}"]

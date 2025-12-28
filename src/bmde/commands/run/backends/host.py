@@ -17,8 +17,8 @@ class HostRunner(RunBackend):
     def run(
         self, spec: RunSpecOpts, exec_opts: ExecOptions
     ) -> int | subprocess.Popen[bytes]:
-        if spec.entrypoint is not None:
-            entry = str(spec.entrypoint)
+        if exec_opts.entrypoint is not None:
+            entry = str(exec_opts.entrypoint)
         else:
             desmume_path = shutil.which("desmume")
             desmumecli_path = shutil.which("desmume-cli")
@@ -33,6 +33,6 @@ class HostRunner(RunBackend):
             args += ["--cflash-image", str(spec.fat_image)]
         if spec.debug:
             args += ["--arm9gdb-port", str(spec.arm9_debug_port), "--gdb-stub"]
-        if spec.arguments is not None:
-            args += list(spec.arguments)
+        if exec_opts.arguments is not None:
+            args += list(exec_opts.arguments)
         return run_cmd(args, exec_opts)

@@ -8,7 +8,8 @@ from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
 from .service import BuildService
-from .spec import BuildSpec
+from .spec import BuildSpec, BuildSpecOpts
+from ...core.spec_opts import SpecExecOpts
 
 log = logging.get_logger(__name__)
 
@@ -20,11 +21,16 @@ def build_command(
         d = Path(os.getcwd())
 
     spec = BuildSpec(
-        d=d,
-        backend=settings.build.backend,
-        entrypoint=settings.build.execution_settings.entrypoint,
-        arguments=arguments,
-        dry_run=dry_run
+        BuildSpecOpts=BuildSpecOpts(
+            d=d,
+        ),
+        SpecExecOpts=SpecExecOpts(
+            backend=settings.build.backend,
+            entrypoint=settings.build.execution_settings.entrypoint,
+            arguments=arguments,
+            dry_run=dry_run,
+            background=settings.build.execution_settings.background,
+        )
     )
 
     code = BuildService().run(spec, ExecOptions(dry_run=dry_run))

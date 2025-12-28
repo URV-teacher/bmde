@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import subprocess
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
 
 from bmde.core import logging
+from bmde.core.types import BackendOptions
 
 log = logging.get_logger(__name__)
 
@@ -15,6 +17,9 @@ class ExecOptions:
     env: Optional[dict[str, str]] = None
     cwd: Optional[str] = None
     background: Optional[bool] = False
+    backend: Optional[BackendOptions] = None
+    entrypoint: Optional[Path] = None
+    arguments: Optional[list[str]] = None
 
 
 def run_cmd(cmd: list[str], opts: ExecOptions) -> int | subprocess.Popen[bytes]:

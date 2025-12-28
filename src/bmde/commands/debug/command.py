@@ -17,7 +17,7 @@ from .spec import DebugSpec
 from ..run.service import RunService
 from ..run.spec import RunSpec, RunSpecOpts
 from ...core.file_utils import resolve_elf, resolve_nds
-from ...core.opts import RunSpecExecOpts
+from ...core.spec_opts import RunSpecExecOpts
 from ...core.types import DOCKER_DESMUME_DEBUG_NETWORK
 
 log = logging.get_logger(__name__)
@@ -38,16 +38,16 @@ def debug_command(
                 nds_rom=nds,
                 fat_image=settings.debug.run.fat_image,
                 graphical_output=settings.debug.run.graphical_output,
-                entrypoint=settings.debug.run.execution_settings.entrypoint,
                 debug=True,
                 arm9_debug_port=settings.debug.run.arm9_debug_port,
-                arguments=arguments,
                 docker_network=DOCKER_DESMUME_DEBUG_NETWORK,
             ),
             RunSpecExecOpts=RunSpecExecOpts(
                 dry_run=dry_run,
                 backend=settings.debug.run.backend,
                 background=True,
+                entrypoint=settings.debug.run.execution_settings.entrypoint,
+                arguments=arguments,
             ),
         ),
         elf=elf,
