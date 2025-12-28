@@ -17,8 +17,8 @@ from .spec import DebugSpec
 from ..run.service import RunService
 from ..run.spec import RunSpec, RunSpecOpts
 from ...core.file_utils import resolve_elf, resolve_nds
-from ...core.spec_opts import RunSpecExecOpts
-from ...core.types import DOCKER_DESMUME_DEBUG_NETWORK
+from ...core.spec_opts import SpecExecOpts
+from ...core.types import DOCKER_DESMUME_DEBUG_NETWORK, BackendOptions
 
 log = logging.get_logger(__name__)
 
@@ -42,9 +42,13 @@ def debug_command(
                 arm9_debug_port=settings.debug.run.arm9_debug_port,
                 docker_network=DOCKER_DESMUME_DEBUG_NETWORK,
             ),
-            RunSpecExecOpts=RunSpecExecOpts(
+            SpecExecOpts=SpecExecOpts(
                 dry_run=dry_run,
-                backend=settings.debug.run.backend,
+                backend=(
+                    settings.debug.run.execution_settings.backend
+                    if settings.debug.run.execution_settings.backend is not None
+                    else BackendOptions.DOCKER
+                ),
                 background=True,
                 entrypoint=settings.debug.run.execution_settings.entrypoint,
                 arguments=arguments,

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-from bmde.core.spec_opts import RunSpecExecOpts
+from bmde.core.spec_opts import SpecExecOpts
 from bmde.core.spec import BaseSpec
 from bmde.core.types import DockerOutputOptions
 
@@ -19,5 +19,5 @@ class RunSpecOpts(BaseSpec):
 
 @dataclass
 class RunSpec(BaseSpec):
-    RunSpecExecOpts: RunSpecExecOpts
+    SpecExecOpts: SpecExecOpts
     RunSpecOpts: RunSpecOpts

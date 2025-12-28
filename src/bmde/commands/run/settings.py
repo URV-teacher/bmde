@@ -4,16 +4,16 @@ from typing import Optional
 from pydantic import BaseModel
 
 from bmde.config.command_settings import ExecutionSettings
-from bmde.core.types import RunBackendOptions, DockerOutputOptions
+from bmde.core.types import DockerOutputOptions
+from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK
 
 
 class RunSettings(BaseModel):
-    backend: Optional[RunBackendOptions] = None
-    graphical_output: Optional[DockerOutputOptions] = None
+    graphical_output: Optional[DockerOutputOptions] = DockerOutputOptions.HOST
 
     execution_settings: ExecutionSettings = ExecutionSettings()
 
-    debug: Optional[bool] = None
-    arm9_debug_port: Optional[int] = None
+    debug: Optional[bool] = False
+    arm9_debug_port: Optional[int] = 1000
     fat_image: Optional[Path] = None
-    docker_network: Optional[str] = None
+    docker_network: Optional[str] = DOCKER_DESMUME_DEBUG_NETWORK

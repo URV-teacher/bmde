@@ -4,7 +4,7 @@ from __future__ import annotations
 from bmde.core import logging
 from bmde.core.service import Service
 from bmde.commands.run.backends.backend import RunBackend
-from bmde.core.types import RunBackendOptions as RunBackendName
+from bmde.core.types import BackendOptions as RunBackendName
 from .backends.docker import DockerRunner
 from .backends.flatpak import FlatpakRunner
 from .backends.host import HostRunner

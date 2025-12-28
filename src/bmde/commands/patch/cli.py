@@ -29,8 +29,6 @@ def patch_controller(
 ) -> None:
     """dlditool wrapper. Patches a NDS ROM for FAT usage."""
 
-    settings: Settings = ctx.obj["settings"]
-
     log.debug(
         "CLI options provided:\n"
         f"- Arguments: {str(arguments)}\n"
@@ -39,6 +37,8 @@ def patch_controller(
         f"- Entrypoint: {str(entrypoint)}\n"
         f"- Dry run: {str(dry_run)}\n"
     )
+
+    settings: Settings = ctx.obj["settings"]
 
     # CLI overrides
     if backend is not None:

@@ -5,11 +5,11 @@ from bmde.core.service import Service
 from .backends.backend import BuildBackend
 from .backends.docker import DockerRunner
 from .backends.host import HostRunner
-from .spec import BuildSpec
+from .spec import BuildSpecOpts
 from ...core.types import BackendOptions
 
 log = logging.get_logger(__name__)
 
-class BuildService(Service[BuildSpec, BuildBackend]):
+class BuildService(Service[BuildSpecOpts, BuildBackend]):
     def __init__(self) -> None:
         super().__init__([BackendOptions.HOST, BackendOptions.DOCKER], {BackendOptions.HOST: HostRunner(), BackendOptions.DOCKER: DockerRunner()})

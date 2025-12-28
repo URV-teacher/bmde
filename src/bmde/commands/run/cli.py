@@ -9,7 +9,6 @@ from bmde.core.shared_options import (
     FatImageOpt,
     ArgumentsOpt,
     DockerScreenOpt,
-    RunBackendOpt,
     EntrypointOpt,
     DebugOpt,
     PortOpt,
@@ -17,6 +16,7 @@ from bmde.core.shared_options import (
     DirectoryOpt,
     DockerNetworkOpt,
     BackgroundOpt,
+    BackendOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -29,7 +29,7 @@ def run_controller(
     directory: DirectoryOpt = None,
     arguments: ArgumentsOpt = None,
     arm9_debug_port: PortOpt = 1000,
-    backend: RunBackendOpt = None,
+    backend: BackendOpt = None,
     background: BackgroundOpt = False,
     debug: DebugOpt = False,
     docker_network: DockerNetworkOpt = None,

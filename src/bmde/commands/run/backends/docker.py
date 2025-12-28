@@ -1,5 +1,4 @@
 import subprocess
-from typing import List
 
 from bmde.core import logging
 from bmde.core.docker import (
@@ -55,6 +54,7 @@ class DockerRunner(RunBackend):
         if spec.graphical_output == "vnc":
             ports += ["-p", "3000:3000", "-p", "3001:3001"]
             envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
+
         entry = []
         if exec_opts.entrypoint:
             entry = ["--entrypoint", str(exec_opts.entrypoint)]
@@ -70,10 +70,14 @@ class DockerRunner(RunBackend):
 
         arguments: list[str] = []
         if exec_opts.arguments is not None:
-            arguments = List(exec_opts.arguments)
+            arguments = list(exec_opts.arguments)
 
         if spec.nds_rom is not None:
             envs += ["-e", f"ROM=/roms/{spec.nds_rom.name}"]
+
+        network_opt: list[str] = []
+        if spec.debug:
+            network_opt += ["--name", "bmde-debug", "--network", spec.docker_network]
 
         run_args = [
             "docker",
@@ -81,10 +85,7 @@ class DockerRunner(RunBackend):
             "--pull=always",
             "--rm",
             "-it",
-            "--name",
-            "desmume",
-            "--network",
-            "bmde-debug",
+            *network_opt,
             *mounts,
             *envs,
             *ports,
@@ -107,6 +108,6 @@ class DockerRunner(RunBackend):
         handle = run_cmd(run_args, exec_opts)
 
         if docker_net is not None and not exec_opts.background:
-            docker_remove_network(DOCKER_DESMUME_DEBUG_NETWORK)
+            docker_remove_network(docker_net)
 
         return handle

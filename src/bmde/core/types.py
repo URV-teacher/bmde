@@ -31,6 +31,7 @@ class BackendOptions(str, Enum):
 
     HOST = "host"
     DOCKER = "docker"
+    FLATPAK = "flatpak"
 
     @classmethod
     def parse(cls, value: Optional[str]) -> Optional["BackendOptions"]:
@@ -46,20 +47,6 @@ class BackendOptions(str, Enum):
             raise ValueError(f"Unknown environment '{value}'. Valid: {valid}") from exc
 
 
-class RunBackendOptions(str, Enum):
-    """
-    Execution environment backends. Obtained by composition with Backend class
-    """
-
-    HOST = str(BackendOptions.HOST.value)
-    DOCKER = str(BackendOptions.DOCKER.value)
-    FLATPAK = "flatpak"
-
-    @classmethod
-    def parse(cls, value: Optional[str]) -> Optional[BackendOptions]:
-        return BackendOptions.parse(value)
-
-
 class DockerOutputOptions(str, Enum):
     """
     Execution environment backends. Obtained by composition with Backend class
@@ -67,6 +54,7 @@ class DockerOutputOptions(str, Enum):
 
     VNC = "vnc"
     HOST = "host"
+    NONE = "none"
 
     @classmethod
     def parse(cls, value: Optional[str]) -> Optional[DockerOutputOptions]:

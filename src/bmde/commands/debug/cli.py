@@ -8,11 +8,11 @@ from bmde.core.shared_options import (
     NdsRomOpt,
     ArgumentsOpt,
     DockerScreenOpt,
-    RunBackendOpt,
     EntrypointOpt,
     PortOpt,
     DryRunOpt,
     ElfRomOpt,
+    BackendOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -26,7 +26,7 @@ def debug_controller(
     arguments: ArgumentsOpt = None,
     docker_screen: DockerScreenOpt = None,
     # common flags
-    backend: RunBackendOpt = None,
+    backend: BackendOpt = None,
     entrypoint: EntrypointOpt = None,
     port: PortOpt = 1000,
     dry_run: DryRunOpt = False,
@@ -46,7 +46,7 @@ def debug_controller(
 
     # CLI overrides
     if backend is not None:
-        settings.run.backend = backend
+        settings.run.execution_settings.backend = backend
     if entrypoint is not None:
         settings.run.execution_settings.entrypoint = entrypoint
     if port:
@@ -57,7 +57,7 @@ def debug_controller(
     log.debug(
         "Settings override:\n"
         f"- Arguments: {str(arguments)}\n"
-        f"- Backend: {str(settings.run.backend)}\n"
+        f"- Backend: {str(settings.run.execution_settings.backend)}\n"
         f"- Entrypoint: {str(settings.run.execution_settings.entrypoint)}\n"
         f"- Dry run: {str(dry_run)}\n"
         f"- Docker screen: {str(settings.run.graphical_output)}\n"

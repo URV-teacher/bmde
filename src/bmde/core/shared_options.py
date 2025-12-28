@@ -9,18 +9,7 @@ from typing import Optional, Annotated
 
 import typer
 
-from bmde.core.types import BackendOptions, RunBackendOptions, DockerOutputOptions
-
-# Backend options for run command
-RunBackendOpt = Annotated[
-    Optional[RunBackendOptions],
-    typer.Option(
-        "-b",
-        "--backend",
-        help="Backend to execute command:" " host|docker|flatpak",
-        case_sensitive=False,
-    ),
-]
+from bmde.core.types import BackendOptions, DockerOutputOptions
 
 # Backend option for the rest of commands other than run
 BackendOpt = Annotated[
@@ -28,7 +17,7 @@ BackendOpt = Annotated[
     typer.Option(
         "-b",
         "--backend",
-        help="Backend to execute command:" " host|docker",
+        help="Backend to execute command:" " host|docker|flatpak",
         case_sensitive=False,
     ),
 ]
@@ -266,7 +255,6 @@ VpnTestIpOpt = Annotated[
 
 # TODO Add all opts to this variable so they are marked as publicly exposed
 __all__ = [
-    "RunBackendOpt",
     "EntrypointOpt",
     "DebugOpt",
     "PortOpt",

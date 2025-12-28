@@ -15,8 +15,8 @@ from .service import RunService
 from .settings import RunSettings
 from .spec import RunSpec, RunSpecOpts
 from ...core.file_utils import resolve_nds
-from ...core.spec_opts import RunSpecExecOpts
-from ...core.types import DockerOutputOptions, RunBackendOptions
+from ...core.spec_opts import SpecExecOpts
+from ...core.types import DockerOutputOptions, BackendOptions
 
 log = logging.get_logger(__name__)
 
@@ -25,11 +25,11 @@ def create_run_spec(
     nds_rom: Optional[Path],
     directory: Optional[Path],
     arguments: Optional[list[str]] = None,
-    arm9_debug_port: Optional[int] = 1000,
-    backend: Optional[RunBackendOptions] = None,
-    background: Optional[bool] = False,
-    debug: Optional[bool] = False,
-    dry_run: bool = False,
+    arm9_debug_port: Optional[int] = None,
+    backend: Optional[BackendOptions] = None,
+    background: Optional[bool] = None,
+    debug: Optional[bool] = None,
+    dry_run: Optional[bool] = None,
     entrypoint: Optional[Path] = None,
     docker_network: Optional[str] = None,
     fat_image: Optional[Path] = None,
@@ -81,8 +81,16 @@ def create_run_spec(
                 else settings.graphical_output
             ),
         ),
-        RunSpecExecOpts=RunSpecExecOpts(
-            backend=backend if backend is not None else settings.backend,
+        SpecExecOpts=SpecExecOpts(
+            backend=(
+                backend
+                if backend is not None
+                else (
+                    settings.execution_settings.backend
+                    if settings.execution_settings.backend is not None
+                    else BackendOptions.DOCKER
+                )
+            ),
             background=(
                 background
                 if background is not None
@@ -93,7 +101,13 @@ def create_run_spec(
                 )
             ),
             dry_run=(
-                dry_run if dry_run is not None else settings.execution_settings.dry_run
+                dry_run
+                if dry_run is not None
+                else (
+                    settings.execution_settings.dry_run
+                    if settings.execution_settings.dry_run is not None
+                    else False
+                )
             ),
             entrypoint=(
                 entrypoint
@@ -116,8 +130,11 @@ def execute_run(
     handle = RunService().run(
         spec.RunSpecOpts,
         ExecOptions(
-            dry_run=spec.RunSpecExecOpts.dry_run,
-            background=spec.RunSpecExecOpts.background,
+            dry_run=spec.SpecExecOpts.dry_run,
+            background=spec.SpecExecOpts.background,
+            entrypoint=spec.SpecExecOpts.entrypoint,
+            arguments=spec.SpecExecOpts.arguments,
+            backend=spec.SpecExecOpts.backend,
         ),
     )
 
@@ -129,7 +146,7 @@ def run_command(
     directory: Optional[Path],
     arguments: Optional[list[str]] = None,
     arm9_debug_port: Optional[int] = 1000,
-    backend: Optional[RunBackendOptions] = None,
+    backend: Optional[BackendOptions] = None,
     background: Optional[bool] = False,
     debug: bool = False,
     docker_network: Optional[str] = None,
