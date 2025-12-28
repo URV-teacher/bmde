@@ -667,29 +667,30 @@ data accepts each subcommand. Data that accepts each command is classified in th
 
 <!-- ROADMAP -->
 ## Roadmap
-- [x] Arm syntax workflow auto-publish into VS Code market 
 - [ ] Repo VS Code custom, dockerfile VS Code 
 - [ ] Change the usage of ROM var into args, prioritize similarity to the actual binary
 - [ ] edit command
 - [ ] check command
+- [ ] mount logs
+- [ ] debug command --> Done but it does not work due to the version probably
+- [ ] Write tests, at least to check that parameters are correctly going into place
+- [ ] implement container for graphical applications and update git container, edit container, desmume and insight
+- [ ] installations with ansible or similar of the components over the host, creating the methods install and uninstall 
+      in each backend
+- [x] Arm syntax workflow auto-publish into VS Code market
+
 - [x] additional controls of desmume (needs compilation)
 - [x] icon of tot inside the devkitarm
 - [x] configuration defaults from bmde from desmume --> retained config into named volume, but wontfix, is actually not 
   that interesting
 - [x] awesome readme with logo
 - [x] dev / test dependencies
-- [ ] mount logs
 - [x] Explore linting tools black and ruff and automate them
 - [x] Reestructure CLI.py in a folder with a file for each command
 - [x] Create common options for Exec options (entrypoint, dryrun, background), also in settings 
 - [x] Implement sane defaults, leaving all of None in the needed parts of the code
 - [x] Complete all arguments and options
-- [ ] Write tests, at least to check that parameters are correctly going into place
-- [ ] implement container for graphical applications and update git container, edit ontainer, desmume and insight
-- [ ] installations with ansible or similar of the components over the host, creating the methods install and uninstall 
-      in each backend
 - [x] AI coding agent
-- [ ] debug command --> Done but it does not work due to the version probably
 
 
 See the [open issues][issues-url] for a full list of proposed features (and known issues).

@@ -19,7 +19,7 @@ def can_run_docker() -> bool:
             stderr=subprocess.DEVNULL,
             check=True,
         )
-        log.debug("Docker container running")
+        log.debug("Docker container runtime running")
         return True
     except FileNotFoundError:
         # Docker CLI not installed
