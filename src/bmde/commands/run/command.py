@@ -16,7 +16,11 @@ from .settings import RunSettings
 from .spec import RunSpec, RunSpecOpts
 from ...core.file_utils import resolve_nds
 from ...core.spec_opts import SpecExecOpts
-from ...core.types import DockerOutputOptions, BackendOptions
+from ...core.types import (
+    DockerOutputOptions,
+    BackendOptions,
+    DOCKER_DESMUME_DEBUG_NETWORK,
+)
 
 log = logging.get_logger(__name__)
 
@@ -72,7 +76,11 @@ def create_run_spec(
             docker_network=(
                 docker_network
                 if docker_network is not None
-                else settings.docker_network
+                else (
+                    settings.docker_network
+                    if settings.docker_network is not None
+                    else DOCKER_DESMUME_DEBUG_NETWORK
+                )
             ),
             fat_image=fat_image if fat_image is not None else settings.fat_image,
             graphical_output=(

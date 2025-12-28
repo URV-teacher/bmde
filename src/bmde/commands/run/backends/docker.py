@@ -60,9 +60,7 @@ class DockerRunner(RunBackend):
             entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
         debug_opt = []
-        print("startingdebug block. debug is: " + str(spec.debug))
         if spec.debug:
-            print("spec debug")
             if spec.arm9_debug_port is not None:
                 debug_opt = [f"--arm9gdb-port={str(spec.arm9_debug_port)}"]
             else:

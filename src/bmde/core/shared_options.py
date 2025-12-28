@@ -222,7 +222,7 @@ VpnHostOpt = Annotated[
 ]
 
 VpnPortOpt = Annotated[
-    Optional[str], typer.Option("--vpn-port", help="VPN port for forticlient")
+    Optional[int], typer.Option("--vpn-port", help="VPN port for forticlient")
 ]
 
 VpnRealmOpt = Annotated[

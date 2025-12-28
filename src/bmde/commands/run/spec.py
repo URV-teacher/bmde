@@ -12,7 +12,7 @@ class RunSpecOpts(BaseSpec):
     nds_rom: Path
     arm9_debug_port: Optional[int]
     debug: bool
-    docker_network: Optional[str]
+    docker_network: str
     fat_image: Optional[Path]
     graphical_output: Optional[DockerOutputOptions]
 

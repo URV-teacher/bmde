@@ -1,6 +1,3 @@
-import os
-from pathlib import Path
-
 import typer
 
 from bmde.cli import app
@@ -22,7 +19,7 @@ log = logging.get_logger(__name__)
 def patch_controller(
     ctx: typer.Context,
     arguments: ArgumentsOpt = None,
-    directory: DirectoryOpt = Path(os.getcwd()),
+    directory: DirectoryOpt = None,
     backend: BackendOpt = None,
     entrypoint: EntrypointOpt = None,
     dry_run: DryRunOpt = False,

@@ -30,7 +30,7 @@ class GitConfigSettings(BaseModel):
 
 
 class GitSettings(BaseModel):
-    backend: Optional[BackendOptions] = None
+    backend: Optional[BackendOptions] = BackendOptions.DOCKER
     execution_settings: ExecutionSettings = ExecutionSettings()
 
     git: GitConfigSettings = GitConfigSettings()

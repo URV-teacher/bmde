@@ -13,13 +13,13 @@ from bmde.core.docker import (
 from bmde.core.exec import run_cmd, ExecOptions
 from bmde.core.os_utils import host_uid_gid
 from .backend import GitBackend
-from ..spec import GitSpec
+from ..spec import GitSpecOpts
 
 log = logging.get_logger(__name__)
 
 
 def _run_vpn(
-    spec: GitSpec, exec_opts: ExecOptions, container_name: str
+    spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str
 ) -> Optional[int] | subprocess.Popen[bytes]:
     docker_img = "aleixmt/forticlient:latest"
 
@@ -78,7 +78,7 @@ def _run_vpn(
 
 
 def _ensure_vpn_healthy(
-    spec: GitSpec, exec_opts: ExecOptions, timeout_s: int = 20000
+    spec: GitSpecOpts, exec_opts: ExecOptions, timeout_s: int = 20000
 ) -> None:
     """
     Ensure the 'forti-vpn' service is running and HEALTHY.
@@ -146,7 +146,7 @@ class DockerRunner(GitBackend):
         return can_run_docker()
 
     def run(
-        self, spec: GitSpec, exec_opts: ExecOptions
+        self, spec: GitSpecOpts, exec_opts: ExecOptions
     ) -> int | subprocess.Popen[bytes]:
         """
         1) Ensure 'forti-vpn' compose service is up & healthy (start in background if needed).
@@ -162,8 +162,8 @@ class DockerRunner(GitBackend):
 
         # 3) Build docker run args for the git container
         entry = []
-        if spec.entrypoint:
-            entry = ["--entrypoint", str(spec.entrypoint)]
+        if exec_opts.entrypoint:
+            entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
         # primary project mount (writable)
         host_path = str(Path(spec.d).resolve())
@@ -191,6 +191,10 @@ class DockerRunner(GitBackend):
             f"GIT_EMAIL={spec.git_email}",
         ]
 
+        args: list[str] = []
+        if exec_opts.arguments:
+            args = exec_opts.arguments
+
         run_args = [
             "docker",
             "run",
@@ -204,7 +208,7 @@ class DockerRunner(GitBackend):
             *entry,
             *workdir_opt,
             docker_img,
-            *getattr(spec, "arguments", []),
+            *args,
         ]
 
         log.debug("Run args for Docker" + str(run_args))
