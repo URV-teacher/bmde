@@ -36,7 +36,7 @@ venv: $(VENV_DIR)/bin/python  ## Create virtualenv (.venv) and upgrade pip
 dev: $(VENV_DIR)/bin/python ## Installs package and dev deps into the venv
 	@$(PIP) install -e ".[dev]"
 
-install_build:
+install_build: venv
 	@$(PIP) install build
 
 # ---- quality --------------------------------------------------------------
