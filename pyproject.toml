@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "bmde"
 version = "1.0.0"
@@ -9,11 +13,21 @@ license = {text="GPL-3.0-or-later"}
 dependencies = [
   "typer",
   "pydantic",
-  "rtoml"
+  "rtoml",
+  "rich",
 ]
 
 [project.scripts]
 bmde = "bmde.__main__:main"
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "mypy",
+  "ruff",
+  "pre-commit",
+  "build"
+]
 
 [tool.ruff]
 line-length = 120

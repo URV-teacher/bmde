@@ -21,6 +21,10 @@ PIP        := $(VENV_DIR)/bin/pip
 PKG_NAME   := bmde
 
 # ---- helpers --------------------------------------------------------------
+install: $(VENV_DIR)/bin/bmde  ## Installs package into the venv
+
+$(VENV_DIR)/bin/bmde: $(VENV_DIR)/bin/python  ## Installs package into the venv
+	@$(PIP) install -e .
 
 $(VENV_DIR)/bin/python:  ## internal: create venv if missing
 	@$(PYTHON_BIN) -m venv "$(VENV_DIR)"
@@ -29,39 +33,35 @@ $(VENV_DIR)/bin/python:  ## internal: create venv if missing
 venv: $(VENV_DIR)/bin/python  ## Create virtualenv (.venv) and upgrade pip
 	@echo "✅ venv ready at $(VENV_DIR)"
 
-$(VENV_DIR)/bin/bmde: $(VENV_DIR)/bin/python  ## Installs package into the venv
-	@$(PIP) install -e .
+dev: $(VENV_DIR)/bin/python ## Installs package and dev deps into the venv
+	@$(PIP) install -e ".[dev]"
 
-install: $(VENV_DIR)/bin/bmde  ## Installs package into the venv
-
-$(VENV_DIR)/bin/ruff: $(VENV_DIR)/bin/python
-	@$(PIP) install -r requirements-dev.txt
-
-$(VENV_DIR)/bin/pytest: $(VENV_DIR)/bin/python
-	@$(PIP) install -r requirements-dev.txt
-
-dev: $(VENV_DIR)/bin/bmde $(VENV_DIR)/bin/ruff $(VENV_DIR)/bin/pytest ## Installs package into the venv
-	@$(PIP) install -e .
+install_build:
+	@$(PIP) install build
 
 # ---- quality --------------------------------------------------------------
 
-lint:  ## Run static checks (ruff + mypy)
+lint: dev ## Run static checks (ruff + mypy)
 	@$(VENV_DIR)/bin/ruff check .
 	@$(VENV_DIR)/bin/mypy src
 
-fmt:  ## Auto-format (black + ruff --fix)
-	@$(VENV_DIR)/bin/black src tests
+fmt: dev ## Auto-format (black + ruff --fix)
 	@$(VENV_DIR)/bin/ruff check --fix .
 
-test:  ## Run tests
+test: dev ## Run tests
 	@PYTHONPATH=src $(VENV_DIR)/bin/pytest -s
+
+# ---- build ----------------------------------------------------------------
+
+dist: install_build ## Build source and wheel distribution
+	@$(PYTHON) -m build
 
 # ---- run ------------------------------------------------------------------
 
 # Pass arguments to the CLI via CMD, e.g.:
 #   make run CMD="run -f demo.nds --debug"
 CMD ?= --help
-run: $(VENV_DIR)/bin/bmde  ## Run the bmde CLI (python -m bmde)
+run: install  ## Run the bmde CLI (python -m bmde)
 	@$(PYTHON) -m $(PKG_NAME) $(CMD)
 
 # ---- maintenance ----------------------------------------------------------
@@ -71,7 +71,7 @@ clean:  ## Remove build/test artifacts
 
 # ---- meta -----------------------------------------------------------------
 
-.PHONY: venv lint fmt test run clean help
+.PHONY: venv lint fmt test run clean help dist install dev
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \
