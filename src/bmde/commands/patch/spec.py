@@ -7,7 +7,9 @@ from bmde.core.spec_opts import SpecExecOpts
 
 @dataclass
 class PatchSpecOpts(BaseSpec):
-    d: Path
+    nds_rom: Path
+
+
 
 
 @dataclass

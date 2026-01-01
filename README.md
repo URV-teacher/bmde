@@ -673,12 +673,11 @@ data accepts each subcommand. Data that accepts each command is classified in th
 - [ ] check command
 - [ ] mount logs
 - [ ] debug command --> Done but it does not work due to the version probably
-- [ ] Write tests, at least to check that parameters are correctly going into place
 - [ ] implement container for graphical applications and update git container, edit container, desmume and insight
 - [ ] installations with ansible or similar of the components over the host, creating the methods install and uninstall 
       in each backend
+- [x] Write tests, at least to check that parameters are correctly going into place
 - [x] Arm syntax workflow auto-publish into VS Code market
-
 - [x] additional controls of desmume (needs compilation)
 - [x] icon of tot inside the devkitarm
 - [x] configuration defaults from bmde from desmume --> retained config into named volume, but wontfix, is actually not 

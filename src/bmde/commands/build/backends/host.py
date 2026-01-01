@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 
@@ -12,10 +13,41 @@ log = logging.get_logger(__name__)
 
 class HostRunner(BuildBackend):
     def is_available(self) -> bool:
-        return is_command_available("make")
+        return self.check()
 
+    def check(self) -> bool:
+        checks_passed = True
 
-    def run(self, spec: BuildSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
+        # Check make
+        if not is_command_available("make"):
+            log.error("'make' not found in PATH.")
+            checks_passed = False
+        else:
+            log.debug("'make' found.")
+
+        # Check devkitARM tools
+        if not is_command_available("arm-none-eabi-gcc"):
+            log.error("'arm-none-eabi-gcc' (devkitARM) not found in PATH.")
+            checks_passed = False
+        else:
+            log.debug("'arm-none-eabi-gcc' found.")
+
+        # Check DEVKITPRO env vartk
+
+        if "DEVKITPRO" not in os.environ:
+            log.warning(
+                "DEVKITPRO environment variable not set. Some tools might fail."
+            )
+
+        # Check DEVKITARM env var
+        if "DEVKITARM" not in os.environ:
+            log.warning("DEVKITARM environment variable not set.")
+
+        return checks_passed
+
+    def run(
+        self, spec: BuildSpecOpts, exec_opts: ExecOptions
+    ) -> int | subprocess.Popen[bytes]:
         if exec_opts.entrypoint is not None:
             entry = str(exec_opts.entrypoint)
         else:

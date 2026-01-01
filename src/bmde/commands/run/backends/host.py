@@ -12,7 +12,13 @@ log = logging.get_logger(__name__)
 
 class HostRunner(RunBackend):
     def is_available(self) -> bool:
-        return is_command_available("desmume") or is_command_available("desmume-cli")
+        return self.check()
+
+    def check(self) -> bool:
+        available = is_command_available("desmume") or is_command_available("desmume-cli")
+        if not available:
+            log.error("desmume or desmume-cli not found in PATH.")
+        return available
 
     def run(
         self, spec: RunSpecOpts, exec_opts: ExecOptions

@@ -19,6 +19,14 @@ class Backend(ABC, Generic[SpecType]):
     @abstractmethod
     def is_available(self) -> bool: ...
 
+    def check(self) -> bool:
+        """
+        Performs detailed checks to verify if the backend is correctly configured.
+        Returns True if all checks pass, False otherwise.
+        Default implementation returns True.
+        """
+        return True
+
     @abstractmethod
     def run(
         self, spec: SpecType, exec_opts: ExecOptions

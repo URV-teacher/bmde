@@ -23,13 +23,14 @@ class DockerRunner(PatchBackend):
 
         docker_img = "aleixmt/dlditool:latest"
 
-        dirname = os.path.basename(spec.d)
-        mounts = ["-v", f"{spec.d}:/input/{dirname}:rw"]
-        workdir_opt = ["-w", f"/input/{dirname}"]  # Workdir
+        mounts = ["-v", f"{spec.nds_rom.parent}:/input/{os.path.basename(spec.nds_rom.parent)}:rw"]
+        workdir_opt = ["-w", f"/input/{os.path.basename(spec.nds_rom.parent)}"]  # Workdir
 
         arguments = []
         if exec_opts.arguments is not None:
             arguments = list(exec_opts.arguments)
+        else:
+            arguments = ["mpcf.dldi", f"/input/{os.path.basename(spec.nds_rom.parent)}/{os.path.basename(spec.nds_rom)}"]
 
         run_args = [
             "docker",

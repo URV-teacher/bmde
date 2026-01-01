@@ -151,7 +151,7 @@ def execute_run(
 
 def run_command(
     nds_rom: Optional[Path],
-    directory: Optional[Path],
+    directory: Optional[Path] = None,
     arguments: Optional[list[str]] = None,
     arm9_debug_port: Optional[int] = 1000,
     backend: Optional[BackendOptions] = None,

@@ -10,6 +10,7 @@ from bmde.core.exec import ExecOptions
 from .service import PatchService
 from .settings import PatchSettings
 from .spec import PatchSpec, PatchSpecOpts
+from ...core.file_utils import resolve_nds
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import BackendOptions
 
@@ -18,6 +19,7 @@ log = logging.get_logger(__name__)
 
 def create_patch_spec(
     d: Optional[Path],
+    nds_rom: Optional[Path] = None,
     arguments: Optional[list[str]] = None,
     backend: Optional[BackendOptions] = None,
     background: bool = False,
@@ -25,15 +27,18 @@ def create_patch_spec(
     entrypoint: Optional[Path] = None,
     settings: Optional[PatchSettings] = None,
 ) -> PatchSpec:
+
     if d is None:
-        d = Path(os.getcwd())
+        d = Path.cwd()
+
+    nds_resolved, _ = resolve_nds(nds_rom, cwd=d)
 
     if settings is None:
         settings = PatchSettings()
 
     return PatchSpec(
         PatchSpecOpts=PatchSpecOpts(
-            d=d,
+            nds_rom=nds_resolved
         ),
         SpecExecOpts=SpecExecOpts(
             backend=(
@@ -78,6 +83,7 @@ def execute_patch(spec: PatchSpec) -> int | Popen[bytes]:
 
 def patch_command(
     d: Optional[Path],
+    nds_rom: Optional[Path] = None,
     arguments: Optional[list[str]] = None,
     backend: Optional[BackendOptions] = None,
     background: bool = False,
@@ -87,6 +93,7 @@ def patch_command(
 ) -> int | Popen[bytes]:
     spec = create_patch_spec(
         d=d,
+        nds_rom=nds_rom,
         arguments=arguments,
         backend=backend,
         background=background,
