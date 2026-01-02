@@ -10,6 +10,8 @@ from bmde.core.exec import ExecOptions
 from .service import BuildService
 from .settings import BuildSettings
 from .spec import BuildSpec, BuildSpecOpts
+from ...config.loader import load_settings
+from ...core.logging import setup_logging, LogLevel
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import BackendOptions
 
@@ -98,6 +100,14 @@ def build_command(
     """
     CLI Entrypoint. Orchestrates spec creation and execution.
     """
+    if settings is None:
+        settings = load_settings()
+        setup_logging(
+            LogLevel(settings.logging.level).to_logging_level(),
+            log_file=settings.logging.file,
+        )
+        settings = settings.build
+
     spec = create_build_spec(
         d=d,
         arguments=arguments,

@@ -14,7 +14,9 @@ from bmde.core.exec import ExecOptions
 from .service import RunService
 from .settings import RunSettings
 from .spec import RunSpec, RunSpecOpts
+from ...config.loader import load_settings
 from ...core.file_utils import resolve_nds
+from ...core.logging import LogLevel, setup_logging
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import (
     DockerOutputOptions,
@@ -134,7 +136,6 @@ def execute_run(
     Executes the RunSpec.
     The API can call this directly with a pre-constructed spec.
     """
-
     handle = RunService().run(
         spec.RunSpecOpts,
         ExecOptions(
@@ -169,6 +170,14 @@ def run_command(
     """
     CLI Entrypoint. Orchestrates spec creation and execution.
     """
+
+    if settings is None:
+        settings = load_settings()
+        setup_logging(
+            LogLevel(settings.logging.level).to_logging_level(),
+            log_file=settings.logging.file,
+        )
+        settings = settings.run
 
     spec = create_run_spec(
         nds_rom=nds_rom,

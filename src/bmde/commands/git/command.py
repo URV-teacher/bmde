@@ -10,6 +10,8 @@ from bmde.core.exec import ExecOptions
 from .service import GitService
 from .settings import GitSettings
 from .spec import GitSpec, GitSpecOpts
+from ...config.loader import load_settings
+from ...core.logging import setup_logging, LogLevel
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import BackendOptions
 
@@ -142,6 +144,15 @@ def git_command(
     vpn_test_ip: Optional[str] = None,
     settings: Optional[GitSettings] = None,
 ) -> int | Popen[bytes]:
+
+    if settings is None:
+        settings = load_settings()
+        setup_logging(
+            LogLevel(settings.logging.level).to_logging_level(),
+            log_file=settings.logging.file,
+        )
+        settings = settings.git
+
     spec = create_git_spec(
         d=d,
         arguments=arguments,

@@ -57,9 +57,7 @@ class DockerRunner(RunBackend):
             entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
         debug_opt = []
-        print("startingdebug block. debug is: " + str(spec.debug))
         if spec.debug:
-            print("spec debug")
             if spec.arm9_debug_port is not None:
                 debug_opt = [f"--arm9gdb-port={str(spec.arm9_debug_port)}"]
             else:
@@ -71,6 +69,7 @@ class DockerRunner(RunBackend):
 
         if spec.nds_rom is not None:
             envs += ["-e", f"ROM=/roms/{spec.nds_rom.name}"]
+            arguments += [f"/roms/{spec.nds_rom.name}"]
 
         network_opt: list[str] = []
         if spec.debug:
