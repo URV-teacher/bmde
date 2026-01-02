@@ -10,6 +10,7 @@
 [![LinkedIn][linkedin-shield]][linkedin-url]
 [![Testing PyTest)][pytest-shield]][pytest-url]
 [![Style (Ruff)][ruff-shield]][ruff-url]
+[![PyPI][pypi-shield]][pypi-url]
 
 
 <!-- PROJECT LOGO -->
@@ -119,7 +120,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]]
+![Product Name Screen Shot][product-screenshot]
 
 Operating system agnostic CLI wrapping the Bare Metal Development Environment (BMDE) and other related utilities 
 to manage the complete software life-cycle of a NDS C and / or assembly project using 
@@ -668,7 +669,7 @@ data accepts each subcommand. Data that accepts each command is classified in th
 <!-- ROADMAP -->
 ## Roadmap
 - [ ] Repo VS Code custom, dockerfile VS Code 
-- [ ] Change the usage of ROM var into args, prioritize similarity to the actual binary
+- [x] Change the usage of ROM var into args, prioritize similarity to the actual binary
 - [ ] edit command
 - [ ] check command
 - [ ] mount logs
@@ -771,6 +772,8 @@ The teachers of URV who have collaborated.
 [ruff-shield]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml/badge.svg
 [ruff-url]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml
 [product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/screenshot.png
+[pypi-shield]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml/badge.svg
+[pypi-url]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml
 
 [flathub-setup-url]: https://flathub.org/en/setup
 [Flathub]: https://img.shields.io/badge/Flathub-%234a90d9.svg?style=for-the-badge&logo=flathub&logoColor=white
@@ -832,4 +835,3 @@ The teachers of URV who have collaborated.
 
 [x11vnc]: https://img.shields.io/badge/x11vnc-EF5350?style=for-the-badge
 [x11vnc-url]: https://github.com/LibVNC/x11vnc
-

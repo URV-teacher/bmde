@@ -1,6 +1,9 @@
 import typer
 from typing import Any, List, Tuple, Optional
+
+from bmde.config.loader import load_settings
 from bmde.core import logging
+from bmde.core.logging import configure_logging_from_settings
 from bmde.core.service import Service
 from bmde.core.types import BackendOptions
 from bmde.config.schema import Settings
@@ -14,6 +17,14 @@ log = logging.get_logger(__name__)
 
 
 def check_command(settings: Settings) -> None:
+
+    if settings is None:
+        full_settings = load_settings()
+        configure_logging_from_settings(
+            settings=full_settings,
+            obfuscate_sensibles=full_settings.logging.hide_sensibles,
+        )
+
     services: List[Tuple[str, Service[Any, Any], Optional[BackendOptions]]] = [
         ("Git", GitService(), settings.git.execution_settings.backend),
         ("Run", RunService(), settings.run.execution_settings.backend),

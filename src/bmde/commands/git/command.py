@@ -11,7 +11,7 @@ from .service import GitService
 from .settings import GitSettings
 from .spec import GitSpec, GitSpecOpts
 from ...config.loader import load_settings
-from ...core.logging import setup_logging, LogLevel
+from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import BackendOptions
 
@@ -146,12 +146,9 @@ def git_command(
 ) -> int | Popen[bytes]:
 
     if settings is None:
-        settings = load_settings()
-        setup_logging(
-            LogLevel(settings.logging.level).to_logging_level(),
-            log_file=settings.logging.file,
-        )
-        settings = settings.git
+        full_settings = load_settings()
+        configure_logging_from_settings(settings=full_settings)
+        settings = full_settings.git
 
     spec = create_git_spec(
         d=d,

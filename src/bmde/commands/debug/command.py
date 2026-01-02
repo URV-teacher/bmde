@@ -18,7 +18,7 @@ from ..run.service import RunService
 from ..run.spec import RunSpec, RunSpecOpts
 from ...config.loader import load_settings
 from ...core.file_utils import resolve_elf, resolve_nds
-from ...core.logging import setup_logging, LogLevel
+from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import (
     DOCKER_DESMUME_DEBUG_NETWORK,
@@ -160,12 +160,9 @@ def debug_command(
 ) -> int | Popen[bytes]:
 
     if settings is None:
-        settings = load_settings()
-        setup_logging(
-            LogLevel(settings.logging.level).to_logging_level(),
-            log_file=settings.logging.file,
-        )
-        settings = settings.debug
+        full_settings = load_settings()
+        configure_logging_from_settings(settings=full_settings)
+        settings = full_settings.debug
 
     spec = create_debug_spec(
         nds=nds,

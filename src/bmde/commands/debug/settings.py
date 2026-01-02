@@ -11,5 +11,5 @@ class DebugSettings(BaseModel):
     run: RunSettings = RunSettings()
     execution_settings: ExecutionSettings = ExecutionSettings()
 
-    docker_screen: Optional[DockerOutputOptions] = None
+    docker_screen: Optional[DockerOutputOptions] = DockerOutputOptions.HOST
     docker_network: Optional[str] = None

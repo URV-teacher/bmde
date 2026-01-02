@@ -1,13 +1,12 @@
 import logging
-import os.path
-from enum import Enum
 from logging import Logger
 from pathlib import Path
-from typing import Optional, Literal, Any, cast
+from typing import Optional, Any, cast
 
 from rich.logging import RichHandler
 
-from bmde.core.types import DATE_FORMAT, NOW
+from bmde.config.schema import Settings
+from bmde.core.types import DATE_FORMAT, LogLevel, get_default_log_path
 
 # ---- extend the logging module with TRACE
 TRACE_LEVEL_NUM = 1
@@ -24,18 +23,49 @@ class ExtendedLogger(logging.Logger):
 logging.setLoggerClass(ExtendedLogger)
 
 
-def get_default_log_path() -> Path:
-    return Path(str(os.path.join(".", "logs", "bmde", NOW + ".log")))
+class SecretsFilter(logging.Filter):
+    def __init__(self, secrets: list[str | None] | None):
+        super().__init__()
+        self.secrets: list[str | None] = secrets or []
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if not self.secrets:
+            return True
+
+        if isinstance(record.msg, str):
+            for secret in self.secrets:
+                if secret and secret in record.msg:
+                    record.msg = record.msg.replace(secret, "*****")
+
+        """
+        if record.args:
+            if isinstance(record.args, tuple):
+                new_args = []
+                modified = False
+                for arg in record.args:
+                    temp_arg = arg
+                    for secret in self.secrets:
+                        if secret and secret in temp_arg:
+                            temp_arg = temp_arg.replace(secret, "*****")
+                            modified = True
+                    new_args.append(temp_arg)
+                if modified:
+                    record.args = tuple(new_args)
+        """
+        return True
 
 
 def setup_logging(
-    level: Optional[int | None], log_file: Optional[str | Path] = None
+    level: Optional[int | None],
+    log_file: Optional[str | Path] = None,
+    secrets: list[str | None] | None = None,
 ) -> None:
     # Default level is INFO
     if level is None:
         level = logging.INFO
 
     handlers: list[logging.Handler] = []
+    secrets_filter = SecretsFilter(secrets)
 
     # ---- console (Rich)
     console = RichHandler(
@@ -48,6 +78,7 @@ def setup_logging(
     common_formatter = logging.Formatter(MESSAGE_FORMAT, DATE_FORMAT)
     console.setLevel(level)
     console.setFormatter(common_formatter)
+    console.addFilter(secrets_filter)
     handlers.append(console)
 
     if log_file:
@@ -56,6 +87,7 @@ def setup_logging(
         file_handler = logging.FileHandler(path, encoding="utf-8")
         file_handler.setLevel(level)
         file_handler.setFormatter(common_formatter)
+        file_handler.addFilter(secrets_filter)
         handlers.append(file_handler)
 
     logging.basicConfig(
@@ -78,49 +110,56 @@ def get_logger(name: str) -> ExtendedLogger:
     return cast(ExtendedLogger, logging.getLogger(name))
 
 
-class LogLevel(str, Enum):
-    """
-    Logical log levels for the CLI.
+def process_log_flags(
+    very_verbose: bool, verbose: bool, quiet: bool, very_quiet: bool
+) -> tuple[LogLevel, bool]:
+    more_than_one_flag = False
+    flag_counter = 0
+    for flag in (very_verbose, verbose, quiet, very_quiet):
+        if flag:
+            flag_counter += 1
+    if flag_counter > 1:
+        more_than_one_flag = True
 
-    Includes a custom TRACE (more verbose than DEBUG) and QUIET
-    (suppresses all output beyond CRITICAL).
-    """
-
-    TRACE = "trace"
-    DEBUG = "debug"
-    INFO = "info"
-    WARNING = "warning"
-    ERROR = "error"
-    QUIET = "quiet"
-
-    @classmethod
-    def parse(cls, value: Optional[str]) -> Optional["LogLevel"]:
-        """Parse case-insensitively; returns None if value is falsy."""
-        print("Executing function parse from LogLevel")
-        if not value:
-            return None
-        norm = value.strip().lower()
-        try:
-            return cls(norm)
-        except ValueError as exc:
-            valid = ", ".join(v.value for v in cls)
-            raise ValueError(f"Unknown log level '{value}'. Valid: {valid}") from exc
-
-    def to_logging_level(self) -> int:
-        if self is LogLevel.TRACE:
-            return 0
-        if self is LogLevel.DEBUG:
-            return logging.DEBUG
-        if self is LogLevel.INFO:
-            return logging.INFO
-        if self is LogLevel.WARNING:
-            return logging.WARNING
-        if self is LogLevel.ERROR:
-            return logging.ERROR
-        if self is LogLevel.QUIET:
-            return logging.CRITICAL + 10
-        # Fallback
-        return logging.INFO
+    if very_verbose:
+        return LogLevel.TRACE, more_than_one_flag
+    elif verbose:
+        return LogLevel.DEBUG, more_than_one_flag
+    elif quiet:
+        return LogLevel.WARNING, more_than_one_flag
+    elif very_quiet:
+        return LogLevel.QUIET, more_than_one_flag
+    else:
+        return LogLevel.INFO, more_than_one_flag
 
 
-LogLevelLiteral = Literal.__getitem__(tuple(v.value for v in LogLevel))
+def configure_logging_from_settings(settings: Settings) -> None:
+    if settings.logging.file is None:
+        settings.logging.file = get_default_log_path()
+
+    if settings.logging.level is None:
+        settings.logging.level = LogLevel.get_default_log_level()
+
+    # Always obfuscate all passwords
+    words_to_obfuscate = [settings.git.vpn.password, settings.git.ssh.password]
+    # Optionally but by default true obfuscate other sensible data.
+    if settings.logging.hide_sensibles:
+        words_to_obfuscate += [
+            settings.git.git.name,
+            settings.git.git.email,
+            settings.git.ssh.host,
+            settings.git.ssh.username,
+            settings.git.vpn.host,
+            str(settings.git.vpn.port),
+            settings.git.vpn.username,
+            settings.git.vpn.cert,
+            settings.git.vpn.realm,
+            settings.git.vpn.test_dns,
+            settings.git.vpn.test_ip,
+        ]
+
+    setup_logging(
+        level=settings.logging.level.to_logging_level(),
+        log_file=settings.logging.file,
+        secrets=words_to_obfuscate,
+    )  # Preventive creation of log for logging the loading of settings

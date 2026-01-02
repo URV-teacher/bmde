@@ -322,4 +322,5 @@ __all__ = [
     "BackgroundOpt",
     "ShowConfigOpt",
     "InteractiveOpt",
+    "ShowDefaultConfigOpt",
 ]
