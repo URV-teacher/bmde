@@ -33,4 +33,4 @@ jobs:
               export SDL_VIDEODRIVER=dummy
               export SDL_AUDIODRIVER=dummy
               export XDG_RUNTIME_DIR=/tmp
-              make test
+              XDG_RUNTIME_DIR=/tmp make test
