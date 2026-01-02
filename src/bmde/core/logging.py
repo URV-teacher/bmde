@@ -7,7 +7,7 @@ from typing import Optional, Literal, Any, cast
 
 from rich.logging import RichHandler
 
-from bmde.core.types import PROJECT_DIR, DATE_FORMAT, NOW
+from bmde.core.types import DATE_FORMAT, NOW
 
 # ---- extend the logging module with TRACE
 TRACE_LEVEL_NUM = 1
