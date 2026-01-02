@@ -10,6 +10,7 @@ from bmde.commands.build.command import build_command
 from bmde.commands.patch.command import patch_command
 from bmde.commands.run.command import run_command
 from bmde.core.logging import setup_logging
+from bmde.core.types import DockerOutputOptions
 
 
 def test_run_filesystem(tmp_path: Path):
@@ -87,7 +88,7 @@ def test_run_filesystem(tmp_path: Path):
     print("Running emulator...")
     # Run in background so we can stop it
     proc = run_command(
-        nds_rom=nds_file, fat_image=fat_img_path, interactive=False
+        nds_rom=nds_file, fat_image=fat_img_path, interactive=False, graphical_output=DockerOutputOptions.NONE
     )
 
     # Wait for emulation to start and write to file
