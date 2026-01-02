@@ -29,11 +29,12 @@ def create_run_spec(
     nds_rom: Optional[Path],
     directory: Optional[Path],
     arguments: Optional[list[str]] = None,
-    arm9_debug_port: Optional[int] = None,
+    arm9_debug_port: Optional[int] = 1000,
     backend: Optional[BackendOptions] = None,
-    background: Optional[bool] = None,
-    debug: Optional[bool] = None,
-    dry_run: Optional[bool] = None,
+    background: Optional[bool] = False,
+    interactive: bool = True,
+    debug: Optional[bool] = False,
+    dry_run: bool = False,
     entrypoint: Optional[Path] = None,
     docker_network: Optional[str] = None,
     fat_image: Optional[Path] = None,
@@ -108,14 +109,13 @@ def create_run_spec(
                     else False
                 )
             ),
+            interactive=(
+                interactive
+                if interactive is not None
+                else settings.execution_settings.interactive
+            ),
             dry_run=(
-                dry_run
-                if dry_run is not None
-                else (
-                    settings.execution_settings.dry_run
-                    if settings.execution_settings.dry_run is not None
-                    else False
-                )
+                dry_run if dry_run is not None else settings.execution_settings.dry_run
             ),
             entrypoint=(
                 entrypoint
@@ -138,11 +138,12 @@ def execute_run(
     handle = RunService().run(
         spec.RunSpecOpts,
         ExecOptions(
+            backend=spec.SpecExecOpts.backend,
             dry_run=spec.SpecExecOpts.dry_run,
             background=spec.SpecExecOpts.background,
+            interactive=spec.SpecExecOpts.interactive,
             entrypoint=spec.SpecExecOpts.entrypoint,
             arguments=spec.SpecExecOpts.arguments,
-            backend=spec.SpecExecOpts.backend,
         ),
     )
 
@@ -150,12 +151,13 @@ def execute_run(
 
 
 def run_command(
-    nds_rom: Optional[Path],
+    nds_rom: Optional[Path] = None,
     directory: Optional[Path] = None,
     arguments: Optional[list[str]] = None,
     arm9_debug_port: Optional[int] = 1000,
     backend: Optional[BackendOptions] = None,
     background: Optional[bool] = False,
+    interactive: bool = True,
     debug: bool = False,
     docker_network: Optional[str] = None,
     dry_run: bool = False,
@@ -175,6 +177,7 @@ def run_command(
         arm9_debug_port=arm9_debug_port,
         backend=backend,
         background=background,
+        interactive=interactive,
         debug=debug,
         docker_network=docker_network,
         dry_run=dry_run,

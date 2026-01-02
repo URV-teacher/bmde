@@ -17,7 +17,7 @@ class DebugService(Service[DebugSpecOpts, DebugBackend]):
         super().__init__(
             [RunBackendName.HOST, RunBackendName.DOCKER],
             {
-                RunBackendName.HOST: HostRunner(),
                 RunBackendName.DOCKER: DockerRunner(),
+                RunBackendName.HOST: HostRunner(),
             },
         )

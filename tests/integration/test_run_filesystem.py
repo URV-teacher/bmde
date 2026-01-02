@@ -36,7 +36,7 @@ def test_run_filesystem(tmp_path: Path):
 
     # 2. Build
     print("Building...")
-    ret = build_command(d=repo_dir)
+    ret = build_command(d=repo_dir, interactive=False)
     if isinstance(ret, subprocess.Popen):
         ret.wait()
         assert ret.returncode == 0, "Build failed"
@@ -86,7 +86,9 @@ def test_run_filesystem(tmp_path: Path):
     # 5. Run
     print("Running emulator...")
     # Run in background so we can stop it
-    proc = run_command(nds_rom=nds_file, fat_image=fat_img_path, background=True)
+    proc = run_command(
+        nds_rom=nds_file, fat_image=fat_img_path, background=True, interactive=False
+    )
 
     # Wait for emulation to start and write to file
     # The ROM is simple, it should write quickly.

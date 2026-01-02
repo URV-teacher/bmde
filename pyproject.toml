@@ -23,6 +23,7 @@ bmde = "bmde.__main__:main"
 [project.optional-dependencies]
 dev = [
   "pytest",
+  "black",
   "mypy",
   "ruff",
   "pre-commit",

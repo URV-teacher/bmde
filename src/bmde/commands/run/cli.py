@@ -16,6 +16,7 @@ from bmde.core.shared_options import (
     DirectoryOpt,
     DockerNetworkOpt,
     BackgroundOpt,
+    InteractiveOpt,
     BackendOpt,
 )
 
@@ -31,6 +32,7 @@ def run_controller(
     arm9_debug_port: PortOpt = 1000,
     backend: BackendOpt = None,
     background: BackgroundOpt = False,
+    interactive: InteractiveOpt = True,
     debug: DebugOpt = False,
     docker_network: DockerNetworkOpt = None,
     dry_run: DryRunOpt = False,
@@ -49,6 +51,7 @@ def run_controller(
         f"- ARM 9 debug port: {str(arm9_debug_port)}\n"
         f"- Backend: {str(backend)}\n"
         f"- Background: {str(background)}\n"
+        f"- Interactive: {str(interactive)}\n"
         f"- Debug: {str(debug)}\n"
         f"- Docker Network: {str(docker_network)}\n"
         f"- Dry run: {str(dry_run)}\n"
@@ -67,6 +70,7 @@ def run_controller(
         arm9_debug_port=arm9_debug_port,
         backend=backend,
         background=background,
+        interactive=interactive,
         debug=debug,
         docker_network=docker_network,
         dry_run=dry_run,

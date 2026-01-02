@@ -24,6 +24,7 @@ def create_patch_spec(
     background: bool = False,
     dry_run: bool = False,
     entrypoint: Optional[Path] = None,
+    interactive: bool = True,
     settings: Optional[PatchSettings] = None,
 ) -> PatchSpec:
 
@@ -61,6 +62,7 @@ def create_patch_spec(
                 if background is not None
                 else settings.execution_settings.background
             ),
+            interactive=interactive,
         ),
     )
 
@@ -86,6 +88,7 @@ def patch_command(
     background: bool = False,
     dry_run: bool = False,
     entrypoint: Optional[Path] = None,
+    interactive: bool = True,
     settings: Optional[PatchSettings] = None,
 ) -> int | Popen[bytes]:
     spec = create_patch_spec(
@@ -96,6 +99,7 @@ def patch_command(
         background=background,
         dry_run=dry_run,
         entrypoint=entrypoint,
+        interactive=interactive,
         settings=settings,
     )
 

@@ -35,7 +35,7 @@ def test_build_smoke(tmp_path: Path):
     # We call the API directly to avoid CLI overhead
     print(f"Building in {repo_dir}")
 
-    ret = build_command(d=repo_dir)
+    ret = build_command(d=repo_dir, interactive=False)
 
     ret_code = 0
     if isinstance(ret, int):

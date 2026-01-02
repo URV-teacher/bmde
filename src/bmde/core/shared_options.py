@@ -58,6 +58,15 @@ DryRunOpt = Annotated[
     typer.Option("--dry-run", help="Simulate actions without executing", is_flag=True),
 ]
 
+InteractiveOpt = Annotated[
+    bool,
+    typer.Option(
+        "--interactive/--no-interactive",
+        help="Run in interactive mode (allocates TTY)",
+        default=True,
+    ),
+]
+
 LogFileOpt = Annotated[
     Optional[Path], typer.Option("-l", "--log-file", help="Path to log file (optional)")
 ]
@@ -313,4 +322,5 @@ __all__ = [
     "DockerNetworkOpt",
     "BackgroundOpt",
     "ShowConfigOpt",
+    "InteractiveOpt",
 ]

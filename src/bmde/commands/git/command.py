@@ -20,8 +20,8 @@ def create_git_spec(
     d: Optional[Path],
     arguments: Optional[list[str]] = None,
     backend: Optional[BackendOptions] = None,
-    background: Optional[bool] = None,
-    dry_run: Optional[bool] = None,
+    interactive: bool = True,
+    dry_run: bool = True,
     entrypoint: Optional[Path] = None,
     ssh_username: Optional[str] = None,
     ssh_password: Optional[str] = None,
@@ -90,22 +90,17 @@ def create_git_spec(
             ),
             arguments=arguments,
             dry_run=(
-                dry_run
-                if dry_run is not None
-                else (
-                    settings.execution_settings.dry_run
-                    if settings.execution_settings.dry_run is not None
-                    else False
-                )
+                dry_run if dry_run is not None else settings.execution_settings.dry_run
             ),
             background=(
-                background
-                if background is not None
-                else (
-                    settings.execution_settings.background
-                    if settings.execution_settings.background is not None
-                    else False
-                )
+                settings.execution_settings.background
+                if settings.execution_settings.background is not None
+                else False
+            ),
+            interactive=(
+                interactive
+                if interactive is not None
+                else settings.execution_settings.interactive
             ),
         ),
     )
@@ -117,6 +112,7 @@ def execute_git(spec: GitSpec) -> int | Popen[bytes]:
         ExecOptions(
             dry_run=spec.SpecExecOpts.dry_run,
             background=spec.SpecExecOpts.background,
+            interactive=spec.SpecExecOpts.interactive,
             entrypoint=spec.SpecExecOpts.entrypoint,
             arguments=spec.SpecExecOpts.arguments,
             backend=spec.SpecExecOpts.backend,
@@ -129,6 +125,7 @@ def git_command(
     arguments: Optional[list[str]] = None,
     backend: Optional[BackendOptions] = None,
     dry_run: bool = False,
+    interactive: bool = True,
     entrypoint: Optional[Path] = None,
     ssh_username: Optional[str] = None,
     ssh_password: Optional[str] = None,
@@ -150,6 +147,7 @@ def git_command(
         arguments=arguments,
         backend=backend,
         dry_run=dry_run,
+        interactive=interactive,
         entrypoint=entrypoint,
         ssh_username=ssh_username,
         ssh_password=ssh_password,

@@ -82,6 +82,7 @@ def create_debug_spec(
                     background=True,
                     entrypoint=settings.run.execution_settings.entrypoint,
                     arguments=arguments,
+                    interactive=False,
                 ),
             ),
         ),
@@ -109,6 +110,7 @@ def create_debug_spec(
                 if background is not None
                 else settings.execution_settings.background
             ),
+            interactive=(False),
         ),
     )
 

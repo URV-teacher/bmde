@@ -11,4 +11,5 @@ class ExecutionSettings(BaseModel):
     arguments: Optional[List[str]] = None
     background: Optional[bool] = False
     dry_run: Optional[bool] = False
+    interactive: bool = True
     backend: Optional[BackendOptions] = BackendOptions.DOCKER

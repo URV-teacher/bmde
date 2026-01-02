@@ -17,6 +17,7 @@ class ExecOptions:
     env: Optional[dict[str, str]] = None
     cwd: Optional[str] = None
     background: Optional[bool] = False
+    interactive: bool = True
     backend: Optional[BackendOptions] = None
     entrypoint: Optional[Path] = None
     arguments: Optional[list[str]] = None

@@ -12,4 +12,4 @@ log = logging.get_logger(__name__)
 
 class BuildService(Service[BuildSpecOpts, BuildBackend]):
     def __init__(self) -> None:
-        super().__init__([BackendOptions.HOST, BackendOptions.DOCKER], {BackendOptions.HOST: HostRunner(), BackendOptions.DOCKER: DockerRunner()})
+        super().__init__([BackendOptions.DOCKER, BackendOptions.HOST], {BackendOptions.HOST: HostRunner(), BackendOptions.DOCKER: DockerRunner()})

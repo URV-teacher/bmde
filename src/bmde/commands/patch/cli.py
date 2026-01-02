@@ -11,7 +11,7 @@ from bmde.core.shared_options import (
     EntrypointOpt,
     DryRunOpt,
     BackgroundOpt,
-    NdsRomOpt,
+    InteractiveOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -20,11 +20,11 @@ log = logging.get_logger(__name__)
 @app.command("patch")
 def patch_controller(
     ctx: typer.Context,
-    nds_rom: NdsRomOpt = None,
-    directory: DirectoryOpt = None,
     arguments: ArgumentsOpt = None,
+    directory: DirectoryOpt = None,
     backend: BackendOpt = None,
     background: BackgroundOpt = False,
+    interactive: InteractiveOpt = True,
     entrypoint: EntrypointOpt = None,
     dry_run: DryRunOpt = False,
 ) -> None:
@@ -32,32 +32,23 @@ def patch_controller(
 
     log.debug(
         "CLI options provided:\n"
-        f"- Directory: {str(directory)}\n"
-        f"- NDS ROM: {str(nds_rom)}\n"
         f"- Arguments: {str(arguments)}\n"
+        f"- Directory: {str(directory)}\n"
         f"- Backend: {str(backend)}\n"
         f"- Background: {str(background)}\n"
+        f"- Interactive: {str(interactive)}\n"
         f"- Entrypoint: {str(entrypoint)}\n"
         f"- Dry run: {str(dry_run)}\n"
     )
 
     settings: Settings = ctx.obj["settings"]
 
-    log.debug(
-        "Final settings for build command:\n"
-        f"- Directory: {str(directory)}\n"
-        f"- Arguments: {str(arguments)}\n"
-        f"- Backend: {str(backend if backend is not None else settings.patch.execution_settings.backend)}\n"
-        f"- Background: {str(background)}\n"
-        f"- Entrypoint: {str(entrypoint if entrypoint is not None else settings.patch.execution_settings.entrypoint)}\n"
-        f"- Dry run: {str(dry_run)}\n"
-    )
-
     ret = patch_command(
         d=directory,
         arguments=arguments,
         backend=backend,
         background=background,
+        interactive=interactive,
         entrypoint=entrypoint,
         dry_run=dry_run,
         settings=settings.patch,

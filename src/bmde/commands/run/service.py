@@ -16,7 +16,7 @@ log = logging.get_logger(__name__)
 class RunService(Service[RunSpecOpts, RunBackend]):
     def __init__(self) -> None:
         super().__init__(
-            [RunBackendName.HOST, RunBackendName.DOCKER, RunBackendName.FLATPAK],
+            [RunBackendName.DOCKER, RunBackendName.FLATPAK, RunBackendName.HOST],
             {
                 RunBackendName.HOST: HostRunner(),
                 RunBackendName.DOCKER: DockerRunner(),

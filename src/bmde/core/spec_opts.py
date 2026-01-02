@@ -11,5 +11,6 @@ class SpecExecOpts(BaseSpec):
     backend: BackendOptions
     background: bool
     dry_run: bool
+    interactive: bool
     entrypoint: Optional[Path]
     arguments: Optional[list[str]]

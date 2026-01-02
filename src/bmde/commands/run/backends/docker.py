@@ -1,15 +1,12 @@
 import subprocess
 
 from bmde.core import logging
-from bmde.core.docker import (
-    can_run_docker,
-    ensure_network_is_present,
-    docker_remove_network,
-)
+from bmde.core.docker import can_run_docker
 from bmde.core.exec import run_cmd, ExecOptions
-from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK
 from .backend import RunBackend
 from ..spec import RunSpecOpts
+from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK
+from bmde.core.docker import ensure_network_is_present, docker_remove_network
 
 log = logging.get_logger(__name__)
 
@@ -60,7 +57,9 @@ class DockerRunner(RunBackend):
             entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
         debug_opt = []
+        print("startingdebug block. debug is: " + str(spec.debug))
         if spec.debug:
+            print("spec debug")
             if spec.arm9_debug_port is not None:
                 debug_opt = [f"--arm9gdb-port={str(spec.arm9_debug_port)}"]
             else:
@@ -82,7 +81,12 @@ class DockerRunner(RunBackend):
             "run",
             "--pull=always",
             "--rm",
-            "-it",
+        ]
+
+        if exec_opts.interactive:
+            run_args += ["-it"]
+
+        run_args += [
             *network_opt,
             *mounts,
             *envs,

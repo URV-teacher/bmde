@@ -58,7 +58,12 @@ def _run_vpn(
         "--pull=always",
         "-d",
         "--rm",
-        "-it",
+    ]
+
+    if exec_opts.interactive:
+        run_args += ["-it"]
+
+    run_args += [
         "--name",
         container_name,
         "--cap-add",
@@ -200,7 +205,12 @@ class DockerRunner(GitBackend):
             "run",
             "--pull=always",
             "--rm",
-            "-it",
+        ]
+
+        if exec_opts.interactive:
+            run_args += ["-it"]
+
+        run_args += [
             *user_opt,
             *net,
             *mounts,

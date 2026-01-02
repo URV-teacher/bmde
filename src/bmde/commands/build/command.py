@@ -21,6 +21,7 @@ def create_build_spec(
     arguments: Optional[list[str]] = None,
     backend: Optional[BackendOptions] = None,
     background: bool = False,
+    interactive: bool = True,
     dry_run: bool = False,
     entrypoint: Optional[Path] = None,
     settings: Optional[BuildSettings] = None,
@@ -61,6 +62,11 @@ def create_build_spec(
                 if background is not None
                 else settings.execution_settings.background
             ),
+            interactive=(
+                interactive
+                if interactive is not None
+                else settings.execution_settings.interactive
+            ),
         ),
     )
 
@@ -74,9 +80,7 @@ def execute_build(spec: BuildSpec) -> int | Popen[bytes]:
         ExecOptions(
             dry_run=spec.SpecExecOpts.dry_run,
             background=spec.SpecExecOpts.background,
-            entrypoint=spec.SpecExecOpts.entrypoint,
-            arguments=spec.SpecExecOpts.arguments,
-            backend=spec.SpecExecOpts.backend,
+            interactive=spec.SpecExecOpts.interactive,
         ),
     )
 
@@ -86,6 +90,7 @@ def build_command(
     arguments: Optional[list[str]] = None,
     backend: Optional[BackendOptions] = None,
     background: bool = False,
+    interactive: bool = True,
     dry_run: bool = False,
     entrypoint: Optional[Path] = None,
     settings: Optional[BuildSettings] = None,
@@ -98,6 +103,7 @@ def build_command(
         arguments=arguments,
         backend=backend,
         background=background,
+        interactive=interactive,
         dry_run=dry_run,
         entrypoint=entrypoint,
         settings=settings,

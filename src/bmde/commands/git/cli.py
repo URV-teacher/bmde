@@ -24,6 +24,7 @@ from bmde.core.shared_options import (
     VpnCertOpt,
     VpnTestDnsOpt,
     VpnTestIpOpt,
+    InteractiveOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -37,6 +38,7 @@ def git_controller(
     backend: BackendOpt = None,
     entrypoint: EntrypointOpt = None,
     dry_run: DryRunOpt = False,
+    interactive: InteractiveOpt = True,
     ssh_username: SshUsernameOpt = None,
     ssh_password: SshPasswordOpt = None,
     ssh_host: SshHostOpt = None,
@@ -60,6 +62,7 @@ def git_controller(
         f"- Backend: {str(backend)}\n"
         f"- Entrypoint: {str(entrypoint)}\n"
         f"- Dry run: {str(dry_run)}\n"
+        f"- Interactive: {str(interactive)}\n"
         f"- SSH username: {obfuscate_text(ssh_username)}\n"
         f"- SSH password: {obfuscate_text(ssh_password)}\n"
         f"- SSH host: {obfuscate_text(ssh_host)}\n"
@@ -82,6 +85,7 @@ def git_controller(
         f"- Arguments: {str(arguments)}\n"
         f"- Directory: {str(directory)}\n"
         f"- Dry run: {str(dry_run)}\n"
+        f"- Interactive: {str(interactive)}\n"
         f"- Backend: {str(backend if backend is not None else settings.git.execution_settings.backend)}\n"
         f"- Entrypoint: {str(entrypoint if entrypoint is not None else settings.git.execution_settings.entrypoint)}\n"
         f"- SSH username: {obfuscate_text(ssh_username if ssh_username is not None else settings.git.ssh.username)}\n"
@@ -104,6 +108,7 @@ def git_controller(
         arguments=arguments,
         backend=backend,
         dry_run=dry_run,
+        interactive=interactive,
         entrypoint=entrypoint,
         ssh_username=ssh_username,
         ssh_password=ssh_password,

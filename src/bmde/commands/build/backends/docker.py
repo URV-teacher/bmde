@@ -20,8 +20,10 @@ class DockerRunner(BuildBackend):
         args = ["docker",
                     "run",
                     "--pull=always",  # Always update image to last version
-                    "--rm",  # Remove container after execution (one-off container)
-                    "-it"]  # Interactive mode with the container CLI
+                    "--rm"]  # Remove container after execution (one-off container)
+
+        if exec_opts.interactive:
+            args += ["-it"]  # Interactive mode with the container CLI
 
         if exec_opts.entrypoint:
             args += ["--entrypoint", str(exec_opts.entrypoint)]
