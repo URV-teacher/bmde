@@ -76,6 +76,7 @@ def execute_patch(spec: PatchSpec) -> int | Popen[bytes]:
             entrypoint=spec.SpecExecOpts.entrypoint,
             arguments=spec.SpecExecOpts.arguments,
             backend=spec.SpecExecOpts.backend,
+            interactive=spec.SpecExecOpts.interactive,
         ),
     )
 
