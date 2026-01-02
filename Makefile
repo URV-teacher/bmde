@@ -57,15 +57,15 @@ dev: src/bmde.egg-info/PKG-INFO  ## Install package and dev dependencies
 
 # ---- quality --------------------------------------------------------------
 
-lint: dev ## Run static checks (ruff + mypy)
+lint:  ## Run static checks (ruff + mypy)
 	@$(VENV_DIR)/bin/ruff check .
 	@$(VENV_DIR)/bin/mypy src
 
-fmt: dev ## Auto-format (black + ruff --fix)
+fmt:  ## Auto-format (black + ruff --fix)
 	@$(VENV_DIR)/bin/black src tests
 	@$(VENV_DIR)/bin/ruff check --fix .
 
-test: dev ## Run tests
+test:  ## Run tests
 	@PYTHONPATH=src $(VENV_DIR)/bin/pytest -s
 
 # ---- run ------------------------------------------------------------------
