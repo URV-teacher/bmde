@@ -51,7 +51,7 @@ def test_run_filesystem(tmp_path: Path):
 
     # 3. Patch
     print("Patching...")
-    ret = patch_command(d=repo_dir)
+    ret = patch_command(d=repo_dir, interactive=False)
     if isinstance(ret, subprocess.Popen):
         ret.wait()
         assert ret.returncode == 0, "Patch failed"

@@ -12,4 +12,4 @@ class ExecutionSettings(BaseModel):
     background: Optional[bool] = False
     dry_run: Optional[bool] = False
     interactive: bool = True
-    backend: Optional[BackendOptions] = BackendOptions.DOCKER
+    backend: Optional[BackendOptions] = None

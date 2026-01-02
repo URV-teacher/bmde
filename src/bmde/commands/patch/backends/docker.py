@@ -45,8 +45,13 @@ class DockerRunner(PatchBackend):
             "docker",
             "run",
             "--pull=always",
-            "--rm",
-            "-it",
+            "--rm"
+            ]
+
+        if exec_opts.interactive:
+            run_args += ["-it"]
+
+        run_args += [
             *mounts,
             *entry,
             *workdir_opt,
