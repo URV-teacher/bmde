@@ -27,7 +27,7 @@ class DockerRunner(RunBackend):
         ]
         envs = (
             []
-        )  # TODO: Balance logic with desmume docker entrypoint ["-e", f"ROM=/roms/{spec.nds.name}"]
+        )
         ports = []
         img_opt = []
         if spec.fat_image:
@@ -68,7 +68,6 @@ class DockerRunner(RunBackend):
             arguments = list(exec_opts.arguments)
 
         if spec.nds_rom is not None:
-            envs += ["-e", f"ROM=/roms/{spec.nds_rom.name}"]
             arguments += [f"/roms/{spec.nds_rom.name}"]
 
         network_opt: list[str] = []
