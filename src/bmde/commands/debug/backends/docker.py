@@ -65,7 +65,11 @@ class DockerRunner(DebugBackend):
             "--rm",
             "-it",
             "--network",
-            "bmde-debug",
+            (
+                spec.docker_network
+                if spec.docker_network
+                else DOCKER_DESMUME_DEBUG_NETWORK
+            ),
             "--cap-add=SYS_PTRACE",
             "--security-opt",
             "seccomp=unconfined",

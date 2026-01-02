@@ -28,6 +28,9 @@ class DockerRunner(RunBackend):
         envs = []
         ports = []
         img_opt = []
+        if spec.debug:
+            ports += ["-p", "1000:1000"]  # Expose desmume to host on debug mode
+
         if spec.fat_image:
             mounts += ["-v", f"{spec.fat_image}:/fs/fat.img:rw"]
             img_opt += ["--cflash-image", "/fs/fat.img"]
@@ -70,7 +73,7 @@ class DockerRunner(RunBackend):
 
         network_opt: list[str] = []
         if spec.debug:
-            network_opt += ["--name", "bmde-debug", "--network", spec.docker_network]
+            network_opt += ["--name", "desmume", "--network", spec.docker_network]
 
         run_args = [
             "docker",

@@ -677,6 +677,7 @@ data accepts each subcommand. Data that accepts each command is classified in th
 - [ ] implement container for graphical applications and update git container, edit container, desmume and insight
 - [ ] installations with ansible or similar of the components over the host, creating the methods install and uninstall 
       in each backend
+- [x] Hide sensible data in logger
 - [x] Write tests, at least to check that parameters are correctly going into place
 - [x] Arm syntax workflow auto-publish into VS Code market
 - [x] additional controls of desmume (needs compilation)

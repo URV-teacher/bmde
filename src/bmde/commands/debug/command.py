@@ -60,7 +60,11 @@ def create_debug_spec(
             docker_screen=(
                 docker_screen if docker_screen is not None else settings.docker_screen
             ),
-            docker_network=settings.docker_network,
+            docker_network=(
+                settings.docker_network
+                if settings.docker_network
+                else DOCKER_DESMUME_DEBUG_NETWORK
+            ),
             RunSpec=RunSpec(
                 RunSpecOpts=RunSpecOpts(
                     nds_rom=nds_resolved,
@@ -72,7 +76,11 @@ def create_debug_spec(
                         if settings.run.arm9_debug_port is not None
                         else port
                     ),
-                    docker_network=DOCKER_DESMUME_DEBUG_NETWORK,
+                    docker_network=(
+                        settings.run.docker_network
+                        if settings.run.docker_network
+                        else DOCKER_DESMUME_DEBUG_NETWORK
+                    ),
                 ),
                 SpecExecOpts=SpecExecOpts(
                     dry_run=dry_run,
@@ -112,7 +120,7 @@ def create_debug_spec(
                 if background is not None
                 else settings.execution_settings.background
             ),
-            interactive=(False),
+            interactive=False,
         ),
     )
 
