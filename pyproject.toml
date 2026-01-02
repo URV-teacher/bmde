@@ -32,6 +32,16 @@ dev = [
 [tool.hatch.version]
 source = "vcs"
 
+[tool.semantic_release]
+version_source = "tag"
+commit_version_number = true
+tag_format = "v{version}"
+
+[tool.semantic_release.commit_parser_options]
+allowed_tags = ["build", "chore", "ci", "docs", "feat", "fix", "perf", "style", "refactor", "test"]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf"]
+
 [tool.ruff]
 line-length = 120
 
