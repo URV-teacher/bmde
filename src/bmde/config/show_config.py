@@ -15,7 +15,7 @@ def get_settings(default_only: bool) -> str:
     toml_str = rtoml.dumps(settings.model_dump(mode="json", by_alias=True))
 
     # Post-process to comment out null values and add spacing
-    lines = []
+    lines: list[str] = []
     for i, line in enumerate(toml_str.splitlines()):
         stripped = line.strip()
 

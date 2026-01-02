@@ -22,7 +22,7 @@ class HostRunner(PatchBackend):
                 entry = "dlditool"
             else:
                 entry = dlditool_path
-        args = [entry, str(spec.d)]
+        args = [entry, str(spec.nds_rom)]
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)
         return run_cmd(args, exec_opts)

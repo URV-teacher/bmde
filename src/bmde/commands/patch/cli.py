@@ -10,7 +10,8 @@ from bmde.core.shared_options import (
     BackendOpt,
     EntrypointOpt,
     DryRunOpt,
-    BackgroundOpt, NdsRomOpt,
+    BackgroundOpt,
+    NdsRomOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -25,7 +26,7 @@ def patch_controller(
     backend: BackendOpt = None,
     background: BackgroundOpt = False,
     entrypoint: EntrypointOpt = None,
-    dry_run: DryRunOpt = False
+    dry_run: DryRunOpt = False,
 ) -> None:
     """dlditool wrapper. Patches a NDS ROM for FAT usage."""
 

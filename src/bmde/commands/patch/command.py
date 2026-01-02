@@ -36,9 +36,7 @@ def create_patch_spec(
         settings = PatchSettings()
 
     return PatchSpec(
-        PatchSpecOpts=PatchSpecOpts(
-            nds_rom=nds_resolved
-        ),
+        PatchSpecOpts=PatchSpecOpts(nds_rom=nds_resolved),
         SpecExecOpts=SpecExecOpts(
             backend=(
                 backend

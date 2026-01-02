@@ -32,7 +32,7 @@ def read_toml(path: Path) -> dict[str, str]:
         return settings
 
 
-def env_config(prefix: str = "TOT_") -> dict[str, dict[str, str]]:
+def env_config(prefix: str = "BMDE_") -> dict[str, dict[str, str]]:
     """
     Reads the configuration from the environment and returns it as a nested dictionary of the read subcommands.
 
@@ -42,7 +42,7 @@ def env_config(prefix: str = "TOT_") -> dict[str, dict[str, str]]:
     Returns:
         Nested dictionary. The first key is the word after the first _ of the name of the system variable in lowercase,
         which represents the subcommand name (run, build...) and the second key is the rest of the name of the system
-        variable in lowercase. The value is the value of the property. (e.g., TOT_RUN_ENVIRONMENT=docker -->
+        variable in lowercase. The value is the value of the property. (e.g., BMDE_RUN_ENVIRONMENT=docker -->
         env[RUN][ENVIRONMENT] = docker)
 
     """
@@ -86,7 +86,7 @@ def merge(a: dict[Any, Any], b: dict[Any, Any]) -> dict[Any, Any]:
 def load_settings(explicit_config: Path | None = None) -> Settings:
     """
     Loads settings following the priority:
-    1. Environment variables: Variables prefixed with TOT_ENVIRONMENT
+    1. Environment variables: Variables prefixed with BMDE_ENVIRONMENT
     2. /etc/bmde/bmde.toml
     3. ~/.config/bmde/bmde.toml
     4. bmde.toml from the repository
@@ -96,7 +96,7 @@ def load_settings(explicit_config: Path | None = None) -> Settings:
     come from CLI arguments.
 
     Args:
-        explicit_config: Path to a run-specific TOT's TOML configuration file.
+        explicit_config: Path to a run-specific BMDE's TOML configuration file.
 
     Returns:
         Settings object with the configuration from all subcommands.

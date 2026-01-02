@@ -1,2 +1,0 @@
-# This file is deprecated. Use pyproject.toml and uv.
-# Run: uv sync

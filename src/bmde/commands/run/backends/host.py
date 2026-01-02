@@ -15,7 +15,9 @@ class HostRunner(RunBackend):
         return self.check()
 
     def check(self) -> bool:
-        available = is_command_available("desmume") or is_command_available("desmume-cli")
+        available = is_command_available("desmume") or is_command_available(
+            "desmume-cli"
+        )
         if not available:
             log.error("desmume or desmume-cli not found in PATH.")
         return available

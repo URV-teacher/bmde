@@ -20,24 +20,40 @@ PIP        := $(VENV_DIR)/bin/pip
 
 PKG_NAME   := bmde
 
+# ---- build ----------------------------------------------------------------
+
+dist: $(VENV_DIR)/bin/pyproject-build ## Build source and wheel distribution
+	@$(PYTHON) -m build
+
 # ---- helpers --------------------------------------------------------------
-install: $(VENV_DIR)/bin/bmde  ## Installs package into the venv
 
-$(VENV_DIR)/bin/bmde: $(VENV_DIR)/bin/python  ## Installs package into the venv
-	@$(PIP) install -e .
-
-$(VENV_DIR)/bin/python:  ## internal: create venv if missing
+# Create virtualenv
+$(VENV_DIR)/bin/python:
 	@$(PYTHON_BIN) -m venv "$(VENV_DIR)"
 	@$(PYTHON_BIN) -m pip install --upgrade pip
 
-venv: $(VENV_DIR)/bin/python  ## Create virtualenv (.venv) and upgrade pip
-	@echo "✅ venv ready at $(VENV_DIR)"
+# Install runtime dependencies (creates bmde executable)
+$(VENV_DIR)/bin/bmde: $(VENV_DIR)/bin/python pyproject.toml
+	@$(PIP) install -e .
 
-dev: $(VENV_DIR)/bin/python ## Installs package and dev deps into the venv
+# Install dev dependencies
+# We use PKG-INFO as the target because pip updates it when dependencies change.
+# This avoids the loop where 'make fmt && make lint' rebuilds twice because binaries
+# like 'bin/ruff' might not have their timestamp updated by pip if they are already present.
+src/bmde.egg-info/PKG-INFO: $(VENV_DIR)/bin/python pyproject.toml
 	@$(PIP) install -e ".[dev]"
 
-install_build: venv
+# Install build tool
+$(VENV_DIR)/bin/pyproject-build: $(VENV_DIR)/bin/python
 	@$(PIP) install build
+
+# Phony aliases
+venv: $(VENV_DIR)/bin/python  ## Create virtualenv
+	@echo "✅ venv ready at $(VENV_DIR)"
+
+install: $(VENV_DIR)/bin/bmde  ## Install package in editable mode
+
+dev: src/bmde.egg-info/PKG-INFO  ## Install package and dev dependencies
 
 # ---- quality --------------------------------------------------------------
 
@@ -46,15 +62,11 @@ lint: dev ## Run static checks (ruff + mypy)
 	@$(VENV_DIR)/bin/mypy src
 
 fmt: dev ## Auto-format (black + ruff --fix)
+	@$(VENV_DIR)/bin/black src tests
 	@$(VENV_DIR)/bin/ruff check --fix .
 
 test: dev ## Run tests
 	@PYTHONPATH=src $(VENV_DIR)/bin/pytest -s
-
-# ---- build ----------------------------------------------------------------
-
-dist: install_build ## Build source and wheel distribution
-	@$(PYTHON) -m build
 
 # ---- run ------------------------------------------------------------------
 

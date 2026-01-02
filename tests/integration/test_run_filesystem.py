@@ -11,6 +11,7 @@ from bmde.commands.patch.command import patch_command
 from bmde.commands.run.command import run_command
 from bmde.core.logging import setup_logging
 
+
 def test_run_filesystem(tmp_path: Path):
     """
     Integration test for the run command with filesystem interaction.
@@ -26,7 +27,7 @@ def test_run_filesystem(tmp_path: Path):
     # Prerequisites
     if not shutil.which("git"):
         pytest.skip("git not found")
-    
+
     # 1. Clone
     repo_url = "https://github.com/URV-teacher/filesystem-nds"
     repo_dir = tmp_path / "filesystem-nds"
@@ -59,7 +60,9 @@ def test_run_filesystem(tmp_path: Path):
 
     # 4. Prepare FAT image
     print("Downloading FAT image...")
-    fat_zip_url = "https://raw.githubusercontent.com/URV-teacher/desmume-docker/master/fs/fat.zip"
+    fat_zip_url = (
+        "https://raw.githubusercontent.com/URV-teacher/desmume-docker/master/fs/fat.zip"
+    )
     fat_zip_path = tmp_path / "fat.zip"
     try:
         urllib.request.urlretrieve(fat_zip_url, fat_zip_path)
@@ -67,15 +70,15 @@ def test_run_filesystem(tmp_path: Path):
         pytest.fail(f"Failed to download FAT image: {e}")
 
     print("Extracting FAT image...")
-    with zipfile.ZipFile(fat_zip_path, 'r') as zip_ref:
+    with zipfile.ZipFile(fat_zip_path, "r") as zip_ref:
         zip_ref.extractall(tmp_path)
-    
+
     # Locate extracted .img file
     fat_imgs = list(tmp_path.glob("*.img"))
     if not fat_imgs:
         # Try looking inside extracted folders if any
         fat_imgs = list(tmp_path.rglob("*.img"))
-    
+
     assert len(fat_imgs) > 0, "No .img file found in extracted zip"
     fat_img_path = fat_imgs[0]
     print(f"Using FAT image: {fat_img_path}")
@@ -83,11 +86,7 @@ def test_run_filesystem(tmp_path: Path):
     # 5. Run
     print("Running emulator...")
     # Run in background so we can stop it
-    proc = run_command(
-        nds_rom=nds_file,
-        fat_image=fat_img_path,
-        background=True
-    )
+    proc = run_command(nds_rom=nds_file, fat_image=fat_img_path, background=True)
 
     # Wait for emulation to start and write to file
     # The ROM is simple, it should write quickly.
@@ -101,11 +100,13 @@ def test_run_filesystem(tmp_path: Path):
             proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
             proc.kill()
-    
+
     # 6. Verify content
     print("Verifying output...")
-    expected_text = "Hola, este es un test en DeSmuME.\nProbando escritura en archivo.\n"
-    
+    expected_text = (
+        "Hola, este es un test en DeSmuME.\nProbando escritura en archivo.\n"
+    )
+
     # Method A: mtools (preferred if available)
     if shutil.which("mtype"):
         print("Using mtools to verify...")
@@ -114,7 +115,7 @@ def test_run_filesystem(tmp_path: Path):
             result = subprocess.run(
                 ["mtype", "-i", str(fat_img_path), "::output.txt"],
                 capture_output=True,
-                text=True
+                text=True,
             )
             if result.returncode == 0:
                 content = result.stdout
@@ -133,11 +134,11 @@ def test_run_filesystem(tmp_path: Path):
     print("Using binary search to verify...")
     with open(fat_img_path, "rb") as f:
         data = f.read()
-        
+
     # The text in the file might use \n or \r\n. The expected string has \n.
     # We search for the main sentence.
     search_phrase = "Hola, este es un test en DeSmuME".encode("utf-8")
-    
+
     if search_phrase in data:
         print("Verification successful (binary search)!")
     else:

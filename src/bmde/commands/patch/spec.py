@@ -10,8 +10,6 @@ class PatchSpecOpts(BaseSpec):
     nds_rom: Path
 
 
-
-
 @dataclass
 class PatchSpec(BaseSpec):
     SpecExecOpts: SpecExecOpts
