@@ -83,7 +83,7 @@ def test_run_filesystem(tmp_path: Path):
 
     assert len(fat_imgs) > 0, "No .img file found in extracted zip"
     fat_img_path = fat_imgs[0]
-    os.chmod(fat_img_path, 0o644)
+    os.chmod(fat_img_path, 0o777)
     print(f"Using FAT image: {fat_img_path}")
 
     # 5. Run
