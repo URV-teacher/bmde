@@ -66,7 +66,7 @@ fmt:  ## Auto-format (black + ruff --fix)
 	@$(VENV_DIR)/bin/ruff check --fix .
 
 test:  ## Run tests
-	@PYTHONPATH=src $(VENV_DIR)/bin/pytest -s
+	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_DIR)/bin/pytest -s
 
 # ---- run ------------------------------------------------------------------
 
