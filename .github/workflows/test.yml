@@ -28,6 +28,11 @@ jobs:
       - name: Install Dependencies
         run: make dev
 
+      - name: Configure BMDE logging
+        run: |
+          echo "[logging]" > bmde.toml
+          echo 'level = "trace"' >> bmde.toml
+
       - name: Run Tests
         run: |
               export SDL_VIDEODRIVER=dummy
