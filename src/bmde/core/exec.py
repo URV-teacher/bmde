@@ -31,7 +31,7 @@ def run_cmd(cmd: list[str], opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         pretty = " ".join(cmd)
         args = cmd
 
-    log.trace("exec: %s", pretty)
+    log.debug("exec: %s", pretty)
     if opts.dry_run:
         log.info("[dry-run] %s", pretty)
         return 0
