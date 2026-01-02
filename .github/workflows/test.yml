@@ -29,4 +29,8 @@ jobs:
         run: make dev
 
       - name: Run Tests
-        run: make test
+        run: |
+              export SDL_VIDEODRIVER=dummy
+              export SDL_AUDIODRIVER=dummy
+              export XDG_RUNTIME_DIR=/tmp
+              make test
