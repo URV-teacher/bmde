@@ -25,9 +25,7 @@ class DockerRunner(RunBackend):
             "-v",
             "desmume_docker_config:/home/desmume/.config/desmume",
         ]
-        envs = (
-            []
-        )
+        envs = []
         ports = []
         img_opt = []
         if spec.fat_image:

@@ -41,12 +41,7 @@ class DockerRunner(PatchBackend):
                 f"/input/{os.path.basename(spec.nds_rom.parent)}/{os.path.basename(spec.nds_rom)}",
             ]
 
-        run_args = [
-            "docker",
-            "run",
-            "--pull=always",
-            "--rm"
-            ]
+        run_args = ["docker", "run", "--pull=always", "--rm"]
 
         if exec_opts.interactive:
             run_args += ["-it"]

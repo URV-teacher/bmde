@@ -88,7 +88,10 @@ def test_run_filesystem(tmp_path: Path):
     print("Running emulator...")
     # Run in background so we can stop it
     proc = run_command(
-        nds_rom=nds_file, fat_image=fat_img_path, interactive=False, graphical_output=DockerOutputOptions.VNC
+        nds_rom=nds_file,
+        fat_image=fat_img_path,
+        interactive=False,
+        graphical_output=DockerOutputOptions.VNC,
     )
 
     # Wait for emulation to start and write to file

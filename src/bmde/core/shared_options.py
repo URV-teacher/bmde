@@ -61,9 +61,8 @@ DryRunOpt = Annotated[
 InteractiveOpt = Annotated[
     bool,
     typer.Option(
-        "--interactive/--no-interactive",
+        "--interactive",
         help="Run in interactive mode (allocates TTY)",
-        default=True,
     ),
 ]
 
@@ -143,7 +142,7 @@ PortOpt = Annotated[
 DockerNetworkOpt = Annotated[
     Optional[DockerOutputOptions],
     typer.Option(
-        "-n",
+        "-N",
         "--docker-network",
         "--network",
         help='Name of the Docker network to use when using the "docker" environment',
@@ -165,7 +164,7 @@ DockerScreenOpt = Annotated[
 
 BackgroundOpt = Annotated[
     bool,
-    typer.Option("-b", "--background", help="Run background", is_flag=True),
+    typer.Option("-B", "--background", help="Run background", is_flag=True),
 ]
 
 NdsRomOpt = Annotated[
