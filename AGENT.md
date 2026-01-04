@@ -14,11 +14,8 @@ Always use full type annotations, generics, and other modern practices.
 - Important: BE SURE you read and understand the project setup by reading the
   pyproject.toml file and the Makefile.
 
-- ALWAYS use uv for running all code and managing dependencies.
+- ALWAYS use `pip` for running all code and managing dependencies.
   Never use direct `pip` or `python` commands.
-
-- Use modern uv commands: `uv sync`, `uv run ...`, etc.
-  Prefer `uv add` over `uv pip install`.
 
 - You may use the following shortcuts
   ```shell
@@ -37,9 +34,6 @@ Always use full type annotations, generics, and other modern practices.
   # Run uv sync, lint, and test in one command:
   make
   ```
-
-- The usual `make test` like standard pytest does not show test output.
-  Run individual tests and see output with `uv run pytest -s some/file.py`.
 
 - Always run `make lint` and `make test` to check your code after changes.
 
