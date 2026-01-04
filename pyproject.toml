@@ -14,11 +14,7 @@ dependencies = [
     "typer>=0.9.0",
     "pydantic>=2.0.0",
     "rich>=13.0.0",
-    "toml>=0.10.0",
-    "docker>=6.0.0",
-    "mkdocs-material>=9.0.0",
-    "mkdocs>=1.5.0",
-    "pymdown-extensions>=10.0",
+    "rtoml"
 ]
 
 [project.scripts]
@@ -32,7 +28,10 @@ dev = [
   "pre-commit",
   "build",
   "hatchling",
-  "hatch-vcs"
+  "hatch-vcs",
+  "mkdocs-material>=9.0.0",
+  "mkdocs>=1.5.0",
+  "pymdown-extensions>=10.0",
 ]
 
 [tool.hatch.version]
