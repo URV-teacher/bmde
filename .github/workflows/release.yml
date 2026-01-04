@@ -22,4 +22,4 @@ jobs:
           git_committer_name: "github-actions"
           git_committer_email: "actions@github.com"
           commit: false
-          push: false
+          push: true
