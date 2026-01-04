@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v1.1.1 (2026-01-04)
+
+### Removed
+
+- Uv dependency (we will revert it back when uv is more mature)
+  ([`e81dc57`](https://github.com/URV-teacher/bmde/commit/e81dc57227fb84e10de3558e72f607c2d84c7858))
+
+
 ## v1.1.0 (2026-01-04)
 
 ### Added
