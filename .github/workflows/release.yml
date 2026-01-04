@@ -18,7 +18,7 @@ jobs:
       - name: Python Semantic Release
         uses: python-semantic-release/python-semantic-release@v9.16.1
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           git_committer_name: "github-actions"
           git_committer_email: "actions@github.com"
           commit: false
