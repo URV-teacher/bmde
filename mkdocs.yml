@@ -1,0 +1,58 @@
+site_name: BMDE
+site_description: Bare Metal Development Environment CLI
+site_author: URV Teachers
+repo_url: https://github.com/URV-teacher/bmde
+repo_name: URV-teacher/bmde
+edit_uri: edit/master/docs/
+
+theme:
+  name: readthedocs
+  logo: assets/logo.webp
+  favicon: assets/logo.webp
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.follow
+    - content.code.copy
+    - content.action.edit
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Usage: getting-started/usage.md
+  - Components:
+    - Run: components/run.md
+    - Build: components/build.md
+    - Patch: components/patch.md
+    - Git: components/git.md
+    - Edit: components/edit.md
+    - Debug: components/debug.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Architecture: development/architecture.md

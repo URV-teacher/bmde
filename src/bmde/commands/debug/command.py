@@ -9,6 +9,7 @@ from pathlib import Path
 from subprocess import Popen
 from typing import Optional
 
+
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
 from .service import DebugService
@@ -38,7 +39,7 @@ def create_debug_spec(
     docker_screen: Optional[DockerOutputOptions] = None,
     dry_run: bool = False,
     entrypoint: Optional[Path] = None,
-    port: int = 1000,
+    port: int = 1024,
     settings: Optional[DebugSettings] = None,
 ) -> DebugSpec:
     if settings is None:
@@ -72,9 +73,13 @@ def create_debug_spec(
                     graphical_output=settings.run.graphical_output,
                     debug=True,
                     arm9_debug_port=(
-                        settings.run.arm9_debug_port
-                        if settings.run.arm9_debug_port is not None
-                        else port
+                        port
+                        if port is not None
+                        else (
+                            settings.run.arm9_debug_port
+                            if settings.run.arm9_debug_port is not None
+                            else 1024
+                        )
                     ),
                     docker_network=(
                         settings.run.docker_network
@@ -145,6 +150,7 @@ def execute_debug(spec: DebugSpec) -> int | Popen[bytes]:
             entrypoint=spec.SpecExecOpts.entrypoint,
             arguments=spec.SpecExecOpts.arguments,
             backend=spec.SpecExecOpts.backend,
+            interactive=spec.SpecExecOpts.interactive,
         ),
     )
 
@@ -163,7 +169,7 @@ def debug_command(
     docker_screen: Optional[DockerOutputOptions] = None,
     dry_run: bool = False,
     entrypoint: Optional[Path] = None,
-    port: int = 1000,
+    port: int = 1024,
     settings: Optional[DebugSettings] = None,
 ) -> int | Popen[bytes]:
 
@@ -171,6 +177,8 @@ def debug_command(
         full_settings = load_settings()
         configure_logging_from_settings(settings=full_settings)
         settings = full_settings.debug
+
+    log.debug("Settings for debug command:\n" f"- {str(settings)}\n")
 
     spec = create_debug_spec(
         nds=nds,
@@ -184,5 +192,7 @@ def debug_command(
         port=port,
         settings=settings,
     )
+
+    log.debug("Spec for debug command:\n" f"- {str(settings)}\n")
 
     return execute_debug(spec)

@@ -80,9 +80,12 @@ def execute_build(spec: BuildSpec) -> int | Popen[bytes]:
     return BuildService().run(
         spec.BuildSpecOpts,
         ExecOptions(
+            arguments=spec.SpecExecOpts.arguments,
             dry_run=spec.SpecExecOpts.dry_run,
             background=spec.SpecExecOpts.background,
             interactive=spec.SpecExecOpts.interactive,
+            backend=spec.SpecExecOpts.backend,
+            entrypoint=spec.SpecExecOpts.entrypoint
         ),
     )
 

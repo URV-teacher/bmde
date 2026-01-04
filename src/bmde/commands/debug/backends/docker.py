@@ -25,10 +25,10 @@ class DockerRunner(DebugBackend):
         docker_img = "aleixmt/insight:latest"
         mounts = [
             "-v",
-            f"{spec.elf.parent}:/roms:ro",
+            f"{spec.elf.parent}:/input:ro",
         ]
-        envs = ["-e", f"ROM=/roms/{spec.elf.name}"]
-        ports = ["-p", "1000:1000"]
+        envs = []
+        ports = []
 
         if spec.docker_screen == "host":
             mounts += ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
@@ -53,10 +53,15 @@ class DockerRunner(DebugBackend):
 
         arguments: list[str] = []
         if spec.elf is not None:
-            arguments += [f"/roms/{spec.elf.name}"]
+            arguments += [f"/input/{spec.elf.name}"]
 
         if exec_opts.arguments is not None:
             arguments += list(exec_opts.arguments)
+
+        docker_net = DOCKER_DESMUME_DEBUG_NETWORK
+        if spec.docker_network is not None:
+            docker_net = spec.docker_network
+        network = ["--network", docker_net]
 
         run_args = [
             "docker",
@@ -64,15 +69,10 @@ class DockerRunner(DebugBackend):
             "--pull=always",
             "--rm",
             "-it",
-            "--network",
-            (
-                spec.docker_network
-                if spec.docker_network
-                else DOCKER_DESMUME_DEBUG_NETWORK
-            ),
             "--cap-add=SYS_PTRACE",
             "--security-opt",
             "seccomp=unconfined",
+            *network,
             *mounts,
             *envs,
             *ports,
@@ -81,10 +81,11 @@ class DockerRunner(DebugBackend):
             *arguments,
         ]
 
-        ensure_network_is_present(DOCKER_DESMUME_DEBUG_NETWORK)
+        ensure_network_is_present(docker_net)
 
         handle = run_cmd(run_args, exec_opts)
 
-        docker_remove_network(DOCKER_DESMUME_DEBUG_NETWORK)
+        if not exec_opts.background:
+            docker_remove_network(docker_net)
 
         return handle

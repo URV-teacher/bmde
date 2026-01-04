@@ -5,16 +5,20 @@ build-backend = "hatchling.build"
 [project]
 name = "bmde"
 dynamic = ["version"]
-description = "CLI for NDS development for the practical exercises of Computers"
+description = "Bare Metal Development Environment CLI; for NDS development for the practical exercises of Computers"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{name="AleixMT"}]
 license = {text="GPL-3.0-or-later"}
 dependencies = [
-  "typer",
-  "pydantic",
-  "rtoml",
-  "rich",
+    "typer>=0.9.0",
+    "pydantic>=2.0.0",
+    "rich>=13.0.0",
+    "toml>=0.10.0",
+    "docker>=6.0.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocs>=1.5.0",
+    "pymdown-extensions>=10.0",
 ]
 
 [project.scripts]
@@ -26,7 +30,9 @@ dev = [
   "mypy",
   "ruff",
   "pre-commit",
-  "build"
+  "build",
+  "hatchling",
+  "hatch-vcs"
 ]
 
 [tool.hatch.version]
@@ -38,9 +44,10 @@ commit_version_number = true
 tag_format = "v{version}"
 
 [tool.semantic_release.commit_parser_options]
-allowed_tags = ["build", "chore", "ci", "docs", "feat", "fix", "perf", "style", "refactor", "test"]
-minor_tags = ["feat"]
-patch_tags = ["fix", "perf"]
+allowed_tags = ["ADDED", "UPDATED", "REMOVED", "FIXED", "RELEASED"]
+minor_tags = ["ADDED", "UPDATED"]
+patch_tags = ["FIXED", "REMOVED"]
+major_tags = ["RELEASED"]
 
 [tool.ruff]
 line-length = 120

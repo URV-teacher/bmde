@@ -30,7 +30,7 @@ def debug_controller(
     backend: BackendOpt = None,
     background: BackgroundOpt = False,
     entrypoint: EntrypointOpt = None,
-    port: PortOpt = 1000,
+    port: PortOpt = 1024,
     dry_run: DryRunOpt = False,
 ) -> None:
     """desmume wrapper. Runs an NDS ROM."""

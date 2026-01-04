@@ -85,6 +85,12 @@ clean:  ## Remove build/test artifacts
 
 .PHONY: venv lint fmt test run clean help dist install dev
 
+docs-serve:
+	@$(PYTHON) -m mkdocs serve
+
+docs-build:
+	@$(PYTHON) -m mkdocs build
+
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'

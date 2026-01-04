@@ -14,6 +14,6 @@ class RunSettings(BaseModel):
     execution_settings: ExecutionSettings = ExecutionSettings()
 
     debug: Optional[bool] = False
-    arm9_debug_port: Optional[int] = 1000
+    arm9_debug_port: Optional[int] = 1024
     fat_image: Optional[Path] = None
     docker_network: Optional[str] = DOCKER_DESMUME_DEBUG_NETWORK

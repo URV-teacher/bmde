@@ -29,7 +29,7 @@ def run_controller(
     nds_rom: NdsRomOpt = None,
     directory: DirectoryOpt = None,
     arguments: ArgumentsOpt = None,
-    arm9_debug_port: PortOpt = 1000,
+    arm9_debug_port: PortOpt = 1024,
     backend: BackendOpt = None,
     background: BackgroundOpt = False,
     interactive: InteractiveOpt = True,

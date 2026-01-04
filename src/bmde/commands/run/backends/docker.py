@@ -29,7 +29,7 @@ class DockerRunner(RunBackend):
         ports = []
         img_opt = []
         if spec.debug:
-            ports += ["-p", "1000:1000"]  # Expose desmume to host on debug mode
+            ports += ["-p", "1024:1024"]  # Expose desmume to host on debug mode
 
         if spec.fat_image:
             mounts += ["-v", f"{spec.fat_image}:/fs/fat.img:rw"]
@@ -60,9 +60,9 @@ class DockerRunner(RunBackend):
         debug_opt = []
         if spec.debug:
             if spec.arm9_debug_port is not None:
-                debug_opt = [f"--arm9gdb-port={str(spec.arm9_debug_port)}"]
+                debug_opt = [f"--arm9gdb={str(spec.arm9_debug_port)}"]
             else:
-                debug_opt = ["--arm9gdb-port=1000"]
+                debug_opt = ["--arm9gdb=1024"]
 
         arguments: list[str] = []
         if exec_opts.arguments is not None:
