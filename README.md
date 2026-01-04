@@ -33,6 +33,8 @@
     <a href="https://github.com/URV-teacher/bmde/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     &middot;
     <a href="https://github.com/URV-teacher/bmde/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    &middot;
+    <a href=https://github.com/orgs/URV-teacher/projects/3></a>
   </p>
 </div>
 
@@ -668,40 +670,8 @@ data accepts each subcommand. Data that accepts each command is classified in th
 
 <!-- ROADMAP -->
 ## Roadmap
-- [ ] Use spec for function interfaces, so they have less arguments
-- [ ] implement container for graphical applications and update git container, edit container, desmume and insight
-- [ ] Repo VS Code custom, dockerfile VS Code 
-- [ ] edit command
-- [ ] mount logs
-- [ ] debug command --> Done but it does not work due to the version probably
-- [ ] installations with ansible or similar of the components over the host, creating the methods install and uninstall 
-      in each backend
-- [ ] check command
-- [ ] Create docs
-- [ ] Move heavy parts of the readme into docs
-- [ ] Abstract common code for host
-- [ ] gdb-multiarch container
-- [ ] Find a way to change metadata of original path compilation for the debugger
-- [ ] Abstract common code for Docker, maybe using Docker lib in python
-- [x] Change the usage of ROM var into args, prioritize similarity to the actual binary
-- [x] Hide sensible data in logger
-- [x] Write tests, at least to check that parameters are correctly going into place
-- [x] Arm syntax workflow auto-publish into VS Code market
-- [x] additional controls of desmume (needs compilation)
-- [ ] icon of tot inside the devkitarm
-- [x] configuration defaults from bmde from desmume --> retained config into named volume, but wontfix, is actually not 
-  that interesting
-- [x] awesome readme with logo
-- [x] dev / test dependencies
-- [x] Explore linting tools black and ruff and automate them
-- [x] Reestructure CLI.py in a folder with a file for each command
-- [x] Create common options for Exec options (entrypoint, dryrun, background), also in settings 
-- [x] Implement sane defaults, leaving all of None in the needed parts of the code
-- [x] Complete all arguments and options
-- [x] AI coding agent
 
-
-See the [open issues][issues-url] for a full list of proposed features (and known issues).
+See the [project roadmap][roadmap-url] for a full list of proposed features, known [issues][issues-url] and its implementation state.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -792,6 +762,7 @@ The teachers of URV who have collaborated.
 [docker-installation-guide]: https://docs.docker.com/engine/install/ubuntu/
 [devkitarm-bin]: https://wii.leseratte10.de/devkitPro/devkitARM/r46%20%282017%29/devkitARM_r46-x86_64-linux.tar.bz2
 [aleixmt-github-profile]: https://github.com/AleixMT
+[roadmap-url]: https://github.com/orgs/URV-teacher/projects/3
 
 [Python]: https://img.shields.io/badge/Python-%230db7ed.svg?style=for-the-badge&logo=python&logoColor=blue
 [python-url]: https://www.python.org/

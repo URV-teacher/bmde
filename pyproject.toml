@@ -43,9 +43,12 @@ version_source = "tag"
 commit_version_number = true
 tag_format = "v{version}"
 
+[tool.semantic_release.changelog]
+mode = "update"
+
 [tool.semantic_release.commit_parser_options]
-allowed_tags = ["ADDED", "UPDATED", "REMOVED", "FIXED", "RELEASED"]
-minor_tags = ["ADDED", "UPDATED"]
+allowed_tags = ["ADDED", "UPDATED", "REMOVED", "FIXED", "RELEASED", "CHANGED"]
+minor_tags = ["ADDED", "UPDATED", "CHANGED"]
 patch_tags = ["FIXED", "REMOVED"]
 major_tags = ["RELEASED"]
 
