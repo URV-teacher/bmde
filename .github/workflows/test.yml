@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  quality:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
