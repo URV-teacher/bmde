@@ -11,6 +11,7 @@
 [![Testing PyTest)][pytest-shield]][pytest-url]
 [![Style (Ruff)][ruff-shield]][ruff-url]
 [![PyPI][pypi-shield]][pypi-url]
+[![Docs][docs-shield]][docs-url]
 
 
 <!-- PROJECT LOGO -->
@@ -67,47 +68,8 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li>
-      <a href="#components">Components</a>
-      <ul>
-        <li>
-          <a href="#bmde-run">bmde run</a>
-          <ul>
-            <li><a href="#mandatory-arguments">Mandatory arguments</a></li>
-            <li><a href="#optional-arguments">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#bmde-build">bmde build</a>
-          <ul>
-             <li><a href="#mandatory-arguments-1">Mandatory arguments</a></li>
-             <li><a href="#optional-arguments-1">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#bmde-patch">bmde patch</a>
-          <ul>
-             <li><a href="#mandatory-arguments-2">Mandatory arguments</a></li>
-             <li><a href="#optional-arguments-2">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#bmde-git">bmde git</a>
-          <ul>
-             <li><a href="#mandatory-arguments-3">Mandatory arguments</a></li>
-             <li><a href="#optional-arguments-3">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#bmde-edit">bmde edit</a>
-          <ul>
-             <li><a href="#mandatory-arguments-4">Mandatory arguments</a></li>
-             <li><a href="#optional-arguments-4">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li><a href="#bmde-debug">bmde debug</a></li>
-      </ul>
+      <a href="#roadmap">Roadmap</a>
     </li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -129,6 +91,7 @@ the development of the practical exercises from the subject Computers, Operating
 Computer Fundamentals from the university degree of Computer Engineering in the University Rovira i Virgili (URV).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 
 ## General features
@@ -166,6 +129,7 @@ repo, specific
 configuration args for the execution.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 
 ### Built With
@@ -300,7 +264,6 @@ Proudly distributed with love under the GNU GPLv3 License. See `LICENSE` for mor
 
 The teachers of URV who have collaborated.
 
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -331,7 +294,8 @@ The teachers of URV who have collaborated.
 [docs-installation]: https://urv-teacher.github.io/bmde/
 [docs-usage]: https://urv-teacher.github.io/bmde/
 [contributing-url]: https://github.com/URV-teacher/bmde/blob/master/CONTRIBUTING.md
-
+[docs-shield]: https://github.com/URV-teacher/bmde/actions/workflows/docs.yml/badge.svg
+[docs-url]: https://github.com/URV-teacher/bmde/actions/workflows/docs.yml
 
 [flathub-setup-url]: https://flathub.org/en/setup
 [Flathub]: https://img.shields.io/badge/Flathub-%234a90d9.svg?style=for-the-badge&logo=flathub&logoColor=white
