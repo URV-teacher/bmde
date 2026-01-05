@@ -38,7 +38,8 @@ dev = [
   "mkdocstrings[python]",
   "mkdocs-autorefs",
   "mkdocs-typer",
-  "mkdocs-awesome-pages-plugin"
+  "mkdocs-awesome-pages-plugin",
+  "mkdocs-typer2"
 ]
 
 [tool.hatch.version]
