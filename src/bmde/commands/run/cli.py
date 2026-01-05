@@ -1,6 +1,5 @@
 import typer
 
-from bmde.cli import app
 from bmde.commands.run.command import run_command
 from bmde.config.schema import Settings
 from bmde.core import logging
@@ -23,7 +22,6 @@ from bmde.core.shared_options import (
 log = logging.get_logger(__name__)
 
 
-@app.command("run")
 def run_controller(
     ctx: typer.Context,
     nds_rom: NdsRomOpt = None,

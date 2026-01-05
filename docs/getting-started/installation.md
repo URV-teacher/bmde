@@ -1,26 +1,18 @@
 # Installation
 
-## Prerequisites
+Install the command by using:
+```shell
+pip install bmde
+```
 
-*   **Operating System:** Linux (Ubuntu 20.04+ recommended)
-*   **Python:** 3.11 or higher
-*   **Docker:** (Optional but recommended) For running components in containers.
-*   **Make:** (Optional) For build automation.
+Check that the installation is available with:
+```shell
+python -m bmde --help
+```
 
-## Steps
+You may add an alias to your binary to shorten up the command from `python -m bmde` to `bmde`:
+```shell
+echo "alias bmde=python -m bmde" >> ~/.bashrc
+```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/URV-teacher/bmde
-    cd bmde
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    make install
-    ```
-
-3.  **Verify installation:**
-    ```bash
-    ./venv/bin/bmde --help
-    ```
+Now, `bmde --help` should have the same result as `python -m bmde --help`

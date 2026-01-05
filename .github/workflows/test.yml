@@ -1,4 +1,4 @@
-name: Automated testing with PyTest
+name: test
 
 on:
   push:
@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  quality:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12' # Matches your dev environment
+          python-version: '3.11' # Matches your dev environment
           cache: 'pip' # Speeds up future runs
 
       - name: Install Dependencies
@@ -35,7 +35,4 @@ jobs:
 
       - name: Run Tests
         run: |
-              export SDL_VIDEODRIVER=dummy
-              export SDL_AUDIODRIVER=dummy
-              export XDG_RUNTIME_DIR=/tmp
               XDG_RUNTIME_DIR=/tmp make test

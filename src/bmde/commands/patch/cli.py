@@ -1,6 +1,5 @@
 import typer
 
-from bmde.cli import app
 from bmde.commands.patch.command import patch_command
 from bmde.config.schema import Settings
 from bmde.core import logging
@@ -17,7 +16,6 @@ from bmde.core.shared_options import (
 log = logging.get_logger(__name__)
 
 
-@app.command("patch")
 def patch_controller(
     ctx: typer.Context,
     arguments: ArgumentsOpt = None,
