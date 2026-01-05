@@ -1,37 +1,16 @@
 annotated-types==0.7.0
-black==25.12.0
--e git+https://github.com/urv-teacher/bmde@4527615009e2512d36a480466240d5012118321e#egg=bmde
-cfgv==3.5.0
+-e git+https://github.com/urv-teacher/bmde@1d2606584ba4920628ece717cf6af1c1f38c7028#egg=bmde
 click==8.3.1
-distlib==0.4.0
-filelock==3.20.1
-identify==2.6.15
-iniconfig==2.3.0
-librt==0.7.4
 markdown-it-py==4.0.0
 mdurl==0.1.2
-mypy==1.19.1
-mypy_extensions==1.1.0
-nodeenv==1.10.0
-packaging==25.0
-pathspec==0.12.1
-platformdirs==4.5.1
-pluggy==1.6.0
-pre_commit==4.5.1
 pydantic==2.12.5
 pydantic-settings==2.12.0
 pydantic_core==2.41.5
 Pygments==2.19.2
-pytest==9.0.2
 python-dotenv==1.2.1
-pytokens==0.3.0
-PyYAML==6.0.3
 rich==14.2.0
 rtoml==0.13.0
-ruff==0.14.10
 shellingham==1.5.4
--e git+https://github.com/URV-teacher/tot@1a334aef03183d14e1b4f38921384fdccf01f241#egg=tot
 typer==0.21.0
 typing-inspection==0.4.2
 typing_extensions==4.15.0
-virtualenv==20.35.4

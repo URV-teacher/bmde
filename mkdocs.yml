@@ -5,10 +5,16 @@ repo_url: https://github.com/URV-teacher/bmde
 repo_name: URV-teacher/bmde
 edit_uri: edit/master/docs/
 
+# Watch the source code directory for changes to trigger hot reload
+watch:
+  - src/bmde
+  - docs
+  - mkdocs.yml
+
 theme:
-  name: readthedocs
-  logo: assets/logo.webp
-  favicon: assets/logo.webp
+  name: material
+  logo: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/logo.webp
+  favicon: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/logo.webp
   palette:
     # Light mode
     - media: "(prefers-color-scheme: light)"
@@ -38,21 +44,30 @@ theme:
 
 markdown_extensions:
   - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
   - attr_list
   - md_in_html
 
-nav:
-  - Home: index.md
-  - Getting Started:
-    - Installation: getting-started/installation.md
-    - Usage: getting-started/usage.md
-  - Components:
-    - Run: components/run.md
-    - Build: components/build.md
-    - Patch: components/patch.md
-    - Git: components/git.md
-    - Edit: components/edit.md
-    - Debug: components/debug.md
-  - Development:
-    - Contributing: development/contributing.md
-    - Architecture: development/architecture.md
+plugins:
+  - search
+  - awesome-pages
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
+            show_signature_annotations: true
+            show_signature: true
+            show_docstring_parameters: true
+            merge_init_into_class: true
+  - mkdocs-typer2:
+      pretty: true

@@ -11,6 +11,7 @@
 [![Testing PyTest)][pytest-shield]][pytest-url]
 [![Style (Ruff)][ruff-shield]][ruff-url]
 [![PyPI][pypi-shield]][pypi-url]
+[![Docs][docs-shield]][docs-url]
 
 
 <!-- PROJECT LOGO -->
@@ -25,16 +26,14 @@
   <p align="center">
     CLI wrapping the Bare Metal Development Environment (BMDE)
     <br />
-    <!-- <a href="https://github.com/URV-teacher/bmde"><strong>Explore the docs »</strong></a>
+    <a href="https://urv-teacher.github.io/bmde/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/URV-teacher/bmde">View Demo</a> 
+    <!-- <a href="https://github.com/URV-teacher/bmde">View Demo</a> 
     &middot;-->
     <a href="https://github.com/URV-teacher/bmde/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     &middot;
     <a href="https://github.com/URV-teacher/bmde/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
-    &middot;
-    <a href=https://github.com/orgs/URV-teacher/projects/3></a>
   </p>
 </div>
 
@@ -69,47 +68,8 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li>
-      <a href="#components">Components</a>
-      <ul>
-        <li>
-          <a href="#bmde-run">bmde run</a>
-          <ul>
-            <li><a href="#mandatory-arguments">Mandatory arguments</a></li>
-            <li><a href="#optional-arguments">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#bmde-build">bmde build</a>
-          <ul>
-             <li><a href="#mandatory-arguments-1">Mandatory arguments</a></li>
-             <li><a href="#optional-arguments-1">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#bmde-patch">bmde patch</a>
-          <ul>
-             <li><a href="#mandatory-arguments-2">Mandatory arguments</a></li>
-             <li><a href="#optional-arguments-2">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#bmde-git">bmde git</a>
-          <ul>
-             <li><a href="#mandatory-arguments-3">Mandatory arguments</a></li>
-             <li><a href="#optional-arguments-3">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li>
-          <a href="#bmde-edit">bmde edit</a>
-          <ul>
-             <li><a href="#mandatory-arguments-4">Mandatory arguments</a></li>
-             <li><a href="#optional-arguments-4">Optional arguments</a></li>
-          </ul>
-        </li>
-        <li><a href="#bmde-debug">bmde debug</a></li>
-      </ul>
+      <a href="#roadmap">Roadmap</a>
     </li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -131,6 +91,7 @@ the development of the practical exercises from the subject Computers, Operating
 Computer Fundamentals from the university degree of Computer Engineering in the University Rovira i Virgili (URV).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 
 ## General features
@@ -170,6 +131,7 @@ configuration args for the execution.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+
 ### Built With
 
 This section lists any major languages/frameworks/libraries/tools used in this project. 
@@ -201,158 +163,33 @@ This section lists any major languages/frameworks/libraries/tools used in this p
 
 <!-- GETTING STARTED -->
 ## Getting Started
-
 ### Prerequisites
-#### Operating system
-This CLI has been developed in Ubuntu Linux 20.04.6 LTS (Focal Fossa), so that is the recommended operating system and
-version to use. The CLI should work in other Linux systems with minor to none changes to the installation process.
+To run `bmde` you will need Python 3.11 installed in your system.
 
-#### Root permissions
-You will need root permissions either to do installations or using the bundled Docker components. Usually these 
-permissions are acquired using the `sudo` command. 
+To run a command you will need either Docker with permissions for the user executing `bmde` `COMMAND` or the 
+software that the command wraps directly installed in your system. For simplicity, we recommend sticking to Docker.
 
-#### Python
-To run the CLI you will need Python installed in your system.
+[Check out the docs for a full explanation on the prerequisites][docs-prerequisites].
 
-In Debian-like systems you can install it with:
-```shell
-sudo apt install -y python
-```
-
-The recommended version to use for Python is 3.11.  
-
-#### `make`
-You can optionally install `make` to automate some of the common operation for the development of the project, such as 
-the creation of the virtual environment.
-
-In Debian-like systems you can install it with:
-```shell
-sudo apt install -y make
-```
-
-#### Manual-installed components or `docker` 
-You will also need the components of the CLI installed. In this case you can either install them into your system 
-manually and 
-select `host` as your backend when using the CLI to use those installations, or you can use the Docker containers that 
-come bundled with
-the CLI by selecting `docker` as your backend when using the CLI.
-
-You can also mix and match `docker`-installed components with `host`-installed components, so there is no need to 
-install all components of the same type. Exceptionally, `flathub` is another possible backend to use, but only for the 
-run command. 
-
-##### `flathub`
-Follow the [oficial installation guide][flathub-setup-url].
-
-In Ubuntu, you can do:
-```shell
-sudo apt install flatpak
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-```
-
-##### `docker`
-Docker components are easier to use because they do not need an installation and are recommended backend to use for all 
-components.
-
-You should install Docker by following the [official Docker installation guide][docker-installation-guide].
-
-In Ubuntu, you can install the latest version of Docker using `apt` with the following:
-```shell
-# Add Docker's official GPG key:
-sudo apt update
-sudo apt install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-# Add the repository to Apt sources:
-sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
-Types: deb
-URIs: https://download.docker.com/linux/ubuntu
-Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
-Components: stable
-Signed-By: /etc/apt/keyrings/docker.asc
-EOF
-
-sudo apt update
-
-sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-```
-
-Currently, the CLI calls `docker` directly, so you either need to:
-* Run the app as root by calling `sudo`
-* Run the app as root by being a privileged user, for example `root`.
-* Add your user to the Docker group.
-
-It is recommended to add your user to the `docker` group, so that you do not need to log in as another user or add
-`sudo` in front of your call to BMDE each time. 
-
-To add yourself to the Docker group you can use this command:
-```shell
-sudo usermod -aG docker $USER
-```
-
-You need to reboot or log out / log in for these changes to take effect.
-
-##### Manual installed components
-You can also install and use the components of the BMDE manually and use them in the CLI.
-
-###### devkitARM
-This is the most complex component to install manually, but it can be done. 
-
-You will need to download [`libnds`][libnds-bin] 
-and [`devkitARMv46`][devkitarm-bin], 
-decompress them in a folder of your machine and create 
-environment variables that point to your installation.
-
-The variables are the following:
-```
-DEVKITPRO=/folder/of/devkitPro \
-DEVKITARM=/folder/of/devkitARM \
-PATH=/folder/of/devkitARM/bin \
-```
-
-A script for the installation of this component will be bundled in the CLI in future versions.
-
-###### `dlditool`
-You will need to install `dlditool` only if you want to mount FAT images to your NDS ROMs.
-
-You can download it from [here][dlditool-bin].
-
-You may need a patch file for your ROMs. We have found that MPCF is the only one that works in desmume. You can download
-the MPCF patch from [here][dlditool-patch].
-
-
-###### Rest of manual installed components
-
-In Debian-like systems you can install the rest of the components in a single command with:
-```shell
-sudo apt install -y git openfortivpn forticlient desmume make ssh
-```
 
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+Install the command by using:
+```shell
+pip install bmde
+```
 
-1. Clone the repo
-    ```shell
-    git clone https://github.com/URV-teacher/bmde
-    ```
-2. Enter the directory
-    ```shell
-    cd bmde
-    ```
-3. Install package
-    ```shell
-    make install
-    ```
-4. Call the CLI help to check that it has been installed properly
-    ```shell
-    ./venv/bin/bmde --help
-    ```
+You may add an alias to your binary to shorten up the command from `python -m bmde` to `bmde`:
+```shell
+echo "alias bmde=python -m bmde" >> ~/.bashrc
+```
 
-### Use
+[Check out the docs for a full explanation on the installation][docs-installation].
+
+
+
+### Usage
 You can start using BMDE by cloning a NDS project:
 ```shell
 bmde git clone 12345678-A@git.deim.urv.cat:comp_20
@@ -373,305 +210,17 @@ If the building is successful you will be able to run the project with:
 bmde run
 ```
 
-You can check out the "Usage" section to see the rest of options available for each component.
+[Check out the docs for a full explanation on the usage][docs-usage].
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Wrap and improve the usage of the software components from BMDE, either from a Docker container or installed in the 
-  host. 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-# Components
-
-## bmde run
-Entrypoint: desmume
-
-Wraps desmume and desmume-cli alongside a VNC server and / or X11 client (Docker mode only), which allows the 
-    desmume screen to be seen from a VNC client () or as a native window if using X11 (Linux).  Features automatic killing of the 
-    entrypoint process in case the main of the NDS rom reached its end or the exit function is called, which is useful 
-    for automated behaviour. 
-
-This module runs NDS binaries using different backends. 
-
-(If possible, depending on the backend) this module features the exit of the runner process if the main function of the 
-binary reached its end, which is useful 
-when testing NDS software.
-
-### Mandatory arguments
-A valid NDS binary file must be provided for the module to run. This information can be supplied or assumed in different
-ways.
-
-With no arguments, this module runs the first `.nds` file found in the directory where `bmde` is invoked. If 
-there are more than one `.nds` file in that directory, shows a warning regarding the assumption made.
-
-With `-f PATH/TO/NDS/file.nds` the NDS file to run can be provided with no assumptions. 
-
-With `-d PATH/TO/DIR/WITH/NDS/FILES` the module will behave the same as with no arguments, but using the passed 
-directory for finding the `.nds` files.
-
-`-d` and `-f` can not be used together.
-
-### Optional arguments
-With `--image PATH/TO/FAT/file.fat` the module will load the FAT image as file into the runner if possible. 
-
-With `-e` or `--environment docker|(host|bmde)|flatpak` you can choose what backend you are using to execute the NDS 
-binary. 
-* With `docker`
-it uses the desmume-docker project to run the binary. Currently, this backend has no screen output, but it could be 
-implemented in the future if the host has a VNC-compatible display server. The default entrypoint for this backend is 
-`desmume-cli`
-* With `host` uses the shell command `desmume` to run the binary, whatever is the implementation of the underlying 
-binary. The default entrypoint for this backend is `desmume`.
-* With `flatpak` uses the FlatPak implementation of DeSmuME. 
-
-If not specified, the backend will be assumed depending on the presence of each backend in the system. If there are 
-more than one possible backend, it will be chosen from the options, from more priority to less priority: `host`, 
-`docker` and finally `flathub`.
-
-When using the backends `host` and `docker`, the option 
-`--entrypoint PATH/TO/ENTRYPOINT` is available, which allows to override the file executed as entrypoint.
-
-When using the backend `docker`, the option `-s` or `--shell` can be used, which gives a shell inside
-the Docker container
-used for running the project.
-
-All options after `--` will be passed to the underlying entrypoint if possible.
-
-With `--debug`, the execution of the runner, if possible, starts with GDB stubs on and the runner waits for connection 
-on port 1000.
-
-With `-p` or `--port`, you can choose which port to expose for the debugger to connect. This assumes `--debug`.
-
-If possible, the option `--dry-run` will be implemented to simulate what the program would do.
-
-With `--verbose` shows more information and with `--trace` shows all logs. With `-q` shows no output.   
-
-
-## bmde build
-Entrypoint: make
-
-Wraps the whole devkitARM from devkitPro environment (make, `arm-none-eabi`, `ndstool` and other utilities) for 
-    building the .NDS binaries from source. 
-
-This module compiles NDS projects using different backends as building environments.
-
-### Mandatory arguments
-A valid NDS project directory must be provided for the module to run. This information can be supplied or assumed in 
-different
-ways.
-
-With no arguments, this module executes `make` in the directory where `bmde` is invoked. 
-
-With `-d PATH/TO/DIR/WITH/NDS/FILES` the module will behave the same as with no arguments, but using the passed 
-directory as the directory where the NDS project to build is located.
-
-### Optional arguments
-With `-e` or `--environment docker|(host|bmde)` you can choose what backend you are using to build the NDS 
-binary. 
-* With `docker`
-it uses the `devkitarm-docker` project to run the binary. 
-* With `host` uses the shell command `desmume` to run the binary, whatever is the implementation of the underlying 
-binary.
-
-The default entrypoint for all backends is `make`.
-
-The option 
-`--entrypoint PATH/TO/ENTRYPOINT` is available, which allows to override the file executed as entrypoint.
-
-When using the backend `docker`, the option `-s` or `--shell` can be used, which gives a shell inside
-the Docker container
-used for building the project.
-
-All options after `--` will be passed to the underlying entrypoint if possible.
-
-If possible, the option `--dry-run` will be implemented to simulate what the program would do.
-
-With `--verbose` shows more information and with `--trace` shows all logs. With `-q` shows no output.   
-
-## bmde patch
-Entrypoint: dlditool
-
-Patches NDS rom to be used with Media Player Compact Flash (MPCF) FAT driver, in order to allow the NDS rom to write in a FAT disk image.
-
-This module patches NDS binaries so that they can access a FAT image.
-
-For patching a NDS file with dlditool.
-
-### Mandatory arguments
-A valid NDS binary must be provided for the module to run. This information can be supplied or assumed in 
-different
-ways.
-
-With no arguments, this module patches the first `.nds` file found in the directory where `bmde` is invoked. 
-
-With `-f PATH/TO/DIR/WITH/NDS/file.nds` the module will behave the same as with no arguments, but using the passed 
-file as the file to be patched. 
-
-### Optional arguments
-With `-e` or `--environment docker|(host|bmde)` you can choose what backend you are using to build the NDS 
-binary. 
-* With `docker`
-it uses the `devkitarm-docker` project to run the binary. 
-* With `host` uses the shell command `desmume` to run the binary, whatever is the implementation of the underlying 
-binary.
-
-The default backend is `docker`.
-
-If possible, the option `--dry-run` will be implemented to simulate what the program would do.
-
-With `--verbose` shows more information and with `--trace` shows all logs. With `-q` shows no output.   
-
-
-## bmde git
-
-Entrypoint: git
-
-Wraps a git client alongside with the VPN needed to connect to the git server and a bypass for the SSH password
-    authentication. Currently, the git module also features two opinionated modes to use the git environment: clone mode
-    and json mode, which wrap the git command with specific arguments to clone a repository by using its name or the 
-    JSON delivery information, instead of supplying the whole git clone ... call. 
-
-
-This module wraps a custom pre-configured `git` environment.
-
-This module features the possibility of being able to connect to a `forticlient` VPN inside the container, which is 
-useful when connecting to `git` servers behind this type of VPN. It also features a bypass of the authentication prompt
-from the `git` server using provided credentials, making the `git` process to execute non-interactive. 
-
-### Mandatory arguments
-Some of the mandatory arguments contain sensible data, they can only be provided 
-via file or system variable. 
-
-The file must have a key-value format (as in `.env` files). A file can be provided with the argument `-p` 
-`--password-file 
-PATH/TO/PASSWORD/FILE`. The file `.env` of the directory where `bmde` is executed is always used.
-
-The same keys that can be provided in the file, can be used with underscores and capital letters for providing the 
-arguments via system variables. 
-
-The priority to read the different values from more to less priority is: via `-p` argument, via `.env` file in the 
-execution directory and system variables. The meaning, values and syntax for each argument in its possible sources are 
-explained 
-below.
-
-You will need to provide the VPN details if you want the VPN on. The required VPN details are the following:
-% TODO: complete details, defaults and structure with table
-* VPN username | VPN_USERNAME | vpn-username
-* VPN password  
-* VPN host
-* VPN port
-
-You can provide the `git` user details to author the commits you make in the repository. The required `git` details are 
-the 
-following:
-* git name
-* git email
-
-You will need to provide the `git` user credentials to be able to connect to the server. The required `git` credentials
-are:
-* git username
-* git password
-* git host
-
-
-### Optional arguments
-A valid `git` project directory could be provided to the module to run `git` commands inside it. This information can be 
-supplied, or it will be assumed.
-
-With no arguments, this module assumes as project directory the directory where `bmde` is invoked. 
-
-With `-d PATH/TO/DIR/WITH/NDS/FILES` the module will behave the same as with no arguments, but using the passed 
-directory as the directory where the NDS project to build is located.
-
-With `-e` or `--environment docker|(host|bmde)` you can choose what backend you are using to build the NDS 
-binary. 
-* With `docker`
-it uses the `fortivpn-git-docker` project to run the binary. 
-* With `host` uses the shell command `git` to run the binary, whatever is the implementation of the underlying 
-binary.
-
-The default entrypoint for all backends is `git`.
-
-When using the backend `docker`, the option `-s` or `--shell` can be used, which gives a shell inside
-the Docker container with the `git` environment.
-
-All options after `--` will be passed to the underlying entrypoint.
-
-If possible, the option `--dry-run` will be implemented to simulate what the program would do.
-
-With `--verbose` shows more information and with `--trace` shows all logs. With `-q` shows no output.   
-
-With `--vpn on|off` you can control the VPN. The default is `on`.
-
-
-## bmde edit
-This module edits NDS projects using different backends as IDEs / editors.
-
-### Mandatory arguments
-A valid directory must be provided for the module to run. This information can be supplied or assumed in 
-different
-ways.
-
-With no arguments, this module executes an IDE in the directory where `bmde` is invoked. 
-
-With `-d PATH/TO/DIR/WITH/NDS/PROJECT` the module will behave the same as with no arguments, but using the passed 
-directory as the directory where the NDS project to build is located.
-
-### Optional arguments
-With `-e` or `--environment docker|(host|bmde)` you can choose what backend you are using to build the NDS 
-binary. 
-* With `docker`
-it uses the `vscode-docker` project to edit the project.
-* With `host` uses the shell command `vscode` to edit the project, whatever is the implementation of the underlying 
-binary.
-
-The default entrypoint for all backends is `vscode`.
-
-The option 
-`--entrypoint PATH/TO/ENTRYPOINT` is available, which allows to override the file executed as entrypoint.
-
-All options after `--` will be passed to the underlying entrypoint if possible.
-
-With `--verbose` shows more information and with `--trace` shows all logs. With `-q` shows no output.   
-
-
-## bmde debug 
-WIP
-
-Debugs a `.nds` file using GDB from terminal or from Insight, possibly using the run backend. 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-# Dev guide
-BMDE is a CLI tool developed with different abstractions layers. Each layer is in charge of a certain operation or 
-abstraction.
-The first abstractions are the CLI files, which are the entrypoints of the programs and are in charge of defining which
-data accepts each subcommand. Data that accepts each command is classified in three categories:
-- The first category are arguments. Arguments are mandatory and represent the data that the command acts upon. 
-  Arguments can be detected because it does not make sense to include them in default values for the predefined settings.
-  Arguments are present only in the signature of the command functions and not present in the settings. Arguments are 
-  also present in the CLI functions and spec. 
-- The second category are behavioural parameters. These are arguments that define a behaviour of the program and are not 
-  really the data that the program acts upon. Behavioural arguments are present only in the settings, and not present 
-  directly in the signature of the command functions, instead, they are wrapped in a settings object. 
-- Finally, we have arguments that make sense to be included in settings, for example the NDS FAT image, which is 
-  actually an argument, but it makes sense to define a default FAT image. These arguments are included both in the 
-  signature of the functions and in the settings object, and in the moment of building the spec, an override of the 
-  command arguments against the settings object happen. 
 
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [project roadmap][roadmap-url] for a full list of proposed features, known [issues][issues-url] and its implementation state.
+See the [project roadmap][roadmap-url] for a full list of proposed features, and known [issues][issues-url] and its 
+implementation state).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -680,18 +229,7 @@ See the [project roadmap][roadmap-url] for a full list of proposed features, kno
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what make the free software community such an amazing place to learn, inspire, and create. Any 
-contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also 
-simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Check out our [CONTRIBUTING.md][contributing-url] to know how to make a contribution.
 
 ### Top contributors:
 
@@ -726,7 +264,6 @@ Proudly distributed with love under the GNU GPLv3 License. See `LICENSE` for mor
 
 The teachers of URV who have collaborated.
 
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -752,6 +289,13 @@ The teachers of URV who have collaborated.
 [product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/screenshot.png
 [pypi-shield]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml/badge.svg
 [pypi-url]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml
+[docs-url]: https://urv-teacher.github.io/bmde/
+[docs-prerequisites]: https://urv-teacher.github.io/bmde/
+[docs-installation]: https://urv-teacher.github.io/bmde/
+[docs-usage]: https://urv-teacher.github.io/bmde/
+[contributing-url]: https://github.com/URV-teacher/bmde/blob/master/CONTRIBUTING.md
+[docs-shield]: https://github.com/URV-teacher/bmde/actions/workflows/docs.yml/badge.svg
+[docs-url]: https://github.com/URV-teacher/bmde/actions/workflows/docs.yml
 
 [flathub-setup-url]: https://flathub.org/en/setup
 [Flathub]: https://img.shields.io/badge/Flathub-%234a90d9.svg?style=for-the-badge&logo=flathub&logoColor=white

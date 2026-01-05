@@ -13,60 +13,67 @@ SHELL := bash
 
 # ---- config ---------------------------------------------------------------
 
-PYTHON_BIN ?= python
+# Check if python3.11 exists, otherwise default to python
+ifneq ($(shell command -v python3.11 2> /dev/null),)
+    PYTHON_BIN ?= python3.11
+else
+    PYTHON_BIN ?= python
+endif
+
 VENV_DIR   ?= venv
-PYTHON     := $(VENV_DIR)/bin/$(PYTHON_BIN)
-PIP        := $(VENV_DIR)/bin/pip
+VENV_BIN   ?= $(VENV_DIR)/bin
+PYTHON     := $(VENV_BIN)/python
+PIP        := $(VENV_BIN)/pip
 
 PKG_NAME   := bmde
 
 # ---- build ----------------------------------------------------------------
 
-dist: $(VENV_DIR)/bin/pyproject-build ## Build source and wheel distribution
+dist: $(VENV_BIN)/pyproject-build ## Build source and wheel distribution
 	@$(PYTHON) -m build
 
 # ---- helpers --------------------------------------------------------------
 
 # Create virtualenv
-$(VENV_DIR)/bin/python:
+$(VENV_BIN)/python:
 	@$(PYTHON_BIN) -m venv "$(VENV_DIR)"
 	@$(PYTHON_BIN) -m pip install --upgrade pip
 
 # Install runtime dependencies (creates bmde executable)
-$(VENV_DIR)/bin/bmde: $(VENV_DIR)/bin/python pyproject.toml
+$(VENV_BIN)/bmde: $(VENV_BIN)/python pyproject.toml
 	@$(PIP) install -e .
 
 # Install dev dependencies
 # We use PKG-INFO as the target because pip updates it when dependencies change.
 # This avoids the loop where 'make fmt && make lint' rebuilds twice because binaries
 # like 'bin/ruff' might not have their timestamp updated by pip if they are already present.
-src/bmde.egg-info/PKG-INFO: $(VENV_DIR)/bin/python pyproject.toml
+src/bmde.egg-info/PKG-INFO: $(VENV_BIN)/python pyproject.toml
 	@$(PIP) install -e ".[dev]"
 
 # Install build tool
-$(VENV_DIR)/bin/pyproject-build: $(VENV_DIR)/bin/python
+$(VENV_BIN)/pyproject-build: $(VENV_BIN)/python
 	@$(PIP) install build
 
 # Phony aliases
-venv: $(VENV_DIR)/bin/python  ## Create virtualenv
+venv: $(VENV_BIN)/python  ## Create virtualenv
 	@echo "✅ venv ready at $(VENV_DIR)"
 
-install: $(VENV_DIR)/bin/bmde  ## Install package in editable mode
+install: $(VENV_BIN)/bmde  ## Install package in editable mode
 
 dev: src/bmde.egg-info/PKG-INFO  ## Install package and dev dependencies
 
 # ---- quality --------------------------------------------------------------
 
 lint:  ## Run static checks (ruff + mypy)
-	@$(VENV_DIR)/bin/ruff check .
-	@$(VENV_DIR)/bin/mypy src
+	@$(VENV_BIN)/ruff check .
+	@$(VENV_BIN)/mypy src
 
 fmt:  ## Auto-format (black + ruff --fix)
-	@$(VENV_DIR)/bin/black src tests
-	@$(VENV_DIR)/bin/ruff check --fix .
+	@$(VENV_BIN)/black src tests
+	@$(VENV_BIN)/ruff check --fix .
 
 test:  ## Run tests
-	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_DIR)/bin/pytest -s
+	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s
 
 # ---- run ------------------------------------------------------------------
 
@@ -85,11 +92,14 @@ clean:  ## Remove build/test artifacts
 
 .PHONY: venv lint fmt test run clean help dist install dev
 
-docs-serve:
-	@$(PYTHON) -m mkdocs serve
+docs-serve: dev
+	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs serve
 
-docs-build:
-	@$(PYTHON) -m mkdocs build
+docs-build: dev
+	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs build
+
+docs-deploy: dev
+	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs gh-deploy --force
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \

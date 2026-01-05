@@ -1,4 +1,4 @@
-name: Automated linting with Ruff
+name: lint
 
 on:
   push:

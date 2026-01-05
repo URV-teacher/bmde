@@ -3,7 +3,6 @@ from pathlib import Path
 
 import typer
 
-from bmde.cli import app
 from bmde.commands.build.command import build_command
 from bmde.config.schema import Settings
 from bmde.core import logging
@@ -11,8 +10,6 @@ from bmde.core.shared_options import ArgumentsOpt, DirectoryOpt, BackendOpt, Ent
 
 log = logging.get_logger(__name__)
 
-
-@app.command("build")
 def build_controller(
         ctx: typer.Context,
         directory: DirectoryOpt = Path(os.getcwd()),
