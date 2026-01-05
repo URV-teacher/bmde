@@ -25,7 +25,7 @@
   <p align="center">
     CLI wrapping the Bare Metal Development Environment (BMDE)
     <br />
-    <a href="https://github.com/URV-teacher/bmde"><strong>Explore the docs »</strong></a>
+    <a href="https://urv-teacher.github.io/bmde/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <!-- <a href="https://github.com/URV-teacher/bmde">View Demo</a> 
@@ -252,29 +252,11 @@ bmde run
 
 
 
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Wrap and improve the usage of the software components from BMDE, either from a Docker container or installed in the 
-  host. 
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-# Components
-
-
-
-
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [project roadmap][roadmap-url] for a full list of proposed features, known [issues][issues-url] and its 
-implementation state.
+See the [project roadmap][roadmap-url] for a full list of proposed features, and known [issues][issues-url] and its 
+implementation state).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -283,18 +265,7 @@ implementation state.
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what make the free software community such an amazing place to learn, inspire, and create. Any 
-contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also 
-simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Check out our [CONTRIBUTING.md][contributing-url] to know how to make a contribution.
 
 ### Top contributors:
 
@@ -355,6 +326,12 @@ The teachers of URV who have collaborated.
 [product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/screenshot.png
 [pypi-shield]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml/badge.svg
 [pypi-url]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml
+[docs-url]: https://urv-teacher.github.io/bmde/
+[docs-prerequisites]: https://urv-teacher.github.io/bmde/
+[docs-installation]: https://urv-teacher.github.io/bmde/
+[docs-usage]: https://urv-teacher.github.io/bmde/
+[contributing-url]: https://github.com/URV-teacher/bmde/blob/master/CONTRIBUTING.md
+
 
 [flathub-setup-url]: https://flathub.org/en/setup
 [Flathub]: https://img.shields.io/badge/Flathub-%234a90d9.svg?style=for-the-badge&logo=flathub&logoColor=white

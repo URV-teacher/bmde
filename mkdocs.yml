@@ -13,8 +13,8 @@ watch:
 
 theme:
   name: material
-  logo: assets/logo.webp
-  favicon: assets/logo.webp
+  logo: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/logo.webp
+  favicon: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/logo.webp
   palette:
     # Light mode
     - media: "(prefers-color-scheme: light)"
