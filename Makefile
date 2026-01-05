@@ -40,7 +40,7 @@ $(VENV_DIR)/bin/bmde: $(VENV_DIR)/bin/python pyproject.toml
 # We use PKG-INFO as the target because pip updates it when dependencies change.
 # This avoids the loop where 'make fmt && make lint' rebuilds twice because binaries
 # like 'bin/ruff' might not have their timestamp updated by pip if they are already present.
-src/bmde.egg-info/PKG-INFO: $(VENV_DIR)/bin/python pyproject.toml
+src/bmde.egg-info/PKG-INFO: $(VENV_DIR)/bin/python pyproject.toml $(VENV_DIR)/bin/bmde
 	@$(PIP) install -e ".[dev]"
 
 # Install build tool
