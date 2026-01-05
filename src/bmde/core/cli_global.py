@@ -1,6 +1,5 @@
 import typer
 
-from bmde.cli import app
 from bmde.config.loader import load_settings
 from bmde.core import logging
 from bmde.core.logging import (
@@ -21,8 +20,7 @@ from bmde.core.shared_options import (
 log = logging.get_logger(__name__)
 
 
-@app.callback()
-def _global(
+def cli_global_callback(
     ctx: typer.Context,
     config: ConfigOpt = None,
     verbose: VerboseOpt = False,

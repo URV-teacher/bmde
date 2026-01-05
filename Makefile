@@ -13,9 +13,9 @@ SHELL := bash
 
 # ---- config ---------------------------------------------------------------
 
-PYTHON_BIN ?= python
+PYTHON_BIN ?= python3.11
 VENV_DIR   ?= venv
-PYTHON     := $(VENV_DIR)/bin/$(PYTHON_BIN)
+PYTHON     := $(VENV_DIR)/bin/python
 PIP        := $(VENV_DIR)/bin/pip
 
 PKG_NAME   := bmde
@@ -85,11 +85,11 @@ clean:  ## Remove build/test artifacts
 
 .PHONY: venv lint fmt test run clean help dist install dev
 
-docs-serve:
-	@$(PYTHON) -m mkdocs serve
+docs-serve: dev
+	@PYTHONPATH=src $(PYTHON) -m mkdocs serve
 
-docs-build:
-	@$(PYTHON) -m mkdocs build
+docs-build: dev
+	@PYTHONPATH=src $(PYTHON) -m mkdocs build
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \

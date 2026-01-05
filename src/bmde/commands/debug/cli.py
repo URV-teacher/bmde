@@ -1,6 +1,5 @@
 import typer
 
-from bmde.cli import app
 from bmde.commands.debug.command import debug_command
 from bmde.config.schema import Settings
 from bmde.core import logging
@@ -19,7 +18,6 @@ from bmde.core.shared_options import (
 log = logging.get_logger(__name__)
 
 
-@app.command("debug")
 def debug_controller(
     ctx: typer.Context,
     nds: NdsRomOpt = None,

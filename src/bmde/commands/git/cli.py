@@ -1,6 +1,5 @@
 import typer
 
-from bmde.cli import app
 from bmde.commands.git.command import git_command
 from bmde.config.schema import Settings
 from bmde.core import logging
@@ -29,7 +28,6 @@ from bmde.core.shared_options import (
 log = logging.get_logger(__name__)
 
 
-@app.command("git")
 def git_controller(
     ctx: typer.Context,
     arguments: ArgumentsOpt = None,
