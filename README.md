@@ -287,8 +287,8 @@ The teachers of URV who have collaborated.
 [ruff-shield]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml/badge.svg
 [ruff-url]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml
 [product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/screenshot.png
-[pypi-shield]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml/badge.svg
-[pypi-url]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml
+[pypi-shield]: https://github.com/URV-teacher/bmde/actions/workflows/release.yml/badge.svg
+[pypi-url]: https://github.com/URV-teacher/bmde/actions/workflows/release.yml
 [docs-url]: https://urv-teacher.github.io/bmde/
 [docs-prerequisites]: https://urv-teacher.github.io/bmde/
 [docs-installation]: https://urv-teacher.github.io/bmde/
