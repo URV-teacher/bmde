@@ -19,4 +19,4 @@ jobs:
           python-version: '3.11'
 
       - run: make docs-build
-      - run: mkdocs gh-deploy --force
+      - run: make docs-deploy

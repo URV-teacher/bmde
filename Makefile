@@ -48,8 +48,6 @@ $(VENV_BIN)/bmde: $(VENV_BIN)/python pyproject.toml
 # This avoids the loop where 'make fmt && make lint' rebuilds twice because binaries
 # like 'bin/ruff' might not have their timestamp updated by pip if they are already present.
 src/bmde.egg-info/PKG-INFO: $(VENV_BIN)/python pyproject.toml
-	echo $PATH
-	echo $(PYTHON_BIN)
 	@$(PIP) install -e ".[dev]"
 
 # Install build tool
@@ -99,6 +97,9 @@ docs-serve: dev
 
 docs-build: dev
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs build
+
+docs-deploy: dev
+	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs gh-deploy --force
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \
