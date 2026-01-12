@@ -13,3 +13,12 @@
 [submodule "components/insight-docker"]
 	path = components/insight-docker
 	url = https://github.com/URV-teacher/insight-docker
+[submodule "components/vscode-arm-syntax-docker"]
+	path = components/vscode-arm-syntax-docker
+	url = https://github.com/URV-teacher/vscode-arm-syntax-docker
+[submodule "components/grit-docker"]
+	path = components/grit-docker
+	url = https://github.com/URV-teacher/grit-docker
+[submodule "components/arm-syntax-vscode-extension"]
+	path = components/arm-syntax-vscode-extension
+	url = https://github.com/URV-teacher/arm-syntax-vscode-extension

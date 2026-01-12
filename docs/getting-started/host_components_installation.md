@@ -1,4 +1,4 @@
-# Software Requirements for Computers Subject in Linux 
+# BMDE host components installation in Linux 
 
 # 1. Objectives
 
@@ -43,15 +43,39 @@ The needed files for everything will be in the provided file host_install.bz2
 All proposed commands assume that `CWD=/path/to/host_install`
 ---
 
+# 4. Installation considerations
+```shell
+# Install dependencies if not present (apt-get is idempotent but good to check)
+sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+    wget \
+    bzip2
+```
+
+Each code snippet assume that previous snippets have been run successfully.
+
+Snippets can be executed:
+* Manually, copying code line by line to a terminal
+* Using the corresponding file for that snippet. The corresponding file for each snippet can be found in the source code
+  of each snippet in this guide. This is because each snippet is embedded in the docs with mkdocs or with the script 
+  `scripts/render-guide.py`. Each script can be run with `bash components/COMPONENT/scripts/SCRIPT.sh`.
+* Using an IDE that supports running markdown snippets or installing extensions for that purpose. In PyCharm
+  you can click in the green button of each snippet to run it in the embedded terminal. We recommend unchecking 
+  `Close session when it ends`, in *Settings->Tools->Terminal* to see the results after running the script. Also, notice
+  that there are some calls to `sudo` in the snippets, which usually stops the execution due to the command asking for 
+  the password. What we can do to solve this is: Execute the snippet, wait for the password prompt to appear and input
+  your password. After the command with authentication has run (and the snippet execution has stopped in the middle), 
+  run the snippet again. Since sudo caches the recent authentications, this time the `sudo` command will not interrupt
+  the snippet execution.
+
 # Operations
 ## Build Operation
 Components:
-* make
+* `make`
 * devkitARM r46:
-  * arm-none-eabi-gcc
-  * arm-none-eabi-as
-  * arm-none-eabi-ld
-  * ndstool (not needed for FC subject): 
+  * `arm-none-eabi-gcc`
+  * `arm-none-eabi-as`
+  * `arm-none-eabi-ld`
+  * `ndstool` (not needed for FC subject): 
 * libNDS (not needed for FC subject): 
 * devkitPro NDS project examples (optional)
 
@@ -65,12 +89,12 @@ The installed binary is expected to be automatically included in your
 
 ###### Proposed command
 ```shell
-apt-get update && apt-get install -y --no-install-recommends make 
+--8<-- "components/devkitarm-nds-docker/scripts/install_make.sh"
 ```
 
 ###### Test component
 ```shell
-make --help
+--8<-- "components/devkitarm-nds-docker/scripts/test_make.sh"
 ```
 
 #### devkitARM 
@@ -100,36 +124,12 @@ Optionally, clean installation outputs.
 
 ###### Proposed command
 ```shell
-echo DEVKITPRO=/bmde/devkitPro >> $HOME/.bashrc 
-echo DEVKITARM=$DEVKITPRO/devkitARM >> $HOME/.bashrc 
-echo DESMUME=/ >> $HOME/.bashrc 
-echo PATH=$DEVKITARM/bin:$PATH >> $HOME/.bashrc 
-
-mkdir -p $DEVKITPRO $DEVKITARM
-
-apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    bzip2 \
- && wget --no-check-certificate "https://wii.leseratte10.de/devkitPro/devkitARM/r46%20%282017%29/devkitARM_r46-x86_64-linux.tar.bz2" -O /tmp/devkitARM.tar.bz2 \
- && tar -xf /tmp/devkitARM.tar.bz2 -C $DEVKITPRO \
- && rm /tmp/devkitARM.tar.bz2
-
-cp -r examples $DEVKITPRO
-
-apt-get purge -y \
-    wget \
-    bzip2 \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+--8<-- "components/devkitarm-nds-docker/scripts/install_devkitarm.sh"
 ```
 
 ###### Test component
 ```shell
-make --help && \
-arm-none-eabi-gcc --help && \
-arm-none-eabi-as --help && \
-arm-none-eabi-ld --help && \
-ndstool --help
+--8<-- "components/devkitarm-nds-docker/scripts/test_devkitarm.sh"
 ```
 
 #### libnds
@@ -145,18 +145,12 @@ corresponding folder `hello-world-nds` is provided.
 
 ###### Proposed command
 ```shell
-wget https://raw.githubusercontent.com/URV-teacher/devkitarm-nds-docker/master/data/libnds.tar.bz2 -O /tmp/libnds.tar.bz2
-tar -xjf /tmp/libnds.tar.bz2 -C $DEVKITPRO
-rm /tmp/libnds.tar.bz2
+--8<-- "components/devkitarm-nds-docker/scripts/install_libnds.sh"
 ```
 
 ### Test operation
 ```shell
-git clone https://github.com/URV-teacher/hello-world-nds.git
-cd hello-world-nds
-make
-[ -f hello-world-nds.nds ]
-# desmume hello-world-nds.nds  # It can be further validated if we have DeSmuME installed.
+--8<-- "components/devkitarm-nds-docker/scripts/test_operation.sh"
 ```
 
 It may be possible that you need to modify a minor thing in the internal file `ds_rules`, that provides building rules 
@@ -164,17 +158,7 @@ for NDS projects.
 
 Optionally, we can also test the operation with the NDS devkitPro project examples:
 ```shell
-wget https://raw.githubusercontent.com/URV-teacher/devkitarm-nds-docker/master/data/examples.tar.bz2 -O /tmp/examples.tar.bz2
-tar -xjf /tmp/examples.tar.bz2 -C $DEVKITPRO
-rm /tmp/examples.tar.bz2
-
-cd $DEVKITPRO/examples
-for i in *; do
-  if [ -d "$i" ]; then
-      comp_msg=$(cd "$i" && make clean && make 2>&1)
-      echo "$comp_msg"
-  fi
-done
+--8<-- "components/devkitarm-nds-docker/scripts/test_examples.sh"
 ```
 
 ---
@@ -199,17 +183,13 @@ Create (or modify) 1 **permanent** environment variables. This is used in the `r
 
 ###### Proposed command
 ```shell
-apt-get update && apt-get install -y --no-install-recommends desmume 
-
-echo DESMUME=/usr/games >> $HOME/.bashrc 
+--8<-- "components/desmume-docker/scripts/install.sh"
 ```
 
 ###### Test component
 To test the component we will use the NDS example with sound:
 ```shell
-cd examples/nds/audio/maxmod/basic_sound  
-# candyNDS_full is already built, but if not you can build it with make, testing also the build operation
-desmume basic_sound.nds  
+--8<-- "components/desmume-docker/scripts/test_component.sh"
 ```
 You should see something similar to this:
 
@@ -229,22 +209,20 @@ implement this in another way, such a shell alias.
 
 ###### Proposed command
 ```shell
-echo "#!/bin/bash
-desmume $@" >> $DESMUME/DeSmuME.exe
-chmod +x $DESMUME/DeSmuME.exe
+--8<-- "components/desmume-docker/scripts/install_wrapper.sh"
 ```
 
 ###### Test component
 ```shell
-$DESMUME/DeSmuME.exe
+--8<-- "components/desmume-docker/scripts/test_wrapper.sh"
 ```
+
+You should see appear the window of DeSmuME.
+
 
 #### Test operation
 ```shell
-cd hello-world-nds
-make clean
-make
-make run
+--8<-- "components/desmume-docker/scripts/test_operation.sh"
 ```
 
 You should see the DeSmuME window appearing with the hello-world message.
@@ -260,11 +238,11 @@ generated from source code and executed using `desmume`, the environment can be 
 Components:
 * DeSmuME 0.9.11 with argument `--gdbport=$PORT` to listen to TCP port `$PORT`
 * GDB debugger. Can be one of the following (WIP):
-  * `arm-none-eabi-gdb`, available in `$DEVKITARM/bin/arm-none-eabi-gdb` (already explained in build operation section)
-  * `gdb-multiarch`, available through package manager
-  * `insight`, installed from source code
+  - devkitARM r46:
+    * `arm-none-eabi-gdb`, available in `$DEVKITARM/bin/arm-none-eabi-gdb` (already explained in build operation section)
+  - `gdb-multiarch`, available through package manager
+  - `insight`, installed from source code
 * `make`, for `make debug` target (`make` already explained in build operation section)
-
 
 #### Component installation
 ##### DeSmuME 0.9.11 with argument `--gdbport=$PORT` to listen to TCP port `$PORT`
@@ -278,24 +256,25 @@ possible to use this target.
 ###### Test component
 To test the component we will use the NDS example with sound:
 ```shell
-desmume --gdbport=1024
-netstat -tlp | grep 1024
+--8<-- "components/desmume-docker/scripts/test_gdbport.sh"
 ```
+
+You should see `DeSmuME listening to port` in your terminal if everything was OK. 
 
 ##### `arm-none-eabi-gdb`
 ###### Explanation
 GDB binary bundled with devkitARM. Proposed installation commands are the same as Build Operation.
 
-###### Proposed command
+You will need to install the library `ncurses5` as a runtime dependency.
+
+You can do that with:
 ```shell
-echo "#!/bin/bash
-desmume $@" >> $DESMUME/DeSmuME.exe
-chmod +x $DESMUME/DeSmuME.exe
+--8<-- "components/insight-docker/scripts/install_ncurses5.sh"
 ```
 
 ###### Test component
 ```shell
-arm-none-eabi-gdb --version
+--8<-- "components/insight-docker/scripts/test_arm_gdb.sh"
 ```
 
 ##### `gdb-multiarch`
@@ -304,12 +283,12 @@ Standard multi-architecture GDB provided via package manager.
 
 ###### Proposed command
 ```shell
-apt-get update && apt-get install -y --no-install-recommends gdb-multiarch 
+--8<-- "components/insight-docker/scripts/install_gdb_multiarch.sh"
 ```
 
 ###### Test component
 ```shell
-gdb-multiarch --version
+--8<-- "components/insight-docker/scripts/test_gdb_multiarch.sh"
 ```
 
 
@@ -320,80 +299,44 @@ Insight is the original debugger (and simulator for FC) in the BMDE debugger.
 ###### Proposed command
 To build `insight`:
 ```shell
-set -euo pipefail
-
-export DEBIAN_FRONTEND=noninteractive
-
-SRC_DIR="insight-src"
-INSIGHT_REPO="git://sourceware.org/git/insight.git"
-
-apt-get update
-apt-get install -y \
-    autoconf \
-    automake \
-    autogen \
-    tk-dev \
-    tcl-dev \
-    libgmp-dev \
-    libmpfr-dev \
-    texinfo \
-    bison \
-    flex \
-    git \
-    build-essential
-
-mkdir -p "${SRC_DIR}"
-cd "${SRC_DIR}"
-
-if [ ! -d "${SRC_DIR}/insight" ]; then
-    git clone --depth 1 --recursive "${INSIGHT_REPO}"
-fi
-
-cd insight
-
-autoconf
-autoupdate
-
-./configure \
-    --prefix=/usr/local \
-    --libdir=/usr/lib64 \
-    --disable-binutils \
-    --disable-elfcpp \
-    --disable-gold \
-    --disable-gprof \
-    --disable-ld \
-    --disable-rpath \
-    --disable-zlib \
-    --enable-sim \
-    --with-gdb-datadir=/usr/share/insight \
-    --with-jit-reader-dir=/usr/lib64/insight \
-    --with-separate-debug-dir='/usr/lib/debug' \
-    --with-expat \
-    --without-libunwind \
-    --without-isl \
-    --without-python
-
-make -j"$(nproc)"
-make install
+--8<-- "components/insight-docker/scripts/build.sh"
 ```
 
 Runtime dependencies:
 ```shell
-apt-get update && apt-get install -y \
-    itcl3 \
-    itk3 \
-    iwidgets4 \
-    libgmp10 \
-    libmpfr6 \
-    libexpat1 \
-    && rm -rf /var/lib/apt/lists/*
+--8<-- "components/insight-docker/scripts/install_runtime.sh"
 ```
 
 
 ###### Test component
 ```shell
-insight --version
+--8<-- "components/insight-docker/scripts/test_insight.sh"
 ```
+
+
+##### `@$(DEVKITPRO)/insight/bin/arm-eabi-insight.exe` wrapper
+###### Explanation
+Optionally, to make the installation of DeSmuME compatible with the `run` target of `Makefile`s, we need to make 
+available the 
+file `$(DEVKITPRO)/insight/bin/arm-eabi-insight.exe`, because it is explicitly referenced by the `Makefile`s.
+
+To do so, we can create a wrapper that forwards the call from `$(DEVKITPRO)/insight/bin/arm-eabi-insight.exe` into 
+`insight` command. We could 
+implement this in another way, such a shell alias. 
+
+###### Proposed command
+```shell
+--8<-- "components/insight-docker/scripts/install_wrapper.sh"
+```
+
+###### Test component
+```shell
+--8<-- "components/insight-docker/scripts/test_wrapper.sh"
+```
+
+You should see appear the window of Insight.
+
+
 
 
 #### Test operation through `make debug`
@@ -403,15 +346,7 @@ make sure
 that the flags `-gdwarf-3` and `-O0` are in the `CFLAGS` (arguments passed to `gcc`) of the `Makefile`. This applies to 
 all programs that you want to debug:
 ```shell
-wget https://raw.githubusercontent.com/URV-teacher/insight-docker/master/data/Mastermind.tar.bz2 -O /tmp/Mastermind.tar.bz2
-tar -xjf /tmp/Mastermind.tar.bz2
-rm /tmp/Mastermind.tar.bz2
-
-cd Mastermind
-make clean
-make  
-
-make debug  # Implicitly uses 
+--8<-- "components/insight-docker/scripts/test_make_debug.sh"
 ```
 
 After running the commands you should see both the Insight window and the DeSmuME window similarly to this:
@@ -446,18 +381,7 @@ You can also test the debug operation "manually" calling directly the commands t
 Insight, you may use any other GDB command, but we will explain the test using inside because it is the most 
 featured debugger:
 ```shell
-wget https://raw.githubusercontent.com/URV-teacher/insight-docker/master/data/Mastermind.tar.bz2 -O /tmp/Mastermind.tar.bz2
-tar -xjf /tmp/Mastermind.tar.bz2
-rm /tmp/Mastermind.tar.bz2
-
-cd Mastermind
-make clean
-make
-
-# Being in the same working directory as the project root that we are debugging is important to let insight see the 
-# source code.
-desmume --gdbport=1024 Mastermind.nds &
-insight Mastermind.elf  # Also gdb-multiarch or arm-none-eabi-gdb should work
+--8<-- "components/insight-docker/scripts/test_debug.sh"
 ```
 
 What you should see afterward is the same as in the previous section.
@@ -510,28 +434,12 @@ We will install it using the prebuilt binaries available in their website.
 
 ###### Proposed command
 ```shell
-VSCODE_DIR=/bmde/vscode
-echo PATH=$VSCODE_DIR/bin:$PATH >> $HOME/.bashrc 
-
-mkdir -p $VSCODE_DIR
-
-apt-get update && apt-get install -y --no-install-recommends \
-    wget \
-    ca-certificates \
- && wget --no-check-certificate -L "https://code.visualstudio.com/sha/download?build=stable&os=linux-x64" -O /tmp/vscode.tar.gz \
- && tar -xzvf /tmp/vscode.tar.gz -C $VSCODE_DIR \
- && rm /tmp/vscode.tar.gz
-
-apt-get purge -y \
-    wget \
-    ca-certificates \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+--8<-- "components/vscode-arm-syntax-docker/scripts/install_vscode.sh"
 ```
 
 ###### Test component
 ```shell
-code
+--8<-- "components/vscode-arm-syntax-docker/scripts/test_vscode.sh"
 ```
 
 Should start the program.
@@ -544,17 +452,12 @@ Extension for VSCode to enable syntax highlight for ARM v5. Available in the
 ###### Proposed command
 Once we have the command `vscode` available we can do the following to install the extension: 
 ```shell
-LATEST_VERSION=$(curl -s https://api.github.com/repos/URV-teacher/arm-syntax-vscode-extension/releases/latest | grep "tag_name" | cut -d '"' -f 4)
-LATEST_VERSION=${VERSION:1}
-wget -O arm-syntax-vscode-extension.vsix \
-  https://github.com/URV-teacher/arm-syntax-vscode-extension/releases/download/v${LATEST_VERSION}/arm-syntax-vscode-extension-${LATEST_VERSION}.vsix  # Download latest release
-code --install-extension arm-syntax-vscode-extension.vsix  # Install extension
+--8<-- "components/arm-syntax-vscode-extension/scripts/install_extension.sh"
 ```
 
 #### Test operation
 ```shell
-```shell
-code Mastermind/source/mm_check.s
+--8<-- "components/arm-syntax-vscode-extension/scripts/test_extension.sh"
 ```
 
 Then, open file `Mastermind/source/mm_check.s` in the IDE.
@@ -577,12 +480,12 @@ Install `git` and `gitk` using your package manager. Version control for course 
 
 ###### Proposed command
 ```shell
-apt-get update && apt-get install -y --no-install-recommends git gitk
+--8<-- "components/git-urv-vpn-docker/scripts/install_git.sh"
 ```
 
 ###### Test component
 ```shell
-git --version
+--8<-- "components/git-urv-vpn-docker/scripts/test_git.sh"
 ```
 
 ##### ssh-client
@@ -591,12 +494,12 @@ SSH authentication is required for accessing the repositories.
 
 ###### Proposed command
 ```shell
-apt-get update && apt-get install -y --no-install-recommends openssh-client
+--8<-- "components/git-urv-vpn-docker/scripts/install_ssh.sh"
 ```
 
 ###### Test component
 ```shell
-ssh -V
+--8<-- "components/git-urv-vpn-docker/scripts/test_ssh.sh"
 ```
 
 ##### forticlient or openfortivpn
@@ -606,19 +509,19 @@ VPN access to the university network. Course Git repositories are only accessibl
 ###### Proposed command
 For `openfortivpn`:
 ```shell
-apt-get update && apt-get install -y --no-install-recommends openfortivpn
+--8<-- "components/git-urv-vpn-docker/scripts/install_vpn.sh"
 ```
 
 ###### Test component
 ```shell
-openfortivpn --version
+--8<-- "components/git-urv-vpn-docker/scripts/test_vpn.sh"
 ```
 
 #### Test operation
 When connected to the VPN (or on campus), the following command should work:
 
 ```bash
-git clone USER_ID@git.deim.urv.cat:comp_25 .
+--8<-- "components/git-urv-vpn-docker/scripts/test_operation.sh"
 ```
 
 This requires:
@@ -645,22 +548,17 @@ Download the latest release from the [GitHub repository](https://github.com/devk
 
 Assuming a manual installation from a tarball:
 ```shell
-GRIT_DIR=/bmde/grit
-mkdir -p $GRIT_DIR
-wget -O /tmp/grit.tar.bz2 "URL_TO_GRIT_TARBALL"
-tar -xf /tmp/grit.tar.bz2 -C $GRIT_DIR
-rm /tmp/grit.tar.bz2
-echo PATH=$GRIT_DIR:$PATH >> $HOME/.bashrc
+--8<-- "components/grit-docker/scripts/install_grit.sh"
 ```
 
 ###### Test component
 ```shell
-grit --help
+--8<-- "components/grit-docker/scripts/test_grit.sh"
 ```
 
 #### Test operation
 To test `grit`, you can try converting a simple image:
 ```shell
-grit myimage.png -gB8 -gTFF00FF -o myimage
+--8<-- "components/grit-docker/scripts/test_operation.sh"
 ```
 This should generate `myimage.s` and `myimage.h` files.

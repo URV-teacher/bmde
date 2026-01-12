@@ -39,7 +39,8 @@ dev = [
   "mkdocs-autorefs",
   "mkdocs-typer",
   "mkdocs-awesome-pages-plugin",
-  "mkdocs-typer2"
+  "mkdocs-typer2",
+  "mkdocs-include-markdown-plugin"
 ]
 
 [tool.hatch.version]
