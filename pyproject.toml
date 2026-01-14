@@ -60,9 +60,6 @@ minor_tags = ["ADDED", "UPDATED", "CHANGED"]
 patch_tags = ["FIXED", "REMOVED"]
 major_tags = ["RELEASED"]
 
-[tool.ruff]
-line-length = 120
-
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
@@ -70,3 +67,18 @@ testpaths = ["tests"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
+
+# Ruff configuration
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "I", "UP", "SIM"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
