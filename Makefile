@@ -90,7 +90,10 @@ clean:  ## Remove build/test artifacts
 
 # ---- meta -----------------------------------------------------------------
 
-.PHONY: venv lint fmt test run clean help dist install dev
+.PHONY: venv lint fmt test run clean help dist install dev readme
+
+readme:
+	./scripts/render-guide.py
 
 docs-serve: dev
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs serve

@@ -126,3 +126,10 @@ In Debian-like systems you can install the rest of the components in a single co
 ```shell
 sudo apt install -y git openfortivpn forticlient desmume make ssh
 ```
+
+[flathub-setup-url]: https://flathub.org/en/setup
+[docker-installation-guide]: https://docs.docker.com/engine/install/ubuntu/
+[libnds-bin]: https://raw.githubusercontent.com/URV-teacher/devkitarm-nds-docker/master/data/libnds.tar.bz2
+[dlditool-bin]: https://www.chishm.com/DLDI/downloads/dlditool-linux-x86_64.zip
+[dlditool-patch]: https://www.chishm.com/DLDI/downloads/mpcf.dldi
+[devkitarm-bin]: https://wii.leseratte10.de/devkitPro/devkitARM/r46%20%282017%29/devkitARM_r46-x86_64-linux.tar.bz2

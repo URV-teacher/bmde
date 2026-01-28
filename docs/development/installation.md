@@ -19,3 +19,8 @@ _Below is an example of how you can instruct your audience on installing and set
     ```shell
     ./venv/bin/bmde --help
     ```
+
+Install pre-commit hooks:
+```shell
+./venv/bin/pre-commit install
+```

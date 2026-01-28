@@ -287,8 +287,8 @@ The teachers of URV who have collaborated.
 [ruff-shield]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml/badge.svg
 [ruff-url]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml
 [product-screenshot]: https://raw.githubusercontent.com/URV-teacher/hosting/master/assets/screenshot.png
-[pypi-shield]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml/badge.svg
-[pypi-url]: https://github.com/URV-teacher/bmde/actions/workflows/publish.yml
+[pypi-shield]: https://github.com/URV-teacher/bmde/actions/workflows/release.yml/badge.svg
+[pypi-url]: https://github.com/URV-teacher/bmde/actions/workflows/release.yml
 [docs-url]: https://urv-teacher.github.io/bmde/
 [docs-prerequisites]: https://urv-teacher.github.io/bmde/
 [docs-installation]: https://urv-teacher.github.io/bmde/
@@ -297,14 +297,8 @@ The teachers of URV who have collaborated.
 [docs-shield]: https://github.com/URV-teacher/bmde/actions/workflows/docs.yml/badge.svg
 [docs-url]: https://github.com/URV-teacher/bmde/actions/workflows/docs.yml
 
-[flathub-setup-url]: https://flathub.org/en/setup
 [Flathub]: https://img.shields.io/badge/Flathub-%234a90d9.svg?style=for-the-badge&logo=flathub&logoColor=white
 [flathub-url]: https://flathub.org/apps/details/YOUR_APP_ID
-[dlditool-bin]: https://www.chishm.com/DLDI/downloads/dlditool-linux-x86_64.zip
-[dlditool-patch]: https://www.chishm.com/DLDI/downloads/mpcf.dldi
-[libnds-bin]: https://raw.githubusercontent.com/URV-teacher/devkitarm-nds-docker/master/data/libnds.tar.bz2
-[docker-installation-guide]: https://docs.docker.com/engine/install/ubuntu/
-[devkitarm-bin]: https://wii.leseratte10.de/devkitPro/devkitARM/r46%20%282017%29/devkitARM_r46-x86_64-linux.tar.bz2
 [aleixmt-github-profile]: https://github.com/AleixMT
 [roadmap-url]: https://github.com/orgs/URV-teacher/projects/3
 

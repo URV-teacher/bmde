@@ -1,0 +1,26 @@
+# Include the README and License
+include README.md
+include LICENSE
+
+# Include the source code
+graft src
+
+# Exclude secrets and sensible data
+global-exclude */secrets/*
+global-exclude *.key
+global-exclude *.pem
+global-exclude .env
+global-exclude bmde.toml
+global-exclude settings.toml
+
+# Exclude build and test artifacts
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .DS_Store
+global-exclude .git*
+global-exclude .pytest_cache
+global-exclude .mypy_cache
+global-exclude .ruff_cache
+
+# Components not needed for CLI
+global-exclude components/
