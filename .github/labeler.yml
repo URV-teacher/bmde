@@ -1,0 +1,37 @@
+# Configuration for .github/workflows/labeler.yml
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "*.md"
+      - "docs/**"
+      - "mkdocs.yml"
+
+docker:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "Dockerfile"
+      - "**/Dockerfile"
+      - "docker-compose.yml"
+      - "**/compose.yml"
+      - ".dockerignore"
+
+python:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "*.py"
+      - "src/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "requirements.txt"
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - ".github/workflows/**"
+      - "Makefile"
+
+components:
+  - changed-files:
+    - any-glob-to-any-file:
+      - "components/**"

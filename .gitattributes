@@ -1,0 +1,33 @@
+# Auto-detect text files and perform LF normalization
+* text=auto
+
+# Custom diff drivers
+*.py diff=python
+*.md diff=markdown
+*.html diff=html
+*.css diff=css
+*.js diff=javascript
+
+# Linguist settings
+# Mark generated files or vendor files to exclude them from language stats
+*.min.js linguist-vendored
+*.min.css linguist-vendored
+docs/ linguist-documentation
+site/ linguist-generated
+venv/ linguist-vendored
+.github/ linguist-vendored
+
+# Ensure specific files always use LF (Linux/macOS) line endings
+*.sh text eol=lf
+*.bash text eol=lf
+*.py text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+Makefile text eol=lf
+
+# Ensure Windows batch files use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
