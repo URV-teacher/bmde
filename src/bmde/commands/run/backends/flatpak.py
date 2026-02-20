@@ -1,16 +1,15 @@
 import shutil
 import subprocess
 
-from bmde.core.exec import run_cmd, ExecOptions
-from .backend import RunBackend
+from bmde.core.exec import ExecOptions, run_cmd
+
 from ..spec import RunSpecOpts
+from .backend import RunBackend
 
 
 class FlatpakRunner(RunBackend):
     def is_available(self) -> bool:
-        if shutil.which("flatpak") is not None:
-            return True
-        return False
+        return shutil.which("flatpak") is not None
 
     def run(
         self, spec: RunSpecOpts, exec_opts: ExecOptions

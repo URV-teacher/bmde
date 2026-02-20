@@ -3,30 +3,30 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from subprocess import Popen
-from typing import Optional
 
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
-from .service import BuildService
-from .settings import BuildSettings
-from .spec import BuildSpec, BuildSpecOpts
+
 from ...config.loader import load_settings
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import BackendOptions
+from .service import BuildService
+from .settings import BuildSettings
+from .spec import BuildSpec, BuildSpecOpts
 
 log = logging.get_logger(__name__)
 
 
 def create_build_spec(
-    d: Optional[Path],
-    arguments: Optional[list[str]] = None,
-    backend: Optional[BackendOptions] = None,
+    d: Path | None,
+    arguments: list[str] | None = None,
+    backend: BackendOptions | None = None,
     background: bool = False,
     interactive: bool = True,
     dry_run: bool = False,
-    entrypoint: Optional[Path] = None,
-    settings: Optional[BuildSettings] = None,
+    entrypoint: Path | None = None,
+    settings: BuildSettings | None = None,
 ) -> BuildSpec:
     """
     Creates the BuildSpec from the provided arguments.
@@ -49,7 +49,9 @@ def create_build_spec(
             d=d,
         ),
         SpecExecOpts=SpecExecOpts(
-            backend=backend if backend is not None else (settings.execution_settings.backend if settings.execution_settings.backend is not None else BackendOptions.DOCKER),
+            backend=backend if backend is not None else (settings.execution_settings.backend
+                                                         if settings.execution_settings.backend is not None else
+                                                         BackendOptions.DOCKER),
             entrypoint=(
                 entrypoint
                 if entrypoint is not None
@@ -91,14 +93,14 @@ def execute_build(spec: BuildSpec) -> int | Popen[bytes]:
 
 
 def build_command(
-    d: Optional[Path],
-    arguments: Optional[list[str]] = None,
-    backend: Optional[BackendOptions] = None,
+    d: Path | None,
+    arguments: list[str] | None = None,
+    backend: BackendOptions | None = None,
     background: bool = False,
     interactive: bool = True,
     dry_run: bool = False,
-    entrypoint: Optional[Path] = None,
-    settings: Optional[BuildSettings] = None,
+    entrypoint: Path | None = None,
+    settings: BuildSettings | None = None,
 ) -> int | Popen[bytes]:
     """
     CLI Entrypoint. Orchestrates spec creation and execution.

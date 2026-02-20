@@ -1,12 +1,16 @@
 import subprocess
 
 from bmde.core import logging
-from bmde.core.docker import can_run_docker
-from bmde.core.exec import run_cmd, ExecOptions
-from .backend import RunBackend
+from bmde.core.docker import (
+    can_run_docker,
+    docker_remove_network,
+    ensure_network_is_present,
+)
+from bmde.core.exec import ExecOptions, run_cmd
+from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK, DockerOutputOptions
+
 from ..spec import RunSpecOpts
-from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK
-from bmde.core.docker import ensure_network_is_present, docker_remove_network
+from .backend import RunBackend
 
 log = logging.get_logger(__name__)
 
@@ -35,7 +39,7 @@ class DockerRunner(RunBackend):
             mounts += ["-v", f"{spec.fat_image}:/fs/fat.img:rw"]
             img_opt += ["--cflash-image", "/fs/fat.img"]
 
-        if spec.graphical_output == "host":
+        if spec.graphical_output == DockerOutputOptions.HOST:
             mounts += ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
             envs += [
                 "-e",
@@ -49,7 +53,7 @@ class DockerRunner(RunBackend):
                 "-e",
                 "VNC_PORT=5900",
             ]
-        if spec.graphical_output == "vnc":
+        if spec.graphical_output == DockerOutputOptions.VNC:
             ports += ["-p", "3000:3000", "-p", "3001:3001"]
             envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
 

@@ -1,7 +1,7 @@
 import logging
 from logging import Logger
 from pathlib import Path
-from typing import Optional, Any, cast
+from typing import Any, cast
 
 from rich.logging import RichHandler
 
@@ -56,8 +56,8 @@ class SecretsFilter(logging.Filter):
 
 
 def setup_logging(
-    level: Optional[int | None],
-    log_file: Optional[str | Path] = None,
+    level: int | None | None,
+    log_file: str | Path | None = None,
     secrets: list[str | None] | None = None,
 ) -> None:
     # Default level is INFO

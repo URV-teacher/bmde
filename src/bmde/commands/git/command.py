@@ -3,42 +3,42 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from subprocess import Popen
-from typing import Optional
 
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
-from .service import GitService
-from .settings import GitSettings
-from .spec import GitSpec, GitSpecOpts
+
 from ...config.loader import load_settings
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import BackendOptions
+from .service import GitService
+from .settings import GitSettings
+from .spec import GitSpec, GitSpecOpts
 
 log = logging.get_logger(__name__)
 
 
 def create_git_spec(
-    d: Optional[Path],
-    arguments: Optional[list[str]] = None,
-    backend: Optional[BackendOptions] = None,
+    d: Path | None,
+    arguments: list[str] | None = None,
+    backend: BackendOptions | None = None,
     interactive: bool = True,
     dry_run: bool = True,
-    entrypoint: Optional[Path] = None,
-    ssh_username: Optional[str] = None,
-    ssh_password: Optional[str] = None,
-    ssh_host: Optional[str] = None,
-    git_name: Optional[str] = None,
-    git_email: Optional[str] = None,
-    vpn_username: Optional[str] = None,
-    vpn_password: Optional[str] = None,
-    vpn_host: Optional[str] = None,
-    vpn_port: Optional[int] = None,
-    vpn_realm: Optional[str] = None,
-    vpn_cert: Optional[str] = None,
-    vpn_test_dns: Optional[str] = None,
-    vpn_test_ip: Optional[str] = None,
-    settings: Optional[GitSettings] = None,
+    entrypoint: Path | None = None,
+    ssh_username: str | None = None,
+    ssh_password: str | None = None,
+    ssh_host: str | None = None,
+    git_name: str | None = None,
+    git_email: str | None = None,
+    vpn_username: str | None = None,
+    vpn_password: str | None = None,
+    vpn_host: str | None = None,
+    vpn_port: int | None = None,
+    vpn_realm: str | None = None,
+    vpn_cert: str | None = None,
+    vpn_test_dns: str | None = None,
+    vpn_test_ip: str | None = None,
+    settings: GitSettings | None = None,
 ) -> GitSpec:
     if d is None:
         d = Path(os.getcwd())
@@ -123,26 +123,26 @@ def execute_git(spec: GitSpec) -> int | Popen[bytes]:
 
 
 def git_command(
-    d: Optional[Path],
-    arguments: Optional[list[str]] = None,
-    backend: Optional[BackendOptions] = None,
+    d: Path | None,
+    arguments: list[str] | None = None,
+    backend: BackendOptions | None = None,
     dry_run: bool = False,
     interactive: bool = True,
-    entrypoint: Optional[Path] = None,
-    ssh_username: Optional[str] = None,
-    ssh_password: Optional[str] = None,
-    ssh_host: Optional[str] = None,
-    git_name: Optional[str] = None,
-    git_email: Optional[str] = None,
-    vpn_username: Optional[str] = None,
-    vpn_password: Optional[str] = None,
-    vpn_host: Optional[str] = None,
-    vpn_port: Optional[int] = None,
-    vpn_realm: Optional[str] = None,
-    vpn_cert: Optional[str] = None,
-    vpn_test_dns: Optional[str] = None,
-    vpn_test_ip: Optional[str] = None,
-    settings: Optional[GitSettings] = None,
+    entrypoint: Path | None = None,
+    ssh_username: str | None = None,
+    ssh_password: str | None = None,
+    ssh_host: str | None = None,
+    git_name: str | None = None,
+    git_email: str | None = None,
+    vpn_username: str | None = None,
+    vpn_password: str | None = None,
+    vpn_host: str | None = None,
+    vpn_port: int | None = None,
+    vpn_realm: str | None = None,
+    vpn_cert: str | None = None,
+    vpn_test_dns: str | None = None,
+    vpn_test_ip: str | None = None,
+    settings: GitSettings | None = None,
 ) -> int | Popen[bytes]:
 
     if settings is None:

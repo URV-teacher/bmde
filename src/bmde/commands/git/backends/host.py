@@ -2,10 +2,11 @@ import shutil
 import subprocess
 
 from bmde.core import logging
-from bmde.core.exec import run_cmd, ExecOptions
+from bmde.core.exec import ExecOptions, run_cmd
 from bmde.core.os_utils import is_command_available
-from .backend import GitBackend
+
 from ..spec import GitSpecOpts
+from .backend import GitBackend
 
 log = logging.get_logger(__name__)
 

@@ -7,16 +7,10 @@ from __future__ import annotations
 
 from pathlib import Path
 from subprocess import Popen
-from typing import Optional
-
 
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
-from .service import DebugService
-from .settings import DebugSettings
-from .spec import DebugSpec, DebugSpecOpts
-from ..run.service import RunService
-from ..run.spec import RunSpec, RunSpecOpts
+
 from ...config.loader import load_settings
 from ...core.file_utils import resolve_elf, resolve_nds
 from ...core.logging import configure_logging_from_settings
@@ -26,21 +20,26 @@ from ...core.types import (
     BackendOptions,
     DockerOutputOptions,
 )
+from ..run.service import RunService
+from ..run.spec import RunSpec, RunSpecOpts
+from .service import DebugService
+from .settings import DebugSettings
+from .spec import DebugSpec, DebugSpecOpts
 
 log = logging.get_logger(__name__)
 
 
 def create_debug_spec(
-    nds: Optional[Path],
-    elf: Optional[Path],
-    arguments: Optional[list[str]] = None,
-    backend: Optional[BackendOptions] = None,
+    nds: Path | None,
+    elf: Path | None,
+    arguments: list[str] | None = None,
+    backend: BackendOptions | None = None,
     background: bool = False,
-    docker_screen: Optional[DockerOutputOptions] = None,
+    docker_screen: DockerOutputOptions | None = None,
     dry_run: bool = False,
-    entrypoint: Optional[Path] = None,
+    entrypoint: Path | None = None,
     port: int = 1024,
-    settings: Optional[DebugSettings] = None,
+    settings: DebugSettings | None = None,
 ) -> DebugSpec:
     if settings is None:
         settings = DebugSettings()
@@ -161,16 +160,16 @@ def execute_debug(spec: DebugSpec) -> int | Popen[bytes]:
 
 
 def debug_command(
-    nds: Optional[Path],
-    elf: Optional[Path],
-    arguments: Optional[list[str]] = None,
-    backend: Optional[BackendOptions] = None,
+    nds: Path | None,
+    elf: Path | None,
+    arguments: list[str] | None = None,
+    backend: BackendOptions | None = None,
     background: bool = False,
-    docker_screen: Optional[DockerOutputOptions] = None,
+    docker_screen: DockerOutputOptions | None = None,
     dry_run: bool = False,
-    entrypoint: Optional[Path] = None,
+    entrypoint: Path | None = None,
     port: int = 1024,
-    settings: Optional[DebugSettings] = None,
+    settings: DebugSettings | None = None,
 ) -> int | Popen[bytes]:
 
     if settings is None:

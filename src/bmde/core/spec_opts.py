@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from bmde.core.spec import BaseSpec
 from bmde.core.types import BackendOptions
@@ -12,5 +11,5 @@ class SpecExecOpts(BaseSpec):
     background: bool
     dry_run: bool
     interactive: bool
-    entrypoint: Optional[Path]
-    arguments: Optional[list[str]]
+    entrypoint: Path | None
+    arguments: list[str] | None

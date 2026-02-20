@@ -6,7 +6,7 @@ def test_build_service_initialization():
     """Verify that BuildService maps the correct backends."""
     service = BuildService()
     # Check if 'host' is in the mapping keys
-    assert "host" in [key.value for key in service.mapping.keys()]
+    assert "host" in [key.value for key in service.mapping]
 
 
 def test_choose_backend_force_env():

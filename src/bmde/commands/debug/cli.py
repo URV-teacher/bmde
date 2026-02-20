@@ -4,15 +4,15 @@ from bmde.commands.debug.command import debug_command
 from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.shared_options import (
-    NdsRomOpt,
     ArgumentsOpt,
-    DockerScreenOpt,
-    EntrypointOpt,
-    PortOpt,
-    DryRunOpt,
-    ElfRomOpt,
     BackendOpt,
     BackgroundOpt,
+    DockerScreenOpt,
+    DryRunOpt,
+    ElfRomOpt,
+    EntrypointOpt,
+    NdsRomOpt,
+    PortOpt,
 )
 
 log = logging.get_logger(__name__)

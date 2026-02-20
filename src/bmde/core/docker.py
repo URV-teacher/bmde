@@ -1,5 +1,4 @@
 import subprocess
-from typing import Optional
 
 from bmde.core import logging
 
@@ -42,7 +41,7 @@ def docker_container_exists(container_name: str) -> bool:
         return False
 
 
-def docker_inspect_health(container_name: str) -> Optional[str]:
+def docker_inspect_health(container_name: str) -> str | None:
     """
     Return health status string: "healthy", "unhealthy", "starting", or None if not found/no health.
     """

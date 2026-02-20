@@ -7,41 +7,41 @@ from __future__ import annotations
 
 from pathlib import Path
 from subprocess import Popen
-from typing import Optional
 
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
-from .service import RunService
-from .settings import RunSettings
-from .spec import RunSpec, RunSpecOpts
+
 from ...config.loader import load_settings
 from ...core.file_utils import resolve_nds
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import (
-    DockerOutputOptions,
-    BackendOptions,
     DOCKER_DESMUME_DEBUG_NETWORK,
+    BackendOptions,
+    DockerOutputOptions,
 )
+from .service import RunService
+from .settings import RunSettings
+from .spec import RunSpec, RunSpecOpts
 
 log = logging.get_logger(__name__)
 
 
 def create_run_spec(
-    nds_rom: Optional[Path],
-    directory: Optional[Path],
-    arguments: Optional[list[str]] = None,
-    arm9_debug_port: Optional[int] = 1000,
-    backend: Optional[BackendOptions] = None,
-    background: Optional[bool] = False,
+    nds_rom: Path | None,
+    directory: Path | None,
+    arguments: list[str] | None = None,
+    arm9_debug_port: int | None = 1000,
+    backend: BackendOptions | None = None,
+    background: bool | None = False,
     interactive: bool = True,
-    debug: Optional[bool] = False,
+    debug: bool | None = False,
     dry_run: bool = False,
-    entrypoint: Optional[Path] = None,
-    docker_network: Optional[str] = None,
-    fat_image: Optional[Path] = None,
-    graphical_output: Optional[DockerOutputOptions] = None,
-    settings: Optional[RunSettings] = None,
+    entrypoint: Path | None = None,
+    docker_network: str | None = None,
+    fat_image: Path | None = None,
+    graphical_output: DockerOutputOptions | None = None,
+    settings: RunSettings | None = None,
 ) -> RunSpec:
     """
     Creates the RunSpec from the provided arguments.
@@ -152,20 +152,20 @@ def execute_run(
 
 
 def run_command(
-    nds_rom: Optional[Path] = None,
-    directory: Optional[Path] = None,
-    arguments: Optional[list[str]] = None,
-    arm9_debug_port: Optional[int] = 1024,
-    backend: Optional[BackendOptions] = None,
-    background: Optional[bool] = False,
+    nds_rom: Path | None = None,
+    directory: Path | None = None,
+    arguments: list[str] | None = None,
+    arm9_debug_port: int | None = 1024,
+    backend: BackendOptions | None = None,
+    background: bool | None = False,
     interactive: bool = True,
     debug: bool = False,
-    docker_network: Optional[str] = None,
+    docker_network: str | None = None,
     dry_run: bool = False,
-    entrypoint: Optional[Path] = None,
-    fat_image: Optional[Path] = None,
-    graphical_output: Optional[DockerOutputOptions] = None,
-    settings: Optional[RunSettings] = None,
+    entrypoint: Path | None = None,
+    fat_image: Path | None = None,
+    graphical_output: DockerOutputOptions | None = None,
+    settings: RunSettings | None = None,
 ) -> int | Popen[bytes]:
     """
     CLI Entrypoint. Orchestrates spec creation and execution.
