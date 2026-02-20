@@ -24,6 +24,7 @@ VENV_DIR   ?= venv
 VENV_BIN   ?= $(VENV_DIR)/bin
 PYTHON     := $(VENV_BIN)/python
 PIP        := $(VENV_BIN)/pip
+PRE_COMMIT := $(VENV_BIN)/pre-commit
 GIT        := git
 
 PKG_NAME   := bmde
@@ -52,6 +53,7 @@ $(VENV_BIN)/bmde: $(VENV_BIN)/python pyproject.toml
 # like 'bin/ruff' might not have their timestamp updated by pip if they are already present.
 src/bmde.egg-info/PKG-INFO: $(VENV_BIN)/python pyproject.toml
 	@$(PIP) install -e ".[dev]"
+	@$(PRE_COMMIT) install
 
 # Install build tool
 $(VENV_BIN)/pyproject-build: $(VENV_BIN)/python
