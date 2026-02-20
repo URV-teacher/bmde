@@ -1,5 +1,13 @@
 name: Greetings
 
+# This workflow automatically posts a friendly greeting message when a user
+# opens their first issue or pull request. It thanks contributors for opening
+# issues or PRs and informs them that their contribution will be reviewed.
+#
+# Triggered on:
+#   - pull_request_target: when a pull request is opened or updated
+#   - issues: when a new issue is opened
+
 on: [pull_request_target, issues]
 
 jobs:

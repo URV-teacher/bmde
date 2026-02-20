@@ -1,12 +1,16 @@
 name: "CodeQL"
+# This workflow performs CodeQL static analysis on the repository to find
+# potential security vulnerabilities and code quality issues.
+#
+# Triggers:
+#   - push to the master branch
+#   - pull request targeting the master branch
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "develop" ]
   pull_request:
-    branches: [ "master" ]
-  schedule:
-    - cron: '36 13 * * 1'
+    branches: [ "master", "develop" ]
 
 jobs:
   analyze:
