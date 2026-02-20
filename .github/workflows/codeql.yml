@@ -3,8 +3,8 @@ name: "CodeQL"
 # potential security vulnerabilities and code quality issues.
 #
 # Triggers:
-#   - push to the master branch
-#   - pull request targeting the master branch
+#   - push to the master or develop branch
+#   - pull request targeting the master or develop branch
 
 on:
   push:
