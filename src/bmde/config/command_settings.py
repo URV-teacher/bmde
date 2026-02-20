@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional, List
 
 from pydantic import BaseModel
 
@@ -7,9 +6,9 @@ from bmde.core.types import BackendOptions
 
 
 class ExecutionSettings(BaseModel):
-    entrypoint: Optional[Path] = None
-    arguments: Optional[List[str]] = None
-    background: Optional[bool] = False
-    dry_run: Optional[bool] = False
+    entrypoint: Path | None = None
+    arguments: list[str] | None = None
+    background: bool | None = False
+    dry_run: bool | None = False
     interactive: bool = True
-    backend: Optional[BackendOptions] = None
+    backend: BackendOptions | None = None

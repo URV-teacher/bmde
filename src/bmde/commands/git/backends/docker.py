@@ -2,25 +2,25 @@ import os
 import subprocess
 import time
 from pathlib import Path
-from typing import Optional
 
 from bmde.core import logging
 from bmde.core.docker import (
-    docker_inspect_health,
-    docker_container_exists,
     can_run_docker,
+    docker_container_exists,
+    docker_inspect_health,
 )
-from bmde.core.exec import run_cmd, ExecOptions
+from bmde.core.exec import ExecOptions, run_cmd
 from bmde.core.os_utils import host_uid_gid
-from .backend import GitBackend
+
 from ..spec import GitSpecOpts
+from .backend import GitBackend
 
 log = logging.get_logger(__name__)
 
 
 def _run_vpn(
     spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str
-) -> Optional[int] | subprocess.Popen[bytes]:
+) -> int | None | subprocess.Popen[bytes]:
     docker_img = "aleixmt/forticlient:latest"
 
     envs: list[str] = [
@@ -107,7 +107,7 @@ def _ensure_vpn_healthy(
         except subprocess.CalledProcessError as e:
             raise RuntimeError(
                 f"Failed to remove unhealthy container '{container_name}': {e}"
-            )
+            ) from e
 
     log.info("Running VPN")
     _run_vpn(spec, exec_opts, container_name)

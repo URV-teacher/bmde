@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from bmde.core.spec import BaseSpec
 from bmde.core.spec_opts import SpecExecOpts
@@ -9,19 +8,19 @@ from bmde.core.spec_opts import SpecExecOpts
 @dataclass
 class GitSpecOpts(BaseSpec):
     d: Path
-    ssh_username: Optional[str]
-    ssh_password: Optional[str]
-    ssh_host: Optional[str]
-    git_name: Optional[str]
-    git_email: Optional[str]
-    vpn_username: Optional[str]
-    vpn_password: Optional[str]
-    vpn_host: Optional[str]
-    vpn_port: Optional[int]
-    vpn_realm: Optional[str]
-    vpn_cert: Optional[str]
-    vpn_test_dns: Optional[str]
-    vpn_test_ip: Optional[str]
+    ssh_username: str | None
+    ssh_password: str | None
+    ssh_host: str | None
+    git_name: str | None
+    git_email: str | None
+    vpn_username: str | None
+    vpn_password: str | None
+    vpn_host: str | None
+    vpn_port: int | None
+    vpn_realm: str | None
+    vpn_cert: str | None
+    vpn_test_dns: str | None
+    vpn_test_ip: str | None
 
 
 @dataclass

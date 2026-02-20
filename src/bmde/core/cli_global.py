@@ -3,18 +3,18 @@ import typer
 from bmde.config.loader import load_settings
 from bmde.core import logging
 from bmde.core.logging import (
-    process_log_flags,
     configure_logging_from_settings,
+    process_log_flags,
 )
 from bmde.core.shared_options import (
     ConfigOpt,
-    VerboseOpt,
-    VeryVerboseOpt,
-    QuietOpt,
-    VeryQuietOpt,
     LogFileOpt,
+    QuietOpt,
     ShowConfigOpt,
     ShowDefaultConfigOpt,
+    VerboseOpt,
+    VeryQuietOpt,
+    VeryVerboseOpt,
 )
 
 log = logging.get_logger(__name__)

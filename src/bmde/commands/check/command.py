@@ -1,17 +1,18 @@
-import typer
-from typing import Any, List, Tuple, Optional
+from typing import Any
 
+import typer
+
+from bmde.commands.build.service import BuildService
+from bmde.commands.debug.service import DebugService
+from bmde.commands.git.service import GitService
+from bmde.commands.patch.service import PatchService
+from bmde.commands.run.service import RunService
 from bmde.config.loader import load_settings
+from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.logging import configure_logging_from_settings
 from bmde.core.service import Service
 from bmde.core.types import BackendOptions
-from bmde.config.schema import Settings
-from bmde.commands.git.service import GitService
-from bmde.commands.run.service import RunService
-from bmde.commands.build.service import BuildService
-from bmde.commands.debug.service import DebugService
-from bmde.commands.patch.service import PatchService
 
 log = logging.get_logger(__name__)
 
@@ -25,7 +26,7 @@ def check_command(settings: Settings) -> None:
             obfuscate_sensibles=full_settings.logging.hide_sensibles,
         )
 
-    services: List[Tuple[str, Service[Any, Any], Optional[BackendOptions]]] = [
+    services: list[tuple[str, Service[Any, Any], BackendOptions | None]] = [
         ("Git", GitService(), settings.git.execution_settings.backend),
         ("Run", RunService(), settings.run.execution_settings.backend),
         ("Build", BuildService(), settings.build.execution_settings.backend),
@@ -33,7 +34,10 @@ def check_command(settings: Settings) -> None:
         ("Patch", PatchService(), settings.patch.execution_settings.backend),
     ]
 
-    msg = "\nSummary of backend availability for the BMDE services in this machine (🚫 means not available, ✅ means available):\n"
+    msg = (
+        "\nSummary of backend availability for the BMDE services in this machine (🚫 means not available, ✅ means "
+        "available):\n"
+    )
     for name, service, selected_backend in services:
         msg += f"\n  * Service: {name}\n"
 

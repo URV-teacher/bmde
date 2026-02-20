@@ -22,7 +22,8 @@ def expand_include(line: str, base_dir: Path) -> list[str]:
     if not file_path.exists():
         raise FileNotFoundError(f"Included file not found: {file_path}")
 
-    lines = open(file_path).readlines()
+    with open(file_path, encoding="utf-8") as f:
+        lines = f.readlines()
 
     # Apply line slicing if specified (1-based, inclusive)
     if start or end:
@@ -38,10 +39,10 @@ def render_file(src: Path, dst: Path):
     base_dir = src.parent.parent.parent
     output = []
 
-    for line in open(src).readlines():
-        expanded = expand_include(line, base_dir)
-        #print(expanded)
-        output.extend(expanded)
+    with open(src, encoding="utf-8") as f:
+        for line in f.readlines():
+            expanded = expand_include(line, base_dir)
+            output.extend(expanded)
 
     dst.write_text("".join(output))
 

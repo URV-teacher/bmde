@@ -1,10 +1,11 @@
 import shutil
 import subprocess
 
-from bmde.core.exec import run_cmd, ExecOptions
+from bmde.core.exec import ExecOptions, run_cmd
 from bmde.core.os_utils import is_command_available
-from .backend import PatchBackend
+
 from ..spec import PatchSpecOpts
+from .backend import PatchBackend
 
 
 class HostRunner(PatchBackend):
@@ -18,10 +19,7 @@ class HostRunner(PatchBackend):
             entry = str(exec_opts.entrypoint)
         else:
             dlditool_path = shutil.which("dlditool")
-            if dlditool_path is None:
-                entry = "dlditool"
-            else:
-                entry = dlditool_path
+            entry = "dlditool" if dlditool_path is None else dlditool_path
         args = [entry, str(spec.nds_rom)]
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)

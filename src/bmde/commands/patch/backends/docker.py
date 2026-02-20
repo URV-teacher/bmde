@@ -3,9 +3,10 @@ import subprocess
 
 from bmde.core import logging
 from bmde.core.docker import can_run_docker
-from bmde.core.exec import run_cmd, ExecOptions
-from .backend import PatchBackend
+from bmde.core.exec import ExecOptions, run_cmd
+
 from ..spec import PatchSpecOpts
+from .backend import PatchBackend
 
 log = logging.get_logger(__name__)
 

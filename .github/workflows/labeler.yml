@@ -1,4 +1,7 @@
 name: "Labeler"
+# Automatically applies labels to pull requests based on repository configuration.
+# Triggered on pull request events (pull_request_target).
+
 on:
   - pull_request_target
 

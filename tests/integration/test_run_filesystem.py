@@ -1,12 +1,14 @@
-import os
-import subprocess
-import shutil
-import time
-import zipfile
-import urllib.request
 import logging
+import os
+import shutil
+import subprocess
+import time
+import urllib.request
+import zipfile
 from pathlib import Path
+
 import pytest
+
 from bmde.commands.build.command import build_command
 from bmde.commands.patch.command import patch_command
 from bmde.commands.run.command import run_command
@@ -145,7 +147,7 @@ def test_run_filesystem(tmp_path: Path):
 
     # The text in the file might use \n or \r\n. The expected string has \n.
     # We search for the main sentence.
-    search_phrase = "Hola, este es un test en DeSmuME".encode("utf-8")
+    search_phrase = b"Hola, este es un test en DeSmuME"
 
     if search_phrase in data:
         print("Verification successful (binary search)!")
