@@ -54,6 +54,7 @@ markdown_extensions:
       alternate_style: true
   - attr_list
   - md_in_html
+  - fenced_code
 
 plugins:
   - search
@@ -71,3 +72,7 @@ plugins:
             merge_init_into_class: true
   - mkdocs-typer2:
       pretty: true
+  - include-markdown
+
+exclude:
+  - 'getting-started/host_components_installation_substituted.md'

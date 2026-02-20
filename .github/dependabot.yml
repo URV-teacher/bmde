@@ -1,0 +1,61 @@
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "AleixMT"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+
+  # Maintain dependencies for Python
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "AleixMT"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+
+  # Maintain dependencies for Docker
+  - package-ecosystem: "docker"
+    directory: "/components/desmume-docker"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "AleixMT"
+
+  - package-ecosystem: "docker"
+    directory: "/components/insight-docker"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "AleixMT"
+
+  - package-ecosystem: "docker"
+    directory: "/components/devkitarm-nds-docker"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "AleixMT"
+
+  - package-ecosystem: "docker"
+    directory: "/components/dlditool-docker"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "AleixMT"
+
+  - package-ecosystem: "docker"
+    directory: "/components/git-urv-vpn-docker"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "AleixMT"

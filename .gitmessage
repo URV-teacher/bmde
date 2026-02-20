@@ -1,0 +1,22 @@
+# <type>: <subject>
+#
+# Allowed types:
+# ADDED:    New feature or capability
+# UPDATED:  Improvement to existing feature
+# REMOVED:  Removal of a feature
+# FIXED:    Bug fix
+# RELEASED: Release of a new version
+# CHANGED:  Changes that don't fit other categories (refactor, style, etc.)
+#
+# Subject: Brief summary of changes (imperative mood, no period at end)
+#
+# Body: More detailed explanation (optional). Wrap at 72 chars.
+#
+# Footer: Breaking changes, issue references (optional)
+#
+# Example:
+# ADDED: Add new build command
+#
+# Implements the build command using devkitARM docker container.
+#
+# Closes #123
