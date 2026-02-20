@@ -7,6 +7,7 @@ updates:
       interval: "weekly"
     reviewers:
       - "AleixMT"
+    target-branch: "develop"
     groups:
       dependencies:
         patterns:
@@ -19,6 +20,7 @@ updates:
       interval: "weekly"
     reviewers:
       - "AleixMT"
+    target-branch: "develop"
     groups:
       dependencies:
         patterns:
@@ -31,6 +33,8 @@ updates:
       interval: "monthly"
     reviewers:
       - "AleixMT"
+    target-branch: "develop"
+
 
   - package-ecosystem: "docker"
     directory: "/components/insight-docker"
@@ -38,6 +42,8 @@ updates:
       interval: "monthly"
     reviewers:
       - "AleixMT"
+    target-branch: "develop"
+
 
   - package-ecosystem: "docker"
     directory: "/components/devkitarm-nds-docker"
@@ -45,6 +51,8 @@ updates:
       interval: "monthly"
     reviewers:
       - "AleixMT"
+    target-branch: "develop"
+
 
   - package-ecosystem: "docker"
     directory: "/components/dlditool-docker"
@@ -52,6 +60,8 @@ updates:
       interval: "monthly"
     reviewers:
       - "AleixMT"
+    target-branch: "develop"
+
 
   - package-ecosystem: "docker"
     directory: "/components/git-urv-vpn-docker"
@@ -59,3 +69,5 @@ updates:
       interval: "monthly"
     reviewers:
       - "AleixMT"
+    target-branch: "develop"
+
