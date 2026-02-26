@@ -4,8 +4,8 @@ These are rules for a modern Python project using uv.
 
 ## Python Version
 
-Write for Python 3.11-3.13. Do NOT write code to support earlier versions of Python.
-Always use modern Python practices appropriate for Python 3.11-3.13.
+Write for Python 3.11. Do NOT write code to support earlier versions of Python.
+Always use modern Python practices appropriate for Python 3.11.
 
 Always use full type annotations, generics, and other modern practices.
 
@@ -19,18 +19,18 @@ Always use full type annotations, generics, and other modern practices.
 
 - You may use the following shortcuts
   ```shell
-  
+
   # Install all dependencies:
   make install
-  
+
   # Run linting (with ruff) and type checking (with basedpyright).
   # Note when you run this, ruff will auto-format and sort imports, resolving any
   # linter warnings about import ordering:
   make lint
-  
+
   # Run tests:
   make test
-  
+
   # Run uv sync, lint, and test in one command:
   make
   ```
@@ -128,7 +128,7 @@ Always use full type annotations, generics, and other modern practices.
   class Link(BaseModel):
     url: str
     title: str = None
-  
+
   # DO NOT write tests like this. They are trivial and only create clutter!
   def test_link_model():
     link = Link(url="https://example.com", title="Example")
@@ -157,7 +157,7 @@ Always use full type annotations, generics, and other modern practices.
     Media types. For broad categories only, to determine what processing
     is possible.
     """
-  
+
     text = "text"
     image = "image"
     audio = "audio"
@@ -208,13 +208,13 @@ Always use full type annotations, generics, and other modern practices.
       """
       Convenience function to check if a string or Path is a URL and if so return
       the `urlparse.ParseResult`.
-  
+
       Also returns false for Paths, so that it's easy to use local paths and URLs
       (`Locator`s) interchangeably. Can provide `HTTP_ONLY` or `HTTP_OR_FILE` to
       restrict to only certain schemes.
       """
       # Function body
-  
+
   def is_url(text: UnresolvedLocator, only_schemes: list[str] | None = None) -> bool:
       """
       Check if a string is a URL. For convenience, also returns false for
