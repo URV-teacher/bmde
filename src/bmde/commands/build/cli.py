@@ -1,18 +1,24 @@
-import os
-from pathlib import Path
 
 import typer
 
 from bmde.commands.build.command import build_command
 from bmde.config.schema import Settings
 from bmde.core import logging
-from bmde.core.shared_options import ArgumentsOpt, DirectoryOpt, BackendOpt, EntrypointOpt, DryRunOpt, BackgroundOpt, InteractiveOpt
+from bmde.core.shared_options import (
+    ArgumentsOpt,
+    BackendOpt,
+    BackgroundOpt,
+    DirectoryOpt,
+    DryRunOpt,
+    EntrypointOpt,
+    InteractiveOpt,
+)
 
 log = logging.get_logger(__name__)
 
 def build_controller(
         ctx: typer.Context,
-        directory: DirectoryOpt = Path(os.getcwd()),
+        directory: DirectoryOpt = None,
         arguments: ArgumentsOpt = None,
         backend: BackendOpt = None,
         background: BackgroundOpt = False,

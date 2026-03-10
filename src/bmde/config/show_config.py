@@ -6,10 +6,7 @@ from bmde.config.schema import Settings
 
 
 def get_settings(default_only: bool) -> str:
-    if default_only:
-        settings = Settings()
-    else:
-        settings = load_settings()
+    settings = Settings() if default_only else load_settings()
 
     # Convert to TOML and print
     toml_str = rtoml.dumps(settings.model_dump(mode="json", by_alias=True))

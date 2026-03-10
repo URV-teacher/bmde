@@ -9,7 +9,6 @@ import logging
 import os
 import pathlib
 from enum import Enum
-from typing import Optional
 
 log = logging.getLogger(
     __name__
@@ -22,7 +21,7 @@ NOW = datetime.datetime.now().strftime(DATE_FORMAT)
 DOCKER_DESMUME_DEBUG_NETWORK = "bmde-debug"
 
 
-class BackendOptions(str, Enum):
+class BackendOptions(Enum):
     """
     Common environment backends.
 
@@ -35,7 +34,7 @@ class BackendOptions(str, Enum):
     FLATPAK = "flatpak"
 
     @classmethod
-    def parse(cls, value: Optional[str]) -> Optional["BackendOptions"]:
+    def parse(cls, value: str | None) -> BackendOptions | None:
         """Parse case-insensitively; returns None if value is falsy."""
         log.debug("Executing function parse from Backend")
         if not value:
@@ -48,7 +47,7 @@ class BackendOptions(str, Enum):
             raise ValueError(f"Unknown environment '{value}'. Valid: {valid}") from exc
 
 
-class DockerOutputOptions(str, Enum):
+class DockerOutputOptions(Enum):
     """
     Execution environment backends. Obtained by composition with Backend class
     """
@@ -58,7 +57,7 @@ class DockerOutputOptions(str, Enum):
     NONE = "none"
 
     @classmethod
-    def parse(cls, value: Optional[str]) -> Optional[DockerOutputOptions]:
+    def parse(cls, value: str | None) -> DockerOutputOptions | None:
         """Parse case-insensitively; returns None if value is falsy."""
         log.debug("Executing function parse from DockerOutputName")
         if not value:
@@ -71,7 +70,7 @@ class DockerOutputOptions(str, Enum):
             raise ValueError(f"Unknown environment '{value}'. Valid: {valid}") from exc
 
 
-class LogLevel(str, Enum):
+class LogLevel(Enum):
     """
     Logical log levels for the CLI.
 
@@ -87,7 +86,7 @@ class LogLevel(str, Enum):
     QUIET = "quiet"
 
     @classmethod
-    def parse(cls, value: Optional[str]) -> Optional["LogLevel"]:
+    def parse(cls, value: str | None) -> LogLevel | None:
         """Parse case-insensitively; returns None if value is falsy."""
         print("Executing function parse from LogLevel")
         if not value:
@@ -100,7 +99,7 @@ class LogLevel(str, Enum):
             raise ValueError(f"Unknown log level '{value}'. Valid: {valid}") from exc
 
     @classmethod
-    def get_default_log_level(cls) -> "LogLevel":
+    def get_default_log_level(cls) -> LogLevel:
         return LogLevel.INFO
 
     def to_logging_level(self) -> int:

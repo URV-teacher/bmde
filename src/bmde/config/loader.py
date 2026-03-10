@@ -5,9 +5,9 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
-from .schema import Settings
 from ..core import logging
 from ..core.paths import find_upwards
+from .schema import Settings
 
 log = logging.get_logger(__name__)
 
@@ -53,7 +53,7 @@ def env_config(prefix: str = "BMDE_") -> dict[str, dict[str, str]]:
         parts = k[len(prefix) :].lower().split("_")
         if len(parts) >= 2:
             section, key = parts[0], "_".join(parts[1:])
-            if section not in result.keys():
+            if section not in result:
                 result[section] = {}
             result[section][key] = v
     log.debug(f"Parsed environment variables: {str(result)}")

@@ -2,32 +2,32 @@ from __future__ import annotations
 
 from pathlib import Path
 from subprocess import Popen
-from typing import Optional
 
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
-from .service import PatchService
-from .settings import PatchSettings
-from .spec import PatchSpec, PatchSpecOpts
+
 from ...config.loader import load_settings
 from ...core.file_utils import resolve_nds
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import BackendOptions
+from .service import PatchService
+from .settings import PatchSettings
+from .spec import PatchSpec, PatchSpecOpts
 
 log = logging.get_logger(__name__)
 
 
 def create_patch_spec(
-    d: Optional[Path],
-    nds_rom: Optional[Path] = None,
-    arguments: Optional[list[str]] = None,
-    backend: Optional[BackendOptions] = None,
+    d: Path | None,
+    nds_rom: Path | None = None,
+    arguments: list[str] | None = None,
+    backend: BackendOptions | None = None,
     background: bool = False,
     dry_run: bool = False,
-    entrypoint: Optional[Path] = None,
+    entrypoint: Path | None = None,
     interactive: bool = True,
-    settings: Optional[PatchSettings] = None,
+    settings: PatchSettings | None = None,
 ) -> PatchSpec:
 
     if d is None:
@@ -84,15 +84,15 @@ def execute_patch(spec: PatchSpec) -> int | Popen[bytes]:
 
 
 def patch_command(
-    d: Optional[Path],
-    nds_rom: Optional[Path] = None,
-    arguments: Optional[list[str]] = None,
-    backend: Optional[BackendOptions] = None,
+    d: Path | None,
+    nds_rom: Path | None = None,
+    arguments: list[str] | None = None,
+    backend: BackendOptions | None = None,
     background: bool = False,
     dry_run: bool = False,
-    entrypoint: Optional[Path] = None,
+    entrypoint: Path | None = None,
     interactive: bool = True,
-    settings: Optional[PatchSettings] = None,
+    settings: PatchSettings | None = None,
 ) -> int | Popen[bytes]:
 
     if settings is None:

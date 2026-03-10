@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 from bmde.commands.run.settings import RunSettings
@@ -11,5 +9,5 @@ class DebugSettings(BaseModel):
     run: RunSettings = RunSettings()
     execution_settings: ExecutionSettings = ExecutionSettings()
 
-    docker_screen: Optional[DockerOutputOptions] = DockerOutputOptions.HOST
-    docker_network: Optional[str] = None
+    docker_screen: DockerOutputOptions | None = DockerOutputOptions.HOST
+    docker_network: str | None = None

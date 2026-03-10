@@ -3,13 +3,14 @@ import subprocess
 from bmde.core import logging
 from bmde.core.docker import (
     can_run_docker,
-    ensure_network_is_present,
     docker_remove_network,
+    ensure_network_is_present,
 )
-from bmde.core.exec import run_cmd, ExecOptions
-from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK
-from .backend import DebugBackend
+from bmde.core.exec import ExecOptions, run_cmd
+from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK, DockerOutputOptions
+
 from ..spec import DebugSpecOpts
+from .backend import DebugBackend
 
 log = logging.get_logger(__name__)
 
@@ -30,7 +31,7 @@ class DockerRunner(DebugBackend):
         envs = []
         ports = []
 
-        if spec.docker_screen == "host":
+        if spec.docker_screen == DockerOutputOptions.HOST:
             mounts += ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
             envs += [
                 "-e",
@@ -44,7 +45,7 @@ class DockerRunner(DebugBackend):
                 "-e",
                 "VNC_PORT=5900",
             ]
-        if spec.docker_screen == "vnc":
+        if spec.docker_screen == DockerOutputOptions.VNC:
             ports += ["-p", "3000:3000", "-p", "3001:3001"]
             envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
         entry = []

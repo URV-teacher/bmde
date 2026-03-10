@@ -5,7 +5,7 @@ Reusable CLI argument definition.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional, Annotated
+from typing import Annotated
 
 import typer
 
@@ -14,7 +14,7 @@ from bmde.core.types import BackendOptions, DockerOutputOptions
 
 # Backend option for the rest of commands other than run
 BackendOpt = Annotated[
-    Optional[BackendOptions],
+    BackendOptions | None,
     typer.Option(
         "-b",
         "--backend",
@@ -25,13 +25,13 @@ BackendOpt = Annotated[
 
 # Arguments passed directly to the entrypoint
 ArgumentsOpt = Annotated[
-    Optional[list[str]],
+    list[str] | None,
     typer.Argument(help="Arguments that are passed to the backend entrypoint."),
 ]
 
 # Argument to send a directory
 DirectoryOpt = Annotated[
-    Optional[Path],
+    Path | None,
     typer.Option(
         "-d",
         "--directory",
@@ -47,7 +47,7 @@ DirectoryOpt = Annotated[
 
 # Path to file that will be used as entrypoint
 EntrypointOpt = Annotated[
-    Optional[Path],
+    Path | None,
     typer.Option("--entrypoint", help="Override backend entrypoint executable"),
 ]
 
@@ -67,7 +67,7 @@ InteractiveOpt = Annotated[
 ]
 
 LogFileOpt = Annotated[
-    Optional[Path], typer.Option("-l", "--log-file", help="Path to log file (optional)")
+    Path | None, typer.Option("-l", "--log-file", help="Path to log file (optional)")
 ]
 
 ShowConfigOpt = Annotated[
@@ -77,7 +77,8 @@ ShowConfigOpt = Annotated[
         "--show-config",
         callback=show_config_callback,
         is_eager=True,
-        help="Show current configuration options. Can be used to freeze BMDE arguments into a bmde.toml configuration file",
+        help="Show current configuration options. Can be used to freeze BMDE arguments into a bmde.toml configuration "
+        "file",
         is_flag=True,
     ),
 ]
@@ -122,7 +123,7 @@ VeryQuietOpt = Annotated[
 ]
 
 ConfigOpt = Annotated[
-    Optional[Path],
+    Path | None,
     typer.Option(
         "-c", "--config", help="Execution-specific config file (highest file priority)"
     ),
@@ -140,7 +141,7 @@ PortOpt = Annotated[
 ]
 
 DockerNetworkOpt = Annotated[
-    Optional[DockerOutputOptions],
+    str | None,
     typer.Option(
         "-N",
         "--docker-network",
@@ -152,7 +153,7 @@ DockerNetworkOpt = Annotated[
 
 
 DockerScreenOpt = Annotated[
-    Optional[DockerOutputOptions],
+    DockerOutputOptions | None,
     typer.Option(
         "-s",
         "--screen",
@@ -168,7 +169,7 @@ BackgroundOpt = Annotated[
 ]
 
 NdsRomOpt = Annotated[
-    Optional[Path],
+    Path | None,
     typer.Option(
         "-n",
         "--nds",
@@ -183,7 +184,7 @@ NdsRomOpt = Annotated[
 
 
 ElfRomOpt = Annotated[
-    Optional[Path],
+    Path | None,
     typer.Option(
         "-e",
         "--elf",
@@ -197,7 +198,7 @@ ElfRomOpt = Annotated[
 ]
 
 FatImageOpt = Annotated[
-    Optional[Path],
+    Path | None,
     typer.Option(
         "-i",
         "--image",
@@ -214,59 +215,59 @@ FatImageOpt = Annotated[
 
 
 SshUsernameOpt = Annotated[
-    Optional[str],
+    str | None,
     typer.Option("--ssh-user", help="User name for the SSH authentication of git"),
 ]
 
 SshPasswordOpt = Annotated[
-    Optional[str],
+    str | None,
     typer.Option(
         "--ssh-password", help="User password for the SSH authentication of git"
     ),
 ]
 
 SshHostOpt = Annotated[
-    Optional[str], typer.Option("--ssh-server", help="Hostname of the ssh server")
+    str | None, typer.Option("--ssh-server", help="Hostname of the ssh server")
 ]
 
 GitNameOpt = Annotated[
-    Optional[str],
+    str | None,
     typer.Option("--git-password", help="User name for git commit signature"),
 ]
 
 GitEmailOpt = Annotated[
-    Optional[str],
+    str | None,
     typer.Option("--git-email", help="User email for git commit signature"),
 ]
 
 VpnUsernameOpt = Annotated[
-    Optional[str],
+    str | None,
     typer.Option("--vpn-user", help="User name for forticlient authentication"),
 ]
 
 VpnPasswordOpt = Annotated[
-    Optional[str],
+    str | None,
     typer.Option("--vpn-password", help="User password for forticlient authentication"),
 ]
 
 VpnHostOpt = Annotated[
-    Optional[str], typer.Option("--vpn-gateway", help="VPN gateway for forticlient")
+    str | None, typer.Option("--vpn-gateway", help="VPN gateway for forticlient")
 ]
 
 VpnPortOpt = Annotated[
-    Optional[int], typer.Option("--vpn-port", help="VPN port for forticlient")
+    int | None, typer.Option("--vpn-port", help="VPN port for forticlient")
 ]
 
 VpnRealmOpt = Annotated[
-    Optional[str], typer.Option("--vpn-realm", help="VPN realm for forticlient")
+    str | None, typer.Option("--vpn-realm", help="VPN realm for forticlient")
 ]
 
 VpnCertOpt = Annotated[
-    Optional[str], typer.Option("--vpn-cert", help="VPN cert for forticlient")
+    str | None, typer.Option("--vpn-cert", help="VPN cert for forticlient")
 ]
 
 VpnTestDnsOpt = Annotated[
-    Optional[str],
+    str | None,
     typer.Option(
         "--vpn-test-dns",
         help="DNS direction that will be tested with an HTTP GET request to validate that we can access the "
@@ -276,7 +277,7 @@ VpnTestDnsOpt = Annotated[
 ]
 
 VpnTestIpOpt = Annotated[
-    Optional[str],
+    str | None,
     typer.Option(
         "--vpn-test-ip",
         help="IP direction that will be tested with an HTTP GET request to validate that we can access the internal "

@@ -3,10 +3,11 @@ import subprocess
 
 from bmde.core import logging
 from bmde.core.docker import can_run_docker
-from bmde.core.exec import run_cmd, ExecOptions
+from bmde.core.exec import ExecOptions, run_cmd
 from bmde.core.os_utils import host_uid_gid
-from .backend import BuildBackend
+
 from ..spec import BuildSpecOpts
+from .backend import BuildBackend
 
 log = logging.get_logger(__name__)
 

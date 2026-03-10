@@ -1,8 +1,8 @@
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Optional, Iterable
 
 
-def find_upwards(name: str, start: Path) -> Optional[Path]:
+def find_upwards(name: str, start: Path) -> Path | None:
     """
     Finds a file with the given name in the start path and in all of its predecessors and returns its path. If not,
     returns None.
@@ -25,7 +25,7 @@ def find_upwards(name: str, start: Path) -> Optional[Path]:
         cur = cur.parent
 
 
-def find_first(paths: Iterable[Path], pattern: str) -> Optional[Path]:
+def find_first(paths: Iterable[Path], pattern: str) -> Path | None:
     for p in paths:
         for hit in p.glob(pattern):
             return hit

@@ -4,19 +4,19 @@ from bmde.commands.run.command import run_command
 from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.shared_options import (
-    NdsRomOpt,
-    FatImageOpt,
     ArgumentsOpt,
-    DockerScreenOpt,
-    EntrypointOpt,
+    BackendOpt,
+    BackgroundOpt,
     DebugOpt,
-    PortOpt,
-    DryRunOpt,
     DirectoryOpt,
     DockerNetworkOpt,
-    BackgroundOpt,
+    DockerScreenOpt,
+    DryRunOpt,
+    EntrypointOpt,
+    FatImageOpt,
     InteractiveOpt,
-    BackendOpt,
+    NdsRomOpt,
+    PortOpt,
 )
 
 log = logging.get_logger(__name__)

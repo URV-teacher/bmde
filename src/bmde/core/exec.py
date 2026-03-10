@@ -3,7 +3,6 @@ from __future__ import annotations
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from bmde.core import logging
 from bmde.core.types import BackendOptions
@@ -13,14 +12,14 @@ log = logging.get_logger(__name__)
 
 @dataclass
 class ExecOptions:
-    dry_run: Optional[bool] | None = False
-    env: Optional[dict[str, str]] = None
-    cwd: Optional[str] = None
-    background: Optional[bool] = False
+    dry_run: bool | None | None = False
+    env: dict[str, str] | None = None
+    cwd: str | None = None
+    background: bool | None = False
     interactive: bool = True
-    backend: Optional[BackendOptions] = None
-    entrypoint: Optional[Path] = None
-    arguments: Optional[list[str]] = None
+    backend: BackendOptions | None = None
+    entrypoint: Path | None = None
+    arguments: list[str] | None = None
 
 
 def run_cmd(cmd: list[str], opts: ExecOptions) -> int | subprocess.Popen[bytes]:

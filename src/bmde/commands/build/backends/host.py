@@ -3,10 +3,11 @@ import shutil
 import subprocess
 
 from bmde.core import logging
-from bmde.core.exec import run_cmd, ExecOptions
+from bmde.core.exec import ExecOptions, run_cmd
 from bmde.core.os_utils import is_command_available
-from .backend import BuildBackend
+
 from ..spec import BuildSpecOpts
+from .backend import BuildBackend
 
 log = logging.get_logger(__name__)
 
@@ -52,10 +53,7 @@ class HostRunner(BuildBackend):
             entry = str(exec_opts.entrypoint)
         else:
             make_path = shutil.which("make")
-            if make_path is None:
-                entry = "make"
-            else:
-                entry = make_path
+            entry = "make" if make_path is None else make_path
         args = [entry, str(spec.d)]
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)

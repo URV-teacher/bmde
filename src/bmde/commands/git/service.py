@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from bmde.core import logging
 from bmde.core.service import Service
+
+from ...core.types import BackendOptions
 from .backends.backend import GitBackend
 from .backends.docker import DockerRunner
 from .backends.host import HostRunner
 from .spec import GitSpecOpts
-from ...core.types import BackendOptions
 
 log = logging.get_logger(__name__)
 

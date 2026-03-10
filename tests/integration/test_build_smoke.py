@@ -1,8 +1,10 @@
-import subprocess
-import shutil
 import logging
+import shutil
+import subprocess
 from pathlib import Path
+
 import pytest
+
 from bmde.commands.build.command import build_command
 from bmde.core.logging import setup_logging
 

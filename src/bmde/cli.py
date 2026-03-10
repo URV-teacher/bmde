@@ -12,14 +12,15 @@ from __future__ import annotations
 import typer
 from rich.console import Console
 
-# Import modules directly to ensure they are loaded and available
-import bmde.core.cli_global
 import bmde.commands.build.cli
+import bmde.commands.check.cli
+import bmde.commands.debug.cli
 import bmde.commands.git.cli
 import bmde.commands.patch.cli
 import bmde.commands.run.cli
-import bmde.commands.debug.cli
-import bmde.commands.check.cli
+
+# Import modules directly to ensure they are loaded and available
+import bmde.core.cli_global
 
 console = Console()
 app = typer.Typer(
