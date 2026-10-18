@@ -5,6 +5,7 @@ from bmde.core.docker import (
     can_run_docker,
     docker_remove_network,
     ensure_network_is_present,
+    host_pulse_docker_args,
     host_x11_docker_args,
 )
 from bmde.core.exec import ExecOptions, run_cmd
@@ -55,6 +56,13 @@ class DockerRunner(RunBackend):
         if spec.graphical_output == DockerOutputOptions.VNC:
             ports += ["-p", "3000:3000", "-p", "3001:3001"]
             envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
+
+        if spec.sound:
+            pulse_mounts, pulse_envs = host_pulse_docker_args()
+            mounts += pulse_mounts
+            envs += pulse_envs
+        else:
+            envs += ["-e", "DESMUME_USE_SOUND=0"]
 
         entry = []
         if exec_opts.entrypoint:

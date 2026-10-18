@@ -119,3 +119,47 @@ def host_x11_docker_args() -> tuple[list[str], list[str]]:
     mounts += ["-v", f"{source}:{CONTAINER_XAUTHORITY}:ro"]
     envs += ["-e", f"XAUTHORITY={CONTAINER_XAUTHORITY}"]
     return mounts, envs
+
+
+CONTAINER_PULSE_SOCKET = "/run/pulse/native"
+CONTAINER_PULSE_COOKIE = "/run/pulse/cookie"
+
+
+def _host_pulse_socket() -> Path | None:
+    server = os.environ.get("PULSE_SERVER")
+    if server:
+        if not server.startswith("unix:"):
+            return None
+        candidate = Path(server.removeprefix("unix:"))
+    else:
+        runtime_dir = os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")
+        candidate = Path(runtime_dir) / "pulse" / "native"
+    return candidate if candidate.is_socket() else None
+
+
+def _host_pulse_cookie() -> Path | None:
+    cookie = os.environ.get("PULSE_COOKIE")
+    candidate = Path(cookie) if cookie else Path.home() / ".config" / "pulse" / "cookie"
+    return candidate if candidate.is_file() else None
+
+
+def host_pulse_docker_args() -> tuple[list[str], list[str]]:
+    """
+    Return (mounts, envs) docker arguments that let a container play sound
+    through the host PulseAudio-compatible server (PulseAudio or PipeWire).
+    """
+    socket = _host_pulse_socket()
+    if socket is None:
+        log.warning(
+            "No host PulseAudio socket found; sound will not be heard. " "Is PulseAudio or pipewire-pulse running?"
+        )
+        return [], []
+
+    mounts = ["-v", f"{socket}:{CONTAINER_PULSE_SOCKET}"]
+    envs = ["-e", f"PULSE_SERVER=unix:{CONTAINER_PULSE_SOCKET}"]
+
+    cookie = _host_pulse_cookie()
+    if cookie is not None:
+        mounts += ["-v", f"{cookie}:{CONTAINER_PULSE_COOKIE}:ro"]
+        envs += ["-e", f"PULSE_COOKIE={CONTAINER_PULSE_COOKIE}"]
+    return mounts, envs

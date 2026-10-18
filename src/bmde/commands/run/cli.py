@@ -17,6 +17,7 @@ from bmde.core.shared_options import (
     InteractiveOpt,
     NdsRomOpt,
     PortOpt,
+    SoundOpt,
 )
 
 log = logging.get_logger(__name__)
@@ -37,8 +38,8 @@ def run_controller(
     entrypoint: EntrypointOpt = None,
     fat_image: FatImageOpt = None,
     graphical_output: DockerScreenOpt = None,
+    sound: SoundOpt = None,
 ) -> None:
-
     log.debug(
         "CLI options provided:\n"
         "- Arguments:\n"
@@ -56,6 +57,7 @@ def run_controller(
         f"- Entrypoint: {str(entrypoint)}\n"
         f"- FAT image: {str(fat_image)}\n"
         f"- Graphical output: {str(graphical_output)}\n"
+        f"- Sound: {str(sound)}\n"
     )
 
     settings: Settings = ctx.obj["settings"]
@@ -75,5 +77,6 @@ def run_controller(
         entrypoint=entrypoint,
         fat_image=fat_image,
         graphical_output=graphical_output,
+        sound=sound,
         settings=settings.run,
     )
