@@ -14,5 +14,3 @@ class BuildSpecOpts(BaseSpec):
 class BuildSpec(BaseSpec):
     SpecExecOpts: SpecExecOpts
     BuildSpecOpts: BuildSpecOpts
-
-

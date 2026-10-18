@@ -126,14 +126,15 @@ Always use full type annotations, generics, and other modern practices.
 
   ```python
   class Link(BaseModel):
-    url: str
-    title: str = None
+      url: str
+      title: str = None
+
 
   # DO NOT write tests like this. They are trivial and only create clutter!
   def test_link_model():
-    link = Link(url="https://example.com", title="Example")
-    assert link.url == "https://example.com"
-    assert link.title == "Example"
+      link = Link(url="https://example.com", title="Example")
+      assert link.url == "https://example.com"
+      assert link.title == "Example"
   ```
 
 ## Types and Type Annotations
@@ -153,17 +154,17 @@ Always use full type annotations, generics, and other modern practices.
   For example:
   ```python
   class MediaType(Enum):
-    """
-    Media types. For broad categories only, to determine what processing
-    is possible.
-    """
+      """
+      Media types. For broad categories only, to determine what processing
+      is possible.
+      """
 
-    text = "text"
-    image = "image"
-    audio = "audio"
-    video = "video"
-    webpage = "webpage"
-    binary = "binary"
+      text = "text"
+      image = "image"
+      audio = "audio"
+      video = "video"
+      webpage = "webpage"
+      binary = "binary"
   ```
 
 ## Guidelines for Literal Strings
@@ -174,6 +175,7 @@ Always use full type annotations, generics, and other modern practices.
   Example:
   ```python
   from textwrap import dedent
+
   markdown_content = dedent("""
       # Title 1
       Some text.
@@ -202,9 +204,7 @@ Always use full type annotations, generics, and other modern practices.
 
 - Here is an example of the correct style for docstrings:
   ```python
-  def check_if_url(
-      text: UnresolvedLocator, only_schemes: list[str] | None = None
-  ) -> ParseResult | None:
+  def check_if_url(text: UnresolvedLocator, only_schemes: list[str] | None = None) -> ParseResult | None:
       """
       Convenience function to check if a string or Path is a URL and if so return
       the `urlparse.ParseResult`.
@@ -214,6 +214,7 @@ Always use full type annotations, generics, and other modern practices.
       restrict to only certain schemes.
       """
       # Function body
+
 
   def is_url(text: UnresolvedLocator, only_schemes: list[str] | None = None) -> bool:
       """
@@ -260,9 +261,9 @@ Always use full type annotations, generics, and other modern practices.
   For example, when writing a class DO NOT blindly make delegation methods around public
   member variables. DO NOT write methods like this:
   ```python
-      def reassemble(self) -> str:
-        """Call the original reassemble method."""
-        return self.paragraph.reassemble()
+  def reassemble(self) -> str:
+      """Call the original reassemble method."""
+      return self.paragraph.reassemble()
   ```
   In general, the user can just call the enclosed objects methods, reducing code bloat.
 

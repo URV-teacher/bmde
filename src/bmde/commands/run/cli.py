@@ -7,6 +7,7 @@ from bmde.core.shared_options import (
     ArgumentsOpt,
     BackendOpt,
     BackgroundOpt,
+    ControlsOpt,
     DebugOpt,
     DirectoryOpt,
     DockerNetworkOpt,
@@ -28,7 +29,7 @@ def run_controller(
     nds_rom: NdsRomOpt = None,
     directory: DirectoryOpt = None,
     arguments: ArgumentsOpt = None,
-    arm9_debug_port: PortOpt = 1024,
+    arm9_debug_port: PortOpt = None,
     backend: BackendOpt = None,
     background: BackgroundOpt = False,
     interactive: InteractiveOpt = True,
@@ -39,6 +40,7 @@ def run_controller(
     fat_image: FatImageOpt = None,
     graphical_output: DockerScreenOpt = None,
     sound: SoundOpt = None,
+    controls: ControlsOpt = None,
 ) -> None:
     log.debug(
         "CLI options provided:\n"
@@ -58,11 +60,12 @@ def run_controller(
         f"- FAT image: {str(fat_image)}\n"
         f"- Graphical output: {str(graphical_output)}\n"
         f"- Sound: {str(sound)}\n"
+        f"- Controls: {str(controls)}\n"
     )
 
     settings: Settings = ctx.obj["settings"]
 
-    log.debug("Loaded settings:\n" f"{str(settings.run)}\n")
+    log.debug(f"Loaded settings:\n{str(settings.run)}\n")
     run_command(
         nds_rom=nds_rom,
         directory=directory,
@@ -78,5 +81,6 @@ def run_controller(
         fat_image=fat_image,
         graphical_output=graphical_output,
         sound=sound,
+        controls=controls,
         settings=settings.run,
     )

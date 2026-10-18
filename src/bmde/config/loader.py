@@ -108,9 +108,7 @@ def load_settings(explicit_config: Path | None = None) -> Settings:
 
     global_paths = [
         Path("/etc/bmde/bmde.toml"),  # 2) system-wide global config
-        Path(
-            os.path.expanduser("~/.config/bmde/bmde.toml")
-        ),  # 3) user-specific global config
+        Path(os.path.expanduser("~/.config/bmde/bmde.toml")),  # 3) user-specific global config
     ]
     for gp in global_paths:
         log.debug(f"Trying to read global config from {gp}")
@@ -118,9 +116,7 @@ def load_settings(explicit_config: Path | None = None) -> Settings:
 
     # 4) repo config (closest bmde.toml up-tree)
     start_path = Path.cwd()
-    log.debug(
-        f'Trying to find repo config "bmde.toml" starting from {start_path} and upwards.'
-    )
+    log.debug(f'Trying to find repo config "bmde.toml" starting from {start_path} and upwards.')
     repo_cfg = find_upwards("bmde.toml", start=start_path)
     if repo_cfg:
         log.debug(f"Trying to read repo config found in {repo_cfg}")

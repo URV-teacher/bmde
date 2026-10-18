@@ -18,14 +18,19 @@ Sound is played on the host by default. With the `docker` backend, `bmde` shares
 (PulseAudio or PipeWire's `pipewire-pulse`, found at `$XDG_RUNTIME_DIR/pulse/native` or `$PULSE_SERVER`) with the
 container. Use `--no-sound` (or `sound = false` under `[run]` in the config) to mute the emulator.
 
+With the `docker` backend, DeSmuME starts with the course's default controls and HUD options. Use
+`--controls PATH/TO/desmume.ini` (or `controls = "PATH/TO/desmume.ini"` under `[run]` in the config) to use your own
+controls. The file uses the format of the `desmume.ini` written by DeSmuME for Windows, so you can reuse that file
+directly. It is applied on every run, overriding changes to the controls made from the emulator window.
+
 With `--image PATH/TO/FAT/file.fat` the module will load the FAT image as file into the runner if possible.
 
 With `-e` or `--environment docker|(host|bmde)|flatpak` you can choose what backend you are using to execute the NDS
 binary.
 * With `docker`
-it uses the desmume-docker project to run the binary. Currently, this backend has no screen output, but it could be
-implemented in the future if the host has a VNC-compatible display server. The default entrypoint for this backend is
-`desmume-cli`
+it uses the desmume-docker project to run the binary. With `-s` or `--screen host|vnc|none` you choose how its window
+is shown: as a window of the desktop (`host`, the default), through VNC on port 5900 of `localhost` (`vnc`) or not
+shown (`none`).
 * With `host` uses the shell command `desmume` to run the binary, whatever is the implementation of the underlying
 binary. The default entrypoint for this backend is `desmume`.
 * With `flatpak` uses the FlatPak implementation of DeSmuME.
@@ -44,7 +49,7 @@ used for running the project.
 All options after `--` will be passed to the underlying entrypoint if possible.
 
 With `--debug`, the execution of the runner, if possible, starts with GDB stubs on and the runner waits for connection
-on port 1000.
+on port 1024. Use [`bmde debug`](debug.md) to also start a debugger connected to it.
 
 With `-p` or `--port`, you can choose which port to expose for the debugger to connect. This assumes `--debug`.
 

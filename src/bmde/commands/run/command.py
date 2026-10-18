@@ -31,7 +31,7 @@ def create_run_spec(
     nds_rom: Path | None,
     directory: Path | None,
     arguments: list[str] | None = None,
-    arm9_debug_port: int | None = 1000,
+    arm9_debug_port: int | None = None,
     backend: BackendOptions | None = None,
     background: bool | None = False,
     interactive: bool = True,
@@ -42,6 +42,7 @@ def create_run_spec(
     fat_image: Path | None = None,
     graphical_output: DockerOutputOptions | None = None,
     sound: bool | None = None,
+    controls: Path | None = None,
     settings: RunSettings | None = None,
 ) -> RunSpec:
     """
@@ -77,6 +78,7 @@ def create_run_spec(
             fat_image=fat_image if fat_image is not None else settings.fat_image,
             graphical_output=(graphical_output if graphical_output is not None else settings.graphical_output),
             sound=(sound if sound is not None else (settings.sound if settings.sound is not None else True)),
+            controls=controls if controls is not None else settings.controls,
         ),
         SpecExecOpts=SpecExecOpts(
             backend=(
@@ -121,6 +123,7 @@ def execute_run(
             interactive=spec.SpecExecOpts.interactive,
             entrypoint=spec.SpecExecOpts.entrypoint,
             arguments=spec.SpecExecOpts.arguments,
+            log_file=spec.SpecExecOpts.log_file,
         ),
     )
 
@@ -131,7 +134,7 @@ def run_command(
     nds_rom: Path | None = None,
     directory: Path | None = None,
     arguments: list[str] | None = None,
-    arm9_debug_port: int | None = 1024,
+    arm9_debug_port: int | None = None,
     backend: BackendOptions | None = None,
     background: bool | None = False,
     interactive: bool = True,
@@ -142,6 +145,7 @@ def run_command(
     fat_image: Path | None = None,
     graphical_output: DockerOutputOptions | None = None,
     sound: bool | None = None,
+    controls: Path | None = None,
     settings: RunSettings | None = None,
 ) -> int | Popen[bytes]:
     """
@@ -168,6 +172,7 @@ def run_command(
         fat_image=fat_image,
         graphical_output=graphical_output,
         sound=sound,
+        controls=controls,
         settings=settings,
     )
 

@@ -3,6 +3,7 @@ import subprocess
 from pathlib import Path
 
 from bmde.core import logging
+from bmde.core.types import DockerOutputOptions
 
 log = logging.get_logger(__name__)
 
@@ -90,6 +91,14 @@ def ensure_network_is_present(network_name: str) -> None:
         docker_create_network(network_name)
 
 
+def docker_project_dir(project: Path) -> str:
+    """
+    Path where a project is mounted in the BMDE containers. The debug information of ELFs built by the build command
+    refers to the sources under it, so the debugger needs the project mounted in the same path to find them.
+    """
+    return f"/input/{project.name}"
+
+
 CONTAINER_XAUTHORITY = "/tmp/.docker.xauth"
 
 
@@ -151,7 +160,7 @@ def host_pulse_docker_args() -> tuple[list[str], list[str]]:
     socket = _host_pulse_socket()
     if socket is None:
         log.warning(
-            "No host PulseAudio socket found; sound will not be heard. " "Is PulseAudio or pipewire-pulse running?"
+            "No host PulseAudio socket found; sound will not be heard. Is PulseAudio or pipewire-pulse running?"
         )
         return [], []
 
@@ -163,3 +172,22 @@ def host_pulse_docker_args() -> tuple[list[str], list[str]]:
         mounts += ["-v", f"{cookie}:{CONTAINER_PULSE_COOKIE}:ro"]
         envs += ["-e", f"PULSE_COOKIE={CONTAINER_PULSE_COOKIE}"]
     return mounts, envs
+
+
+CONTAINER_VNC_PORT = 5900
+
+
+def docker_screen_args(
+    output: DockerOutputOptions | None, vnc_host_port: int = CONTAINER_VNC_PORT
+) -> tuple[list[str], list[str], list[str]]:
+    """
+    Return (mounts, envs, ports) docker arguments to show the graphical output of a container of the BMDE images
+    (MODE of their entrypoint): as windows of the host X server, through a VNC server published at vnc_host_port,
+    or not at all.
+    """
+    if output == DockerOutputOptions.HOST:
+        mounts, envs = host_x11_docker_args()
+        return mounts, [*envs, "-e", "MODE=host"], []
+    if output == DockerOutputOptions.VNC:
+        return [], ["-e", "MODE=vnc"], ["-p", f"{vnc_host_port}:{CONTAINER_VNC_PORT}"]
+    return [], ["-e", "MODE=none"], []

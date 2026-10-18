@@ -10,7 +10,7 @@ from typing import Annotated
 import typer
 
 from bmde.config.show_config import show_config_callback, show_default_config_callback
-from bmde.core.types import BackendOptions, DockerOutputOptions
+from bmde.core.types import BackendOptions, DebuggerOptions, DockerOutputOptions
 
 # Backend option for the rest of commands other than run
 BackendOpt = Annotated[
@@ -18,7 +18,7 @@ BackendOpt = Annotated[
     typer.Option(
         "-b",
         "--backend",
-        help="Backend to execute command:" " host|docker|flatpak",
+        help="Backend to execute command: host|docker|flatpak",
         case_sensitive=False,
     ),
 ]
@@ -126,7 +126,12 @@ ConfigOpt = Annotated[
 DebugOpt = Annotated[bool, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)]
 
 # To specify the debug port in options
-PortOpt = Annotated[int, typer.Option("-p", "--port", help="Debug port (implies --debug)")]
+PortOpt = Annotated[int | None, typer.Option("-p", "--port", help="Debug port (implies --debug)")]
+
+DebuggerOpt = Annotated[
+    DebuggerOptions | None,
+    typer.Option("-g", "--debugger", help="Debugger connected to the emulator"),
+]
 
 DockerNetworkOpt = Annotated[
     str | None,
@@ -204,6 +209,19 @@ FatImageOpt = Annotated[
         readable=True,
         resolve_path=True,
         help="Path to FAT image (optional)",
+    ),
+]
+
+ControlsOpt = Annotated[
+    Path | None,
+    typer.Option(
+        "--controls",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        resolve_path=True,
+        help="Path to a DeSmuME desmume.ini with custom controls (and HUD options) (optional)",
     ),
 ]
 
@@ -289,6 +307,8 @@ __all__ = [
     "NdsRomOpt",
     "FatImageOpt",
     "SoundOpt",
+    "DebuggerOpt",
+    "ControlsOpt",
     "SshUsernameOpt",
     "SshPasswordOpt",
     "SshHostOpt",

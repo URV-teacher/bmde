@@ -10,6 +10,7 @@ debug = false
 arm9_debug_port = 1000
 # fat_image = "null"
 sound = true
+# controls = "path/to/desmume.ini"
 docker_network = "bmde-debug"
 
 [run.execution_settings]
@@ -61,8 +62,8 @@ dry_run = false
 backend = "docker"
 
 [debug]
-# docker_screen = "null"
-# docker_network = "null"
+debugger = "insight"
+docker_screen = "host"
 
 [debug.run]
 graphical_output = "host"
