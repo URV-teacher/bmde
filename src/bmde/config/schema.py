@@ -13,6 +13,8 @@ from bmde.config.logging_settings import LoggingSettings
 
 
 class Settings(BaseModel):
+    """Configuration of BMDE."""
+
     logging: LoggingSettings = LoggingSettings()
     run: RunSettings = RunSettings()
     build: BuildSettings = BuildSettings()
