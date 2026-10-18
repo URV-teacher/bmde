@@ -4,12 +4,12 @@ from bmde.core import logging
 from bmde.core.docker import (
     can_run_docker,
     docker_remove_network,
+    docker_screen_args,
     ensure_network_is_present,
     host_pulse_docker_args,
-    host_x11_docker_args,
 )
 from bmde.core.exec import ExecOptions, run_cmd
-from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK, DockerOutputOptions
+from bmde.core.types import DOCKER_DESMUME_DEBUG_HOST, DOCKER_DESMUME_DEBUG_NETWORK
 
 from ..spec import RunSpecOpts
 from .backend import RunBackend
@@ -29,36 +29,23 @@ class DockerRunner(RunBackend):
             "-v",
             "desmume_docker_config:/home/desmume/.config/desmume",
         ]
-        envs = []
-        ports = []
         img_opt = []
+        debug_opt = []
+
+        screen_mounts, envs, ports = docker_screen_args(spec.graphical_output)
+        mounts += screen_mounts
+
         if spec.debug:
-            ports += ["-p", "1024:1024"]  # Expose desmume to host on debug mode
+            port = spec.arm9_debug_port if spec.arm9_debug_port is not None else 1024
+            ports += ["-p", f"{port}:{port}"]  # Expose desmume to host on debug mode
+            debug_opt = [f"--arm9gdb={port}"]
 
         if spec.fat_image:
             mounts += ["-v", f"{spec.fat_image}:/fs/fat.img:rw"]
+            img_opt += ["--cflash-image", "/fs/fat.img"]
 
         if spec.controls:
             mounts += ["-v", f"{spec.controls}:/config/desmume.ini:ro"]
-            img_opt += ["--cflash-image", "/fs/fat.img"]
-
-        if spec.graphical_output == DockerOutputOptions.HOST:
-            x11_mounts, x11_envs = host_x11_docker_args()
-            mounts += x11_mounts
-            envs += [
-                *x11_envs,
-                "-e",
-                "MODE=host",
-                "-e",
-                "XVFB_DISPLAY=:99",
-                "-e",
-                "GEOMETRY=1024x768x24",
-                "-e",
-                "VNC_PORT=5900",
-            ]
-        if spec.graphical_output == DockerOutputOptions.VNC:
-            ports += ["-p", "3000:3000", "-p", "3001:3001"]
-            envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
 
         if spec.sound:
             pulse_mounts, pulse_envs = host_pulse_docker_args()
@@ -71,13 +58,6 @@ class DockerRunner(RunBackend):
         if exec_opts.entrypoint:
             entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
-        debug_opt = []
-        if spec.debug:
-            if spec.arm9_debug_port is not None:
-                debug_opt = [f"--arm9gdb={str(spec.arm9_debug_port)}"]
-            else:
-                debug_opt = ["--arm9gdb=1024"]
-
         arguments: list[str] = []
         if exec_opts.arguments is not None:
             arguments = list(exec_opts.arguments)
@@ -87,13 +67,14 @@ class DockerRunner(RunBackend):
 
         network_opt: list[str] = []
         if spec.debug:
-            network_opt += ["--name", "desmume", "--network", spec.docker_network]
+            network_opt += ["--name", DOCKER_DESMUME_DEBUG_HOST, "--network", spec.docker_network]
 
         run_args = [
             "docker",
             "run",
             "--pull=always",
             "--rm",
+            "--init",  # Forwards signals to the entrypoint, so stopping the container stops the emulator
         ]
 
         if exec_opts.interactive:
@@ -117,7 +98,7 @@ class DockerRunner(RunBackend):
             if spec.docker_network is not None:
                 docker_net = spec.docker_network
 
-        if docker_net is not None:
+        if docker_net is not None and not exec_opts.dry_run:
             ensure_network_is_present(docker_net)
 
         handle = run_cmd(run_args, exec_opts)

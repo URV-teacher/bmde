@@ -62,8 +62,8 @@ dry_run = false
 backend = "docker"
 
 [debug]
-# docker_screen = "null"
-# docker_network = "null"
+debugger = "insight"
+docker_screen = "host"
 
 [debug.run]
 graphical_output = "host"

@@ -10,7 +10,7 @@ from typing import Annotated
 import typer
 
 from bmde.config.show_config import show_config_callback, show_default_config_callback
-from bmde.core.types import BackendOptions, DockerOutputOptions
+from bmde.core.types import BackendOptions, DebuggerOptions, DockerOutputOptions
 
 # Backend option for the rest of commands other than run
 BackendOpt = Annotated[
@@ -126,7 +126,12 @@ ConfigOpt = Annotated[
 DebugOpt = Annotated[bool, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)]
 
 # To specify the debug port in options
-PortOpt = Annotated[int, typer.Option("-p", "--port", help="Debug port (implies --debug)")]
+PortOpt = Annotated[int | None, typer.Option("-p", "--port", help="Debug port (implies --debug)")]
+
+DebuggerOpt = Annotated[
+    DebuggerOptions | None,
+    typer.Option("-g", "--debugger", help="Debugger connected to the emulator"),
+]
 
 DockerNetworkOpt = Annotated[
     str | None,
@@ -302,6 +307,7 @@ __all__ = [
     "NdsRomOpt",
     "FatImageOpt",
     "SoundOpt",
+    "DebuggerOpt",
     "ControlsOpt",
     "SshUsernameOpt",
     "SshPasswordOpt",

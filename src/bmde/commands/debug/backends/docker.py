@@ -1,19 +1,18 @@
 import subprocess
+import sys
 
 from bmde.core import logging
-from bmde.core.docker import (
-    can_run_docker,
-    docker_remove_network,
-    ensure_network_is_present,
-    host_x11_docker_args,
-)
+from bmde.core.docker import can_run_docker, docker_project_dir, docker_screen_args
 from bmde.core.exec import ExecOptions, run_cmd
-from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK, DockerOutputOptions
+from bmde.core.types import DOCKER_DESMUME_DEBUG_HOST, BackendOptions
 
 from ..spec import DebugSpecOpts
 from .backend import DebugBackend
 
 log = logging.get_logger(__name__)
+
+# Host port of the VNC server of the debugger, next to the one of the emulator
+DEBUGGER_VNC_HOST_PORT = 5901
 
 
 class DockerRunner(DebugBackend):
@@ -22,57 +21,48 @@ class DockerRunner(DebugBackend):
 
     def run(self, spec: DebugSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         docker_img = "aleixmt/insight:latest"
+        project_dir = docker_project_dir(spec.elf.parent)
         mounts = [
             "-v",
-            f"{spec.elf.parent}:/input:ro",
+            f"{spec.elf.parent}:{project_dir}:ro",
+            "-v",
+            "insight_docker_config:/home/insight",  # Keeps the preferences, sessions and breakpoints of Insight
         ]
-        envs = []
-        ports = []
 
-        if spec.docker_screen == DockerOutputOptions.HOST:
-            x11_mounts, x11_envs = host_x11_docker_args()
-            mounts += x11_mounts
-            envs += [
-                *x11_envs,
-                "-e",
-                "MODE=host",
-                "-e",
-                "XVFB_DISPLAY=:99",
-                "-e",
-                "GEOMETRY=1024x768x24",
-                "-e",
-                "VNC_PORT=5900",
-            ]
-        if spec.docker_screen == DockerOutputOptions.VNC:
-            ports += ["-p", "3000:3000", "-p", "3001:3001"]
-            envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
+        screen_mounts, envs, ports = docker_screen_args(spec.docker_screen, vnc_host_port=DEBUGGER_VNC_HOST_PORT)
+        mounts += screen_mounts
+
+        # Reach the GDB stub of the emulator through the Docker network if it runs in a container, or through the host
+        emulator = spec.RunSpec
+        port = emulator.RunSpecOpts.arm9_debug_port if emulator.RunSpecOpts.arm9_debug_port is not None else 1024
+        if emulator.SpecExecOpts.backend == BackendOptions.DOCKER:
+            network = ["--network", emulator.RunSpecOpts.docker_network]
+            target = f"{DOCKER_DESMUME_DEBUG_HOST}:{port}"
+        else:
+            network = ["--add-host", "host.docker.internal:host-gateway"]
+            target = f"host.docker.internal:{port}"
+        envs += ["-e", f"DEBUGGER={spec.debugger.value}", "-e", f"GDB_TARGET={target}"]
+
         entry = []
         if exec_opts.entrypoint:
             entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
-        arguments: list[str] = []
-        if spec.elf is not None:
-            arguments += [f"/input/{spec.elf.name}"]
-
+        arguments = [spec.elf.name]
         if exec_opts.arguments is not None:
             arguments += list(exec_opts.arguments)
-
-        docker_net = DOCKER_DESMUME_DEBUG_NETWORK
-        if spec.docker_network is not None:
-            docker_net = spec.docker_network
-        network = ["--network", docker_net]
 
         run_args = [
             "docker",
             "run",
             "--pull=always",
             "--rm",
-            "-it",
-            "--cap-add=SYS_PTRACE",
-            "--security-opt",
-            "seccomp=unconfined",
+            # Terminal debuggers need a TTY, only available if bmde has one
+            "-it" if sys.stdin.isatty() else "-i",
             *network,
             *mounts,
+            # Same working directory as the build, so the debugger finds the sources of the ELF
+            "-w",
+            project_dir,
             *envs,
             *ports,
             *entry,
@@ -80,11 +70,4 @@ class DockerRunner(DebugBackend):
             *arguments,
         ]
 
-        ensure_network_is_present(docker_net)
-
-        handle = run_cmd(run_args, exec_opts)
-
-        if not exec_opts.background:
-            docker_remove_network(docker_net)
-
-        return handle
+        return run_cmd(run_args, exec_opts)

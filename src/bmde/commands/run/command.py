@@ -31,7 +31,7 @@ def create_run_spec(
     nds_rom: Path | None,
     directory: Path | None,
     arguments: list[str] | None = None,
-    arm9_debug_port: int | None = 1000,
+    arm9_debug_port: int | None = None,
     backend: BackendOptions | None = None,
     background: bool | None = False,
     interactive: bool = True,
@@ -123,6 +123,7 @@ def execute_run(
             interactive=spec.SpecExecOpts.interactive,
             entrypoint=spec.SpecExecOpts.entrypoint,
             arguments=spec.SpecExecOpts.arguments,
+            log_file=spec.SpecExecOpts.log_file,
         ),
     )
 
@@ -133,7 +134,7 @@ def run_command(
     nds_rom: Path | None = None,
     directory: Path | None = None,
     arguments: list[str] | None = None,
-    arm9_debug_port: int | None = 1024,
+    arm9_debug_port: int | None = None,
     backend: BackendOptions | None = None,
     background: bool | None = False,
     interactive: bool = True,

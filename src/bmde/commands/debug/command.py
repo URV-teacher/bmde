@@ -5,6 +5,8 @@ into the specification of the pure logic of the command, for example, translatin
 
 from __future__ import annotations
 
+import subprocess
+import tempfile
 from pathlib import Path
 from subprocess import Popen
 
@@ -12,21 +14,26 @@ from bmde.core import logging
 from bmde.core.exec import ExecOptions
 
 from ...config.loader import load_settings
-from ...core.file_utils import resolve_elf, resolve_nds
+from ...core.docker import docker_remove_network
+from ...core.file_utils import resolve_elf
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import (
-    DOCKER_DESMUME_DEBUG_NETWORK,
     BackendOptions,
+    DebuggerOptions,
     DockerOutputOptions,
 )
-from ..run.service import RunService
-from ..run.spec import RunSpec, RunSpecOpts
+from ..run.command import create_run_spec, execute_run
 from .service import DebugService
 from .settings import DebugSettings
 from .spec import DebugSpec, DebugSpecOpts
 
 log = logging.get_logger(__name__)
+
+# Seconds to wait for the emulator to exit after asking it to stop
+EMULATOR_STOP_TIMEOUT = 10
+# The emulator logs every packet of the debugger, which would mess the terminal of terminal debuggers
+EMULATOR_LOG_FILE = Path(tempfile.gettempdir()) / "bmde-debug-emulator.log"
 
 
 def create_debug_spec(
@@ -35,17 +42,17 @@ def create_debug_spec(
     arguments: list[str] | None = None,
     backend: BackendOptions | None = None,
     background: bool = False,
+    debugger: DebuggerOptions | None = None,
     docker_screen: DockerOutputOptions | None = None,
     dry_run: bool = False,
     entrypoint: Path | None = None,
-    port: int = 1024,
+    port: int | None = None,
     settings: DebugSettings | None = None,
 ) -> DebugSpec:
     if settings is None:
         settings = DebugSettings()
 
     elf_resolved, _ = resolve_elf(elf, cwd=Path.cwd())
-    nds_resolved, _ = resolve_nds(nds, cwd=Path.cwd())
 
     # Default args are prepended to CLI args
     passed_args: list[str] = []
@@ -54,41 +61,30 @@ def create_debug_spec(
     if settings.execution_settings.arguments is not None:
         passed_args += settings.execution_settings.arguments
 
+    # The emulator is run as the run command would do, but in debug mode and in the background
+    run_spec = create_run_spec(
+        nds_rom=nds,
+        directory=Path.cwd(),
+        arm9_debug_port=port,
+        background=True,
+        interactive=False,
+        debug=True,
+        dry_run=dry_run,
+        graphical_output=docker_screen,
+        settings=settings.run,
+    )
+    run_spec.SpecExecOpts.log_file = EMULATOR_LOG_FILE
+
     return DebugSpec(
         DebugSpecOpts=DebugSpecOpts(
             elf=elf_resolved,
-            docker_screen=(docker_screen if docker_screen is not None else settings.docker_screen),
-            docker_network=(settings.docker_network if settings.docker_network else DOCKER_DESMUME_DEBUG_NETWORK),
-            RunSpec=RunSpec(
-                RunSpecOpts=RunSpecOpts(
-                    nds_rom=nds_resolved,
-                    fat_image=settings.run.fat_image,
-                    graphical_output=settings.run.graphical_output,
-                    sound=(settings.run.sound if settings.run.sound is not None else True),
-                    controls=settings.run.controls,
-                    debug=True,
-                    arm9_debug_port=(
-                        port
-                        if port is not None
-                        else (settings.run.arm9_debug_port if settings.run.arm9_debug_port is not None else 1024)
-                    ),
-                    docker_network=(
-                        settings.run.docker_network if settings.run.docker_network else DOCKER_DESMUME_DEBUG_NETWORK
-                    ),
-                ),
-                SpecExecOpts=SpecExecOpts(
-                    dry_run=dry_run,
-                    backend=(
-                        settings.run.execution_settings.backend
-                        if settings.run.execution_settings.backend is not None
-                        else BackendOptions.DOCKER
-                    ),
-                    background=True,
-                    entrypoint=settings.run.execution_settings.entrypoint,
-                    arguments=arguments,
-                    interactive=False,
-                ),
+            debugger=(
+                debugger
+                if debugger is not None
+                else (settings.debugger if settings.debugger is not None else DebuggerOptions.INSIGHT)
             ),
+            docker_screen=(docker_screen if docker_screen is not None else settings.docker_screen),
+            RunSpec=run_spec,
         ),
         SpecExecOpts=SpecExecOpts(
             backend=(
@@ -104,39 +100,62 @@ def create_debug_spec(
             arguments=passed_args,
             dry_run=(dry_run if dry_run is not None else settings.execution_settings.dry_run),
             background=(background if background is not None else settings.execution_settings.background),
-            interactive=False,
+            interactive=True,
         ),
     )
+
+
+def stop_emulator(spec: DebugSpec, emulator: int | Popen[bytes]) -> None:
+    """
+    Stops the emulator started by execute_debug and removes the resources created for it.
+    """
+    if isinstance(emulator, Popen) and emulator.poll() is None:
+        log.info("Stopping the emulator")
+        emulator.terminate()
+        try:
+            emulator.wait(timeout=EMULATOR_STOP_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            emulator.kill()
+            emulator.wait()
+
+    run_spec = spec.DebugSpecOpts.RunSpec
+    if run_spec.SpecExecOpts.backend == BackendOptions.DOCKER and not run_spec.SpecExecOpts.dry_run:
+        try:
+            docker_remove_network(run_spec.RunSpecOpts.docker_network)
+        except subprocess.CalledProcessError:
+            log.warning(f"Could not remove Docker network '{run_spec.RunSpecOpts.docker_network}'")
 
 
 def execute_debug(spec: DebugSpec) -> int | Popen[bytes]:
-    handle = RunService().run(
-        spec.DebugSpecOpts.RunSpec.RunSpecOpts,
-        ExecOptions(
-            dry_run=spec.DebugSpecOpts.RunSpec.SpecExecOpts.dry_run,
-            background=spec.DebugSpecOpts.RunSpec.SpecExecOpts.background,
-            backend=spec.DebugSpecOpts.RunSpec.SpecExecOpts.backend,
-            entrypoint=spec.DebugSpecOpts.RunSpec.SpecExecOpts.entrypoint,
-            arguments=spec.DebugSpecOpts.RunSpec.SpecExecOpts.arguments,
-        ),
-    )
+    """
+    Runs the emulator in debug mode and a debugger connected to it. The emulator is stopped when the debugger exits.
+    """
+    log.info(f"Emulator output is written to {EMULATOR_LOG_FILE}")
+    emulator = execute_run(spec.DebugSpecOpts.RunSpec)
 
-    code = DebugService().run(
-        spec.DebugSpecOpts,
-        ExecOptions(
-            dry_run=spec.SpecExecOpts.dry_run,
-            background=spec.SpecExecOpts.background,
-            entrypoint=spec.SpecExecOpts.entrypoint,
-            arguments=spec.SpecExecOpts.arguments,
-            backend=spec.SpecExecOpts.backend,
-            interactive=spec.SpecExecOpts.interactive,
-        ),
-    )
+    try:
+        debugger = DebugService().run(
+            spec.DebugSpecOpts,
+            ExecOptions(
+                dry_run=spec.SpecExecOpts.dry_run,
+                background=spec.SpecExecOpts.background,
+                entrypoint=spec.SpecExecOpts.entrypoint,
+                arguments=spec.SpecExecOpts.arguments,
+                backend=spec.SpecExecOpts.backend,
+                interactive=spec.SpecExecOpts.interactive,
+            ),
+        )
+    except BaseException:
+        stop_emulator(spec, emulator)
+        raise
 
-    if isinstance(handle, Popen):
-        handle.communicate()
+    if isinstance(debugger, Popen):
+        # Debugger in the background: the emulator is left running, managed by the caller along with the debugger
+        log.info("Debugger and emulator running in the background")
+        return debugger
 
-    return code
+    stop_emulator(spec, emulator)
+    return debugger
 
 
 def debug_command(
@@ -145,10 +164,11 @@ def debug_command(
     arguments: list[str] | None = None,
     backend: BackendOptions | None = None,
     background: bool = False,
+    debugger: DebuggerOptions | None = None,
     docker_screen: DockerOutputOptions | None = None,
     dry_run: bool = False,
     entrypoint: Path | None = None,
-    port: int = 1024,
+    port: int | None = None,
     settings: DebugSettings | None = None,
 ) -> int | Popen[bytes]:
     if settings is None:
@@ -164,6 +184,7 @@ def debug_command(
         arguments=arguments,
         backend=backend,
         background=background,
+        debugger=debugger,
         docker_screen=docker_screen,
         dry_run=dry_run,
         entrypoint=entrypoint,
@@ -171,6 +192,6 @@ def debug_command(
         settings=settings,
     )
 
-    log.debug("Spec for debug command:\n" f"- {str(settings)}\n")
+    log.debug("Spec for debug command:\n" f"- {str(spec)}\n")
 
     return execute_debug(spec)
