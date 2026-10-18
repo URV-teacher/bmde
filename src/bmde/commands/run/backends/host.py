@@ -40,6 +40,8 @@ class HostRunner(RunBackend):
             args += ["--arm9gdb-port", str(spec.arm9_debug_port), "--gdb-stub"]
         if not spec.sound:
             args += ["--disable-sound"]
+        if spec.controls:
+            log.warning(f"Custom controls are only applied with the docker backend, ignoring {spec.controls}")
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)
         return run_cmd(args, exec_opts)

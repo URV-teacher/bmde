@@ -37,6 +37,9 @@ class DockerRunner(RunBackend):
 
         if spec.fat_image:
             mounts += ["-v", f"{spec.fat_image}:/fs/fat.img:rw"]
+
+        if spec.controls:
+            mounts += ["-v", f"{spec.controls}:/config/desmume.ini:ro"]
             img_opt += ["--cflash-image", "/fs/fat.img"]
 
         if spec.graphical_output == DockerOutputOptions.HOST:

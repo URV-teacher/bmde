@@ -207,6 +207,19 @@ FatImageOpt = Annotated[
     ),
 ]
 
+ControlsOpt = Annotated[
+    Path | None,
+    typer.Option(
+        "--controls",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        resolve_path=True,
+        help="Path to a DeSmuME desmume.ini with custom controls (and HUD options) (optional)",
+    ),
+]
+
 # Git
 
 
@@ -289,6 +302,7 @@ __all__ = [
     "NdsRomOpt",
     "FatImageOpt",
     "SoundOpt",
+    "ControlsOpt",
     "SshUsernameOpt",
     "SshPasswordOpt",
     "SshHostOpt",

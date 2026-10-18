@@ -7,6 +7,7 @@ from bmde.core.shared_options import (
     ArgumentsOpt,
     BackendOpt,
     BackgroundOpt,
+    ControlsOpt,
     DebugOpt,
     DirectoryOpt,
     DockerNetworkOpt,
@@ -39,6 +40,7 @@ def run_controller(
     fat_image: FatImageOpt = None,
     graphical_output: DockerScreenOpt = None,
     sound: SoundOpt = None,
+    controls: ControlsOpt = None,
 ) -> None:
     log.debug(
         "CLI options provided:\n"
@@ -58,6 +60,7 @@ def run_controller(
         f"- FAT image: {str(fat_image)}\n"
         f"- Graphical output: {str(graphical_output)}\n"
         f"- Sound: {str(sound)}\n"
+        f"- Controls: {str(controls)}\n"
     )
 
     settings: Settings = ctx.obj["settings"]
@@ -78,5 +81,6 @@ def run_controller(
         fat_image=fat_image,
         graphical_output=graphical_output,
         sound=sound,
+        controls=controls,
         settings=settings.run,
     )

@@ -18,6 +18,11 @@ Sound is played on the host by default. With the `docker` backend, `bmde` shares
 (PulseAudio or PipeWire's `pipewire-pulse`, found at `$XDG_RUNTIME_DIR/pulse/native` or `$PULSE_SERVER`) with the
 container. Use `--no-sound` (or `sound = false` under `[run]` in the config) to mute the emulator.
 
+With the `docker` backend, DeSmuME starts with the course's default controls and HUD options. Use
+`--controls PATH/TO/desmume.ini` (or `controls = "PATH/TO/desmume.ini"` under `[run]` in the config) to use your own
+controls. The file uses the format of the `desmume.ini` written by DeSmuME for Windows, so you can reuse that file
+directly. It is applied on every run, overriding changes to the controls made from the emulator window.
+
 With `--image PATH/TO/FAT/file.fat` the module will load the FAT image as file into the runner if possible.
 
 With `-e` or `--environment docker|(host|bmde)|flatpak` you can choose what backend you are using to execute the NDS

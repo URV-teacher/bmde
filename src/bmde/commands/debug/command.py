@@ -65,6 +65,7 @@ def create_debug_spec(
                     fat_image=settings.run.fat_image,
                     graphical_output=settings.run.graphical_output,
                     sound=(settings.run.sound if settings.run.sound is not None else True),
+                    controls=settings.run.controls,
                     debug=True,
                     arm9_debug_port=(
                         port
