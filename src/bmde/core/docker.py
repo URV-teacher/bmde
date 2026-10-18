@@ -160,7 +160,7 @@ def host_pulse_docker_args() -> tuple[list[str], list[str]]:
     socket = _host_pulse_socket()
     if socket is None:
         log.warning(
-            "No host PulseAudio socket found; sound will not be heard. " "Is PulseAudio or pipewire-pulse running?"
+            "No host PulseAudio socket found; sound will not be heard. Is PulseAudio or pipewire-pulse running?"
         )
         return [], []
 

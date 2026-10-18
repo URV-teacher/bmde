@@ -65,7 +65,7 @@ def run_controller(
 
     settings: Settings = ctx.obj["settings"]
 
-    log.debug("Loaded settings:\n" f"{str(settings.run)}\n")
+    log.debug(f"Loaded settings:\n{str(settings.run)}\n")
     run_command(
         nds_rom=nds_rom,
         directory=directory,

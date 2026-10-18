@@ -110,9 +110,7 @@ def get_logger(name: str) -> ExtendedLogger:
     return cast(ExtendedLogger, logging.getLogger(name))
 
 
-def process_log_flags(
-    very_verbose: bool, verbose: bool, quiet: bool, very_quiet: bool
-) -> tuple[LogLevel | None, bool]:
+def process_log_flags(very_verbose: bool, verbose: bool, quiet: bool, very_quiet: bool) -> tuple[LogLevel | None, bool]:
     more_than_one_flag = False
     flag_counter = 0
     for flag in (very_verbose, verbose, quiet, very_quiet):

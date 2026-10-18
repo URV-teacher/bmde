@@ -1,36 +1,76 @@
+# Every check here just calls a Makefile target - the Makefile is the single place that defines what
+# "linted", "formatted" and "tested" mean for this repo, and CI calls the exact same targets (see
+# .github/workflows/lint.yml and test.yml).
+#
+# This means every tool used by a "make ..." hook must already be installed in the project's own venv
+# (`make dev`) - pre-commit does not manage separate per-hook environments or version pins for them; those
+# versions live solely in pyproject.toml's dev dependencies.
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+  - repo: local
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-toml
-      - id: check-added-large-files
-      - id: check-merge-conflict
-      - id: check-case-conflict
+      - id: fmt-ruff
+        name: fmt-ruff (make fmt-ruff)
+        entry: make fmt-ruff
+        language: system
+        pass_filenames: false
 
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.0
-    hooks:
-      - id: ruff
-        args: [ --fix ]
-      - id: ruff-format
+      - id: fmt-ruff-format
+        name: fmt-ruff-format (make fmt-ruff-format)
+        entry: make fmt-ruff-format
+        language: system
+        pass_filenames: false
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
-    hooks:
-      - id: mypy
-        args: [--strict, --ignore-missing-imports]
-        additional_dependencies:
-          - "typer>=0.9.0"
-          - "pydantic>=2.0.0"
-          - "pydantic-settings"
-          - "rich>=13.0.0"
-          - "rtoml"
+      - id: fmt-hygiene
+        name: fmt-hygiene (make fmt-hygiene)
+        entry: make fmt-hygiene
+        language: system
+        pass_filenames: false
 
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.9.0.6
-    hooks:
-      - id: shellcheck
-        args: ["--external-sources"]
+      - id: lint-mypy
+        name: lint-mypy (make lint-mypy)
+        entry: make lint-mypy
+        language: system
+        pass_filenames: false
+
+      - id: lint-yaml
+        name: lint-yaml (make lint-yaml)
+        entry: make lint-yaml
+        language: system
+        pass_filenames: false
+
+      - id: lint-toml
+        name: lint-toml (make lint-toml)
+        entry: make lint-toml
+        language: system
+        pass_filenames: false
+
+      - id: lint-large-files
+        name: lint-large-files (make lint-large-files)
+        entry: make lint-large-files
+        language: system
+        pass_filenames: false
+
+      - id: lint-merge-conflict
+        name: lint-merge-conflict (make lint-merge-conflict)
+        entry: make lint-merge-conflict
+        language: system
+        pass_filenames: false
+
+      - id: lint-case-conflict
+        name: lint-case-conflict (make lint-case-conflict)
+        entry: make lint-case-conflict
+        language: system
+        pass_filenames: false
+
+      - id: lint-shellcheck
+        name: lint-shellcheck (make lint-shellcheck)
+        entry: make lint-shellcheck
+        language: system
+        pass_filenames: false
+
+      - id: test
+        name: test (make test)
+        entry: make test
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

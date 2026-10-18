@@ -176,7 +176,7 @@ def debug_command(
         configure_logging_from_settings(settings=full_settings)
         settings = full_settings.debug
 
-    log.debug("Settings for debug command:\n" f"- {str(settings)}\n")
+    log.debug(f"Settings for debug command:\n- {str(settings)}\n")
 
     spec = create_debug_spec(
         nds=nds,
@@ -192,6 +192,6 @@ def debug_command(
         settings=settings,
     )
 
-    log.debug("Spec for debug command:\n" f"- {str(spec)}\n")
+    log.debug(f"Spec for debug command:\n- {str(spec)}\n")
 
     return execute_debug(spec)

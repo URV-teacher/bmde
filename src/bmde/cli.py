@@ -23,9 +23,7 @@ import bmde.commands.run.cli
 import bmde.core.cli_global
 
 console = Console()
-app = typer.Typer(
-    add_completion=False, help="BMDE CLI", no_args_is_help=True
-)  # TODO Completion does not work
+app = typer.Typer(add_completion=False, help="BMDE CLI", no_args_is_help=True)  # TODO Completion does not work
 
 # Use the imported modules directly
 app.callback()(bmde.core.cli_global.cli_global_callback)

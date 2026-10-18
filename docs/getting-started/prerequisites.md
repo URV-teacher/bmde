@@ -5,8 +5,8 @@ This CLI has been developed in Ubuntu Linux 20.04.6 LTS (Focal Fossa), so that i
 version to use. The CLI should work in other Linux systems with minor to none changes to the installation process.
 
 #### Root permissions
-You will need root permissions either to do installations or using the bundled Docker components. Usually these 
-permissions are acquired using the `sudo` command. 
+You will need root permissions either to do installations or using the bundled Docker components. Usually these
+permissions are acquired using the `sudo` command.
 
 #### Python
 To run the CLI you will need Python installed in your system.
@@ -16,10 +16,10 @@ In Debian-like systems you can install it with:
 sudo apt install -y python
 ```
 
-The recommended version to use for Python is 3.11.  
+The recommended version to use for Python is 3.11.
 
 #### `make`
-You can optionally install `make` to automate some of the common operation for the development of the project, such as 
+You can optionally install `make` to automate some of the common operation for the development of the project, such as
 the creation of the virtual environment.
 
 In Debian-like systems you can install it with:
@@ -27,16 +27,16 @@ In Debian-like systems you can install it with:
 sudo apt install -y make
 ```
 
-#### Manual-installed components or `docker` 
-You will also need the components of the CLI installed. In this case you can either install them into your system 
-manually and 
-select `host` as your backend when using the CLI to use those installations, or you can use the Docker containers that 
+#### Manual-installed components or `docker`
+You will also need the components of the CLI installed. In this case you can either install them into your system
+manually and
+select `host` as your backend when using the CLI to use those installations, or you can use the Docker containers that
 come bundled with
 the CLI by selecting `docker` as your backend when using the CLI.
 
-You can also mix and match `docker`-installed components with `host`-installed components, so there is no need to 
-install all components of the same type. Exceptionally, `flathub` is another possible backend to use, but only for the 
-run command. 
+You can also mix and match `docker`-installed components with `host`-installed components, so there is no need to
+install all components of the same type. Exceptionally, `flathub` is another possible backend to use, but only for the
+run command.
 
 ##### `flathub`
 Follow the [oficial installation guide][flathub-setup-url].
@@ -48,7 +48,7 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 ```
 
 ##### `docker`
-Docker components are easier to use because they do not need an installation and are recommended backend to use for all 
+Docker components are easier to use because they do not need an installation and are recommended backend to use for all
 components.
 
 You should install Docker by following the [official Docker installation guide][docker-installation-guide].
@@ -82,7 +82,7 @@ Currently, the CLI calls `docker` directly, so you either need to:
 * Add your user to the Docker group.
 
 It is recommended to add your user to the `docker` group, so that you do not need to log in as another user or add
-`sudo` in front of your call to BMDE each time. 
+`sudo` in front of your call to BMDE each time.
 
 To add yourself to the Docker group you can use this command:
 ```shell
@@ -95,11 +95,11 @@ You need to reboot or log out / log in for these changes to take effect.
 You can also install and use the components of the BMDE manually and use them in the CLI.
 
 ###### devkitARM
-This is the most complex component to install manually, but it can be done. 
+This is the most complex component to install manually, but it can be done.
 
-You will need to download [`libnds`][libnds-bin] 
-and [`devkitARMv46`][devkitarm-bin], 
-decompress them in a folder of your machine and create 
+You will need to download [`libnds`][libnds-bin]
+and [`devkitARMv46`][devkitarm-bin],
+decompress them in a folder of your machine and create
 environment variables that point to your installation.
 
 The variables are the following:

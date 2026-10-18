@@ -1,27 +1,27 @@
-# BMDE host components installation in Linux 
+# BMDE host components installation in Linux
 
 # 1. Objectives
 
-The objective of this doc is to explain how to install and verify installation in the host of the **BMDE toolchain** 
+The objective of this doc is to explain how to install and verify installation in the host of the **BMDE toolchain**
 components. The BMDE is used in subjects:
 
 * *Computers* (primary focus): The whole Computers subject uses all software described in this documentation.
-* *Operating Systems Structure (ESO)* (secondary focus): Only the practical part of this subject needs all software 
+* *Operating Systems Structure (ESO)* (secondary focus): Only the practical part of this subject needs all software
   described in this documentation.
-* *Fundamentals of Computers (FC)* (tertiary focus): Only debug, build and edit. 
+* *Fundamentals of Computers (FC)* (tertiary focus): Only debug, build and edit.
 
 
 ---
 
 # 2. Deployment Strategy and Docker Considerations
 
-Since **Milax** is the de-facto Linux environment used by students, and the system image is managed centrally, the 
-recommended approach is to use bare-metal installations, instead of using the Docker based installations already built 
-for the BMDE CLI. 
+Since **Milax** is the de-facto Linux environment used by students, and the system image is managed centrally, the
+recommended approach is to use bare-metal installations, instead of using the Docker based installations already built
+for the BMDE CLI.
 
-When tools are already deployed directly on an 
-operating system under full administrative control (as milax is), Docker does not provide significant added value. 
-Therefore, a 
+When tools are already deployed directly on an
+operating system under full administrative control (as milax is), Docker does not provide significant added value.
+Therefore, a
 **native package-based installation** is preferred.
 
 Docker may still be offered as an **optional alternative**, knowing Docker itself is installed on the milax image. It is
@@ -29,10 +29,10 @@ not necessary to integrate specific Docker images directly into the Milax distri
 
 ---
 
-# 3. BMDE operations vs software components 
+# 3. BMDE operations vs software components
 
-A component can be understood as an independent piece of software. One or more components are used together for each 
-operation of the BMDE. 
+A component can be understood as an independent piece of software. One or more components are used together for each
+operation of the BMDE.
 
 This guide will explain how to:
 * Install each component, either the explanation of each step and the proposed commands to do it.
@@ -56,14 +56,14 @@ Each code snippet assume that previous snippets have been run successfully.
 Snippets can be executed:
 * Manually, copying code line by line to a terminal
 * Using the corresponding file for that snippet. The corresponding file for each snippet can be found in the source code
-  of each snippet in this guide. This is because each snippet is embedded in the docs with mkdocs or with the script 
+  of each snippet in this guide. This is because each snippet is embedded in the docs with mkdocs or with the script
   `scripts/render-guide.py`. Each script can be run with `bash components/COMPONENT/scripts/SCRIPT.sh`.
 * Using an IDE that supports running markdown snippets or installing extensions for that purpose. In PyCharm
-  you can click in the green button of each snippet to run it in the embedded terminal. We recommend unchecking 
+  you can click in the green button of each snippet to run it in the embedded terminal. We recommend unchecking
   `Close session when it ends`, in *Settings->Tools->Terminal* to see the results after running the script. Also, notice
-  that there are some calls to `sudo` in the snippets, which usually stops the execution due to the command asking for 
+  that there are some calls to `sudo` in the snippets, which usually stops the execution due to the command asking for
   the password. What we can do to solve this is: Execute the snippet, wait for the password prompt to appear and input
-  your password. After the command with authentication has run (and the snippet execution has stopped in the middle), 
+  your password. After the command with authentication has run (and the snippet execution has stopped in the middle),
   run the snippet again. Since sudo caches the recent authentications, this time the `sudo` command will not interrupt
   the snippet execution.
 
@@ -75,8 +75,8 @@ Components:
   * `arm-none-eabi-gcc`
   * `arm-none-eabi-as`
   * `arm-none-eabi-ld`
-  * `ndstool` (not needed for FC subject): 
-* libNDS (not needed for FC subject): 
+  * `ndstool` (not needed for FC subject):
+* libNDS (not needed for FC subject):
 * devkitPro NDS project examples (optional)
 
 ### Component installation
@@ -84,7 +84,7 @@ Components:
 ###### Explanation
 Install `make` using your package manager.
 
-The installed binary is expected to be automatically included in your 
+The installed binary is expected to be automatically included in your
 `$PATH` by the package manager and because of that available directly through shell commands.
 
 ###### Proposed command
@@ -97,23 +97,23 @@ The installed binary is expected to be automatically included in your
 --8<-- "components/devkitarm-nds-docker/scripts/test_make.sh"
 ```
 
-#### devkitARM 
+#### devkitARM
 ##### Explanation
 Create 3 new **permanent** environment variables, which are used in the Makefiles:
 * `DEVKITPRO` with value `/path/to/installation/of/devkitPro/`.
 * `DEVKITARM` with value `/path/to/installation/of/devkitARM/`.
 * `DESMUME` with any value (it just needs to be defined so that it passes the checks of the `Makefile`s).
 
-Modify **permanently** the PATH variable, **prepending** (writing at the beginning) the path `$DEVKITARM/bin` to the 
-variable. Including the directories in the `$PATH` make the files in the included directories directly available through 
-shell commands. The prepending is 
-done to give more priority to our binaries than the system binaries. This priority can be implemented differently 
+Modify **permanently** the PATH variable, **prepending** (writing at the beginning) the path `$DEVKITARM/bin` to the
+variable. Including the directories in the `$PATH` make the files in the included directories directly available through
+shell commands. The prepending is
+done to give more priority to our binaries than the system binaries. This priority can be implemented differently
  if
 no priority is needed or this priority is implemented in any other way.
 
 Create the directories `$DEVKITARM` and `$DEVKITPRO`.
 
-Download devkitARM from 
+Download devkitARM from
 [here](https://wii.leseratte10.de/devkitPro/devkitARM/r46%20%282017%29/devkitARM_r46-x86_64-linux.tar.bz2).
 
 Decompress it in the folder `$DEVKITARM`.
@@ -135,13 +135,13 @@ Optionally, clean installation outputs.
 #### libnds
 ##### Explanation
 Download and decompress the file `libnds.tar.bz2` into `$DEVKITPRO`. The file `libnds.tar.bz2` has been obtained
-directly 
-from the original BMDE folder implementation, so in case of update of the original BMDE, it will be needed to update 
-the provided file. 
+directly
+from the original BMDE folder implementation, so in case of update of the original BMDE, it will be needed to update
+the provided file.
 
-This component is only used in the compilation of projects, so its testing involves the building of a NDS project 
-(operation test). That is why the test will be skipped for this component and the 
-corresponding folder `hello-world-nds` is provided. 
+This component is only used in the compilation of projects, so its testing involves the building of a NDS project
+(operation test). That is why the test will be skipped for this component and the
+corresponding folder `hello-world-nds` is provided.
 
 ###### Proposed command
 ```shell
@@ -153,8 +153,8 @@ corresponding folder `hello-world-nds` is provided.
 --8<-- "components/devkitarm-nds-docker/scripts/test_operation.sh"
 ```
 
-It may be possible that you need to modify a minor thing in the internal file `ds_rules`, that provides building rules 
-for NDS projects. 
+It may be possible that you need to modify a minor thing in the internal file `ds_rules`, that provides building rules
+for NDS projects.
 
 Optionally, we can also test the operation with the NDS devkitPro project examples:
 ```shell
@@ -175,11 +175,11 @@ Components:
 #### Component installation
 ##### desmume
 ###### Explanation
-Install `desmume` using your package manager. The installed binary is expected to be automatically included in your 
+Install `desmume` using your package manager. The installed binary is expected to be automatically included in your
 `$PATH` by the package manager and because of that available directly through shell commands.
 
 Create (or modify) 1 **permanent** environment variables. This is used in the `run` target of the `Makefile`s:
-* `DESMUME` with value `/path/to/installation/of/desmume/`. 
+* `DESMUME` with value `/path/to/installation/of/desmume/`.
 
 ###### Proposed command
 ```shell
@@ -200,12 +200,12 @@ In addition to being able to run it, you should hear sound to validate the sound
 
 ##### `$DESMUME/DeSmuME.exe` wrapper
 ###### Explanation
-Optionally, to make the installation of DeSmuME compatible with the `run` target of `Makefile`s, we need to make 
-available the 
+Optionally, to make the installation of DeSmuME compatible with the `run` target of `Makefile`s, we need to make
+available the
 file `$DESMUME/DeSmuME.exe`, because it is explicitly referenced by the `Makefile`s.
 
-To do so, we can create a wrapper that forwards the call from `$DESMUME/DeSmuME.exe` into `desmume` command. We could 
-implement this in another way, such a shell alias. 
+To do so, we can create a wrapper that forwards the call from `$DESMUME/DeSmuME.exe` into `desmume` command. We could
+implement this in another way, such a shell alias.
 
 ###### Proposed command
 ```shell
@@ -227,8 +227,8 @@ You should see appear the window of DeSmuME.
 
 You should see the DeSmuME window appearing with the hello-world message.
 
-This test is accumulative with the build operation, because it implies it, so, if a functional `.nds` binary can be 
-generated from source code and executed using `desmume`, the environment can be considered operational. 
+This test is accumulative with the build operation, because it implies it, so, if a functional `.nds` binary can be
+generated from source code and executed using `desmume`, the environment can be considered operational.
 
 ---
 
@@ -247,10 +247,10 @@ Components:
 #### Component installation
 ##### DeSmuME 0.9.11 with argument `--gdbport=$PORT` to listen to TCP port `$PORT`
 ###### Explanation
-Using the `desmume` command obtained in the previous section Run Operation with argument `--gdbport=$PORT`. We recommend 
-`PORT` to be higher or equal to 1024 to avoid problems, since lower ports are privileged and give problems. 
+Using the `desmume` command obtained in the previous section Run Operation with argument `--gdbport=$PORT`. We recommend
+`PORT` to be higher or equal to 1024 to avoid problems, since lower ports are privileged and give problems.
 
-Unluckily the `Makefile`s has the hardcoded argument `--gdbport=1000` in the `make debug` option, so it may be not 
+Unluckily the `Makefile`s has the hardcoded argument `--gdbport=1000` in the `make debug` option, so it may be not
 possible to use this target.
 
 ###### Test component
@@ -259,7 +259,7 @@ To test the component we will use the NDS example with sound:
 --8<-- "components/desmume-docker/scripts/test_gdbport.sh"
 ```
 
-You should see `DeSmuME listening to port` in your terminal if everything was OK. 
+You should see `DeSmuME listening to port` in your terminal if everything was OK.
 
 ##### `arm-none-eabi-gdb`
 ###### Explanation
@@ -279,7 +279,7 @@ You can do that with:
 
 ##### `gdb-multiarch`
 ###### Explanation
-Standard multi-architecture GDB provided via package manager. 
+Standard multi-architecture GDB provided via package manager.
 
 ###### Proposed command
 ```shell
@@ -294,7 +294,7 @@ Standard multi-architecture GDB provided via package manager.
 
 ##### `insight` (from source)
 ###### Explanation
-Insight is the original debugger (and simulator for FC) in the BMDE debugger. 
+Insight is the original debugger (and simulator for FC) in the BMDE debugger.
 
 ###### Proposed command
 To build `insight`:
@@ -316,13 +316,13 @@ Runtime dependencies:
 
 ##### `@$(DEVKITPRO)/insight/bin/arm-eabi-insight.exe` wrapper
 ###### Explanation
-Optionally, to make the installation of DeSmuME compatible with the `run` target of `Makefile`s, we need to make 
-available the 
+Optionally, to make the installation of DeSmuME compatible with the `run` target of `Makefile`s, we need to make
+available the
 file `$(DEVKITPRO)/insight/bin/arm-eabi-insight.exe`, because it is explicitly referenced by the `Makefile`s.
 
-To do so, we can create a wrapper that forwards the call from `$(DEVKITPRO)/insight/bin/arm-eabi-insight.exe` into 
-`insight` command. We could 
-implement this in another way, such a shell alias. 
+To do so, we can create a wrapper that forwards the call from `$(DEVKITPRO)/insight/bin/arm-eabi-insight.exe` into
+`insight` command. We could
+implement this in another way, such a shell alias.
 
 ###### Proposed command
 ```shell
@@ -340,10 +340,10 @@ You should see appear the window of Insight.
 
 
 #### Test operation through `make debug`
-Test the debug operation using `Makefile` and the example program Mastermind. The binary is already built in Mastermind 
+Test the debug operation using `Makefile` and the example program Mastermind. The binary is already built in Mastermind
 folder, but if you build it
-make sure 
-that the flags `-gdwarf-3` and `-O0` are in the `CFLAGS` (arguments passed to `gcc`) of the `Makefile`. This applies to 
+make sure
+that the flags `-gdwarf-3` and `-O0` are in the `CFLAGS` (arguments passed to `gcc`) of the `Makefile`. This applies to
 all programs that you want to debug:
 ```shell
 --8<-- "components/insight-docker/scripts/test_make_debug.sh"
@@ -359,26 +359,26 @@ To start the debug session you need to do the following
     break main
     continue
     ```
-3. You should see Insight stopping at the first line of the line. 
+3. You should see Insight stopping at the first line of the line.
 4. You can change the source code mode to see different
    versions of the source code (ARM, mixed...) like this:
 5. Then, introduce the command `break MM_check` to set a breakpoint into the ARM function `MM_check`.
-6. Then, you should introduce the command `continue` in the GDB console. After that, the debugger window should be blocked 
+6. Then, you should introduce the command `continue` in the GDB console. After that, the debugger window should be blocked
    and DeSmuME already running and waiting for input.
-7. Use the keyboard to press the buttons of the emulated NDS and introduce the required input for the Mastermind 
+7. Use the keyboard to press the buttons of the emulated NDS and introduce the required input for the Mastermind
    program. In this case, you need to press they key Z three times.
 8. After that, it will be the opposite: DeSmuME window is blocked and the debugger is answering again.
-9. Introduce the command `continue`. After that, the debugger window should be blocked 
+9. Introduce the command `continue`. After that, the debugger window should be blocked
    and DeSmuME already running and waiting for input.
 10. Introduce the required input with the buttons into MasterMind program.
-11. DeSmuME window is blocked and the debugger is answering again. 
+11. DeSmuME window is blocked and the debugger is answering again.
 12. Now press again source code to see the ARM source code.
-13. Now press other buttons of the GUI to evaluate its functionality.  
+13. Now press other buttons of the GUI to evaluate its functionality.
 
 
 #### Test operation manually
-You can also test the debug operation "manually" calling directly the commands to do a debug session. Instead of 
-Insight, you may use any other GDB command, but we will explain the test using inside because it is the most 
+You can also test the debug operation "manually" calling directly the commands to do a debug session. Instead of
+Insight, you may use any other GDB command, but we will explain the test using inside because it is the most
 featured debugger:
 ```shell
 --8<-- "components/insight-docker/scripts/test_debug.sh"
@@ -400,7 +400,7 @@ The goal is to provide an IDE to edit code and have syntax highlight for:
 * C language
 
 <!--
-or 
+or
 * Programmer's Notepad (WIP)
 
 
@@ -408,16 +408,16 @@ or
 #### Component installation
 ##### Programmer's notepad
 ###### Explanation
-Programmer's notepad is the original code editor used in the original BMDE. The main reason for this is the support for 
+Programmer's notepad is the original code editor used in the original BMDE. The main reason for this is the support for
 ARM v5 syntax highlight (`.s` files used in the subject).
 
 It may be not possible to install it in Linux? WIP
 
 ###### Proposed command
 ```shell
-apt-get update && apt-get install -y --no-install-recommends desmume 
+apt-get update && apt-get install -y --no-install-recommends desmume
 
-echo DESMUME=/usr/games >> $HOME/.bashrc 
+echo DESMUME=/usr/games >> $HOME/.bashrc
 ```
 
 ###### Test component
@@ -446,11 +446,11 @@ Should start the program.
 
 ##### NDS ARM Assembly Syntax Highlight extension
 ###### Explanation
-Extension for VSCode to enable syntax highlight for ARM v5. Available in the 
+Extension for VSCode to enable syntax highlight for ARM v5. Available in the
 [marketplace](https://marketplace.visualstudio.com/items?itemName=aleixmt.nds-arm-assembly-syntax-highlight).
 
 ###### Proposed command
-Once we have the command `vscode` available we can do the following to install the extension: 
+Once we have the command `vscode` available we can do the following to install the extension:
 ```shell
 --8<-- "components/arm-syntax-vscode-extension/scripts/install_extension.sh"
 ```

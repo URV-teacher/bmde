@@ -18,7 +18,7 @@ BackendOpt = Annotated[
     typer.Option(
         "-b",
         "--backend",
-        help="Backend to execute command:" " host|docker|flatpak",
+        help="Backend to execute command: host|docker|flatpak",
         case_sensitive=False,
     ),
 ]
