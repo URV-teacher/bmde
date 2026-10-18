@@ -67,7 +67,12 @@ class DockerRunner(RunBackend):
 
         network_opt: list[str] = []
         if spec.debug:
-            network_opt += ["--name", DOCKER_DESMUME_DEBUG_HOST, "--network", spec.docker_network]
+            network_opt += [
+                "--name",
+                DOCKER_DESMUME_DEBUG_HOST,
+                "--network",
+                spec.docker_network,
+            ]
 
         run_args = [
             "docker",

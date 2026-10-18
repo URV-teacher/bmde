@@ -28,7 +28,10 @@ class HostRunner(DebugBackend):
             entry = str(exec_opts.entrypoint)
         else:
             commands = DEBUGGER_COMMANDS[spec.debugger]
-            entry = next((path for c in commands if (path := shutil.which(c)) is not None), commands[0])
+            entry = next(
+                (path for c in commands if (path := shutil.which(c)) is not None),
+                commands[0],
+            )
 
         # The emulator publishes its GDB stub in the host, also when it runs in Docker
         port = spec.RunSpec.RunSpecOpts.arm9_debug_port
@@ -36,7 +39,11 @@ class HostRunner(DebugBackend):
 
         # ELFs built with Docker refer to the sources in the path where the project was mounted
         project = spec.elf.parent
-        args = [entry, "-ex", f"set substitute-path {docker_project_dir(project)} {project}"]
+        args = [
+            entry,
+            "-ex",
+            f"set substitute-path {docker_project_dir(project)} {project}",
+        ]
         if spec.debugger == DebuggerOptions.INSIGHT:
             log.info(f'Connect from Insight with "Run > Connect to target": Remote/TCP, {target}')
         else:
