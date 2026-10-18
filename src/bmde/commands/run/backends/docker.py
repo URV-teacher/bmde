@@ -5,6 +5,8 @@ from bmde.core.docker import (
     can_run_docker,
     docker_remove_network,
     ensure_network_is_present,
+    host_pulse_docker_args,
+    host_x11_docker_args,
 )
 from bmde.core.exec import ExecOptions, run_cmd
 from bmde.core.types import DOCKER_DESMUME_DEBUG_NETWORK, DockerOutputOptions
@@ -19,9 +21,7 @@ class DockerRunner(RunBackend):
     def is_available(self) -> bool:
         return can_run_docker()
 
-    def run(
-        self, spec: RunSpecOpts, exec_opts: ExecOptions
-    ) -> int | subprocess.Popen[bytes]:
+    def run(self, spec: RunSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         docker_img = "aleixmt/desmume:latest"
         mounts = [
             "-v",
@@ -40,12 +40,12 @@ class DockerRunner(RunBackend):
             img_opt += ["--cflash-image", "/fs/fat.img"]
 
         if spec.graphical_output == DockerOutputOptions.HOST:
-            mounts += ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
+            x11_mounts, x11_envs = host_x11_docker_args()
+            mounts += x11_mounts
             envs += [
+                *x11_envs,
                 "-e",
                 "MODE=host",
-                "-e",
-                "DISPLAY=:0",
                 "-e",
                 "XVFB_DISPLAY=:99",
                 "-e",
@@ -56,6 +56,13 @@ class DockerRunner(RunBackend):
         if spec.graphical_output == DockerOutputOptions.VNC:
             ports += ["-p", "3000:3000", "-p", "3001:3001"]
             envs += ["-e", "MODE=vnc", "-e", "DISPLAY=:0"]
+
+        if spec.sound:
+            pulse_mounts, pulse_envs = host_pulse_docker_args()
+            mounts += pulse_mounts
+            envs += pulse_envs
+        else:
+            envs += ["-e", "DESMUME_USE_SOUND=0"]
 
         entry = []
         if exec_opts.entrypoint:

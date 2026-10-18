@@ -41,6 +41,7 @@ def create_run_spec(
     docker_network: str | None = None,
     fat_image: Path | None = None,
     graphical_output: DockerOutputOptions | None = None,
+    sound: bool | None = None,
     settings: RunSettings | None = None,
 ) -> RunSpec:
     """
@@ -66,31 +67,16 @@ def create_run_spec(
     return RunSpec(
         RunSpecOpts=RunSpecOpts(
             nds_rom=nds_resolved,
-            arm9_debug_port=(
-                arm9_debug_port
-                if arm9_debug_port is not None
-                else settings.arm9_debug_port
-            ),
-            debug=(
-                debug
-                if debug is not None
-                else (settings.debug if settings.debug is not None else False)
-            ),
+            arm9_debug_port=(arm9_debug_port if arm9_debug_port is not None else settings.arm9_debug_port),
+            debug=(debug if debug is not None else (settings.debug if settings.debug is not None else False)),
             docker_network=(
                 docker_network
                 if docker_network is not None
-                else (
-                    settings.docker_network
-                    if settings.docker_network is not None
-                    else DOCKER_DESMUME_DEBUG_NETWORK
-                )
+                else (settings.docker_network if settings.docker_network is not None else DOCKER_DESMUME_DEBUG_NETWORK)
             ),
             fat_image=fat_image if fat_image is not None else settings.fat_image,
-            graphical_output=(
-                graphical_output
-                if graphical_output is not None
-                else settings.graphical_output
-            ),
+            graphical_output=(graphical_output if graphical_output is not None else settings.graphical_output),
+            sound=(sound if sound is not None else (settings.sound if settings.sound is not None else True)),
         ),
         SpecExecOpts=SpecExecOpts(
             backend=(
@@ -111,19 +97,9 @@ def create_run_spec(
                     else False
                 )
             ),
-            interactive=(
-                interactive
-                if interactive is not None
-                else settings.execution_settings.interactive
-            ),
-            dry_run=(
-                dry_run if dry_run is not None else settings.execution_settings.dry_run
-            ),
-            entrypoint=(
-                entrypoint
-                if entrypoint is not None
-                else settings.execution_settings.entrypoint
-            ),
+            interactive=(interactive if interactive is not None else settings.execution_settings.interactive),
+            dry_run=(dry_run if dry_run is not None else settings.execution_settings.dry_run),
+            entrypoint=(entrypoint if entrypoint is not None else settings.execution_settings.entrypoint),
             arguments=passed_args,
         ),
     )
@@ -165,6 +141,7 @@ def run_command(
     entrypoint: Path | None = None,
     fat_image: Path | None = None,
     graphical_output: DockerOutputOptions | None = None,
+    sound: bool | None = None,
     settings: RunSettings | None = None,
 ) -> int | Popen[bytes]:
     """
@@ -190,6 +167,7 @@ def run_command(
         entrypoint=entrypoint,
         fat_image=fat_image,
         graphical_output=graphical_output,
+        sound=sound,
         settings=settings,
     )
 

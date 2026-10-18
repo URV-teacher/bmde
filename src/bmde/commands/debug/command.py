@@ -57,33 +57,22 @@ def create_debug_spec(
     return DebugSpec(
         DebugSpecOpts=DebugSpecOpts(
             elf=elf_resolved,
-            docker_screen=(
-                docker_screen if docker_screen is not None else settings.docker_screen
-            ),
-            docker_network=(
-                settings.docker_network
-                if settings.docker_network
-                else DOCKER_DESMUME_DEBUG_NETWORK
-            ),
+            docker_screen=(docker_screen if docker_screen is not None else settings.docker_screen),
+            docker_network=(settings.docker_network if settings.docker_network else DOCKER_DESMUME_DEBUG_NETWORK),
             RunSpec=RunSpec(
                 RunSpecOpts=RunSpecOpts(
                     nds_rom=nds_resolved,
                     fat_image=settings.run.fat_image,
                     graphical_output=settings.run.graphical_output,
+                    sound=(settings.run.sound if settings.run.sound is not None else True),
                     debug=True,
                     arm9_debug_port=(
                         port
                         if port is not None
-                        else (
-                            settings.run.arm9_debug_port
-                            if settings.run.arm9_debug_port is not None
-                            else 1024
-                        )
+                        else (settings.run.arm9_debug_port if settings.run.arm9_debug_port is not None else 1024)
                     ),
                     docker_network=(
-                        settings.run.docker_network
-                        if settings.run.docker_network
-                        else DOCKER_DESMUME_DEBUG_NETWORK
+                        settings.run.docker_network if settings.run.docker_network else DOCKER_DESMUME_DEBUG_NETWORK
                     ),
                 ),
                 SpecExecOpts=SpecExecOpts(
@@ -110,20 +99,10 @@ def create_debug_spec(
                     else BackendOptions.DOCKER
                 )
             ),
-            entrypoint=(
-                entrypoint
-                if entrypoint is not None
-                else settings.execution_settings.entrypoint
-            ),
+            entrypoint=(entrypoint if entrypoint is not None else settings.execution_settings.entrypoint),
             arguments=passed_args,
-            dry_run=(
-                dry_run if dry_run is not None else settings.execution_settings.dry_run
-            ),
-            background=(
-                background
-                if background is not None
-                else settings.execution_settings.background
-            ),
+            dry_run=(dry_run if dry_run is not None else settings.execution_settings.dry_run),
+            background=(background if background is not None else settings.execution_settings.background),
             interactive=False,
         ),
     )
@@ -171,7 +150,6 @@ def debug_command(
     port: int = 1024,
     settings: DebugSettings | None = None,
 ) -> int | Popen[bytes]:
-
     if settings is None:
         full_settings = load_settings()
         configure_logging_from_settings(settings=full_settings)
