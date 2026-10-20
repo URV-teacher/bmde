@@ -74,8 +74,7 @@ release uses the package. The upstream tarball is also identical to `desmume-0.9
 
 | Asset | Source | Purpose | Check |
 |-------|--------|---------|-------|
-| `insight-7.3.50.20110803-cvs.tar.xz` | CVS repository of sourceware.org, `rsync://sourceware.org/src-cvs/` | Sources of Insight 7.3.50.20110803-cvs, the version of the Windows BMDE, built by the image. That version was never released as a tarball, so `scripts/fetch_source.sh` reconstructs it from the CVS history (~900 MB download with `rsync`, checked out with `cvs`): `gdb/` as of 2011-08-03, and `bfd/`, `opcodes/` and `include/` as of 2011-08-01 | SHA-256 of the files |
-| `insight-7.3.50.20110803-cvs-linux-x86_64.tar.xz` | <https://github.com/URV-teacher/insight-docker/releases/latest/download/insight-7.3.50.20110803-cvs-linux-x86_64.tar.xz> | Insight already built by the image, published in the releases of insight-docker, installed in hosts | Not checked |
+| `insight-7.3.50.20110803-cvs.tar.xz` | CVS repository of sourceware.org, `rsync://sourceware.org/src-cvs/` | Sources of Insight 7.3.50.20110803-cvs, the version of the Windows BMDE, built by the image (and by `scripts/build_tarball.sh` into a tarball to install it in hosts). That version was never released as a tarball, so `scripts/fetch_source.sh` reconstructs it from the CVS history (~900 MB download with `rsync`, checked out with `cvs`): `gdb/` as of 2011-08-03, and `bfd/`, `opcodes/` and `include/` as of 2011-08-01 | SHA-256 of the files |
 | `hello-world-nds.tar.gz` | <https://github.com/URV-teacher/hello-world-nds/archive/refs/heads/master.tar.gz> | Hello world project of the course, built and debugged by `test/test_operation.sh` | Not checked |
 
 Installed during the build:
@@ -134,6 +133,6 @@ Installed during the build: the dependencies of VS Code declared by its package 
 ## Resources of URV-teacher
 
 These assets are under our control, but they are downloaded from GitHub like any other asset: the ROM and the project
-of `hello-world-nds` (desmume-docker, devkitarm-nds-docker, insight-docker), the release of Insight (insight-docker),
-the extension and its install script (vscode-arm-syntax-docker, arm-syntax-vscode-extension), and the image
-`aleixmt/bmde-linux`, which builds the test ROM of dlditool-docker.
+of `hello-world-nds` (desmume-docker, devkitarm-nds-docker, insight-docker), the ROM of `filesystem-nds`
+(desmume-docker), the extension and its install script (vscode-arm-syntax-docker, arm-syntax-vscode-extension), and the
+images `aleixmt/bmde-linux` and `aleixmt/dlditool`, which build test ROMs (desmume-docker, dlditool-docker).

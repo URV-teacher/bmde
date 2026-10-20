@@ -320,19 +320,20 @@ BMDE (GDB/Insight 7.3.50.20110803 for `arm-eabi`), built from the same source co
 GDB of the same build for the terminal (the `arm-none-eabi-gdb` of devkitARM r46 needs the library ncurses 5, which
 current distributions do not provide anymore).
 
-The 2011 source code needs a compiler of its time, so it is built in Ubuntu 14.04 (in the Docker image of the component,
-with `build_insight.sh`) into a tarball that works in current distributions, published in the releases of
-[insight-docker](https://github.com/URV-teacher/insight-docker/releases). The script installs that tarball into
-`/URV/bmde/insight` (set `INSIGHT_TARBALL` to install another file).
+The 2011 source code needs a compiler of its time, so it is built in Ubuntu 14.04 (in the build stage of the Docker
+image of the component, with `build_insight.sh`) into a tarball that works in current distributions. The script installs
+that tarball into `/URV/bmde/insight` (set `INSIGHT_TARBALL` to install another file).
 
-###### Download assets
-Download the tarball of Insight published in the releases of insight-docker (and the project used by the test of the
-operation) into `components/insight-docker/assets/`. Without arguments, the script also reconstructs the sources of
-Insight, which are only needed to build it (~900 MB download).
+###### Download assets and build the tarball
+Download the sources of Insight, reconstructed from the CVS repository of sourceware.org (~900 MB download, it needs
+`rsync` and `cvs`), and the project used by the test of the operation into `components/insight-docker/assets/`. Then
+build the tarball of Insight with the build stage of the Docker image (it needs Docker) into
+`components/insight-docker/build/`.
 
 ```shell
-components/insight-docker/scripts/download_assets.sh \
-  insight-7.3.50.20110803-cvs-linux-x86_64.tar.xz hello-world-nds.tar.gz
+sudo apt-get install -y rsync cvs
+components/insight-docker/scripts/download_assets.sh
+components/insight-docker/scripts/build_tarball.sh
 ```
 
 ###### Proposed command
