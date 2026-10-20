@@ -30,21 +30,21 @@ COPY --from=vscode /URV/bmde/vscode /URV/bmde/vscode
 
 RUN --mount=type=bind,from=components,target=/components \
     cd /components \
-    && devkitarm-nds-docker/scripts/install_make.sh \
-    && devkitarm-nds-docker/scripts/install_devkitarm.sh \
-    && devkitarm-nds-docker/scripts/install_libnds.sh \
-    && devkitarm-nds-docker/scripts/install_examples.sh \
-    && desmume-docker/scripts/install_desmume.sh \
-    && desmume-docker/scripts/install_wrapper.sh \
-    && insight-docker/scripts/install_insight.sh \
-    && insight-docker/scripts/install_gdb_multiarch.sh \
-    && insight-docker/scripts/install_wrapper.sh \
-    && dlditool-docker/scripts/install_dlditool.sh \
-    && grit-docker/scripts/install_grit.sh \
-    && git-urv-vpn-docker/scripts/install_ssh.sh \
-    && git-urv-vpn-docker/scripts/install_git.sh \
-    && git-urv-vpn-docker/scripts/install_vpn.sh \
-    && vscode-arm-syntax-docker/scripts/install_vscode.sh \
+    && devkitarm-nds-docker/src/install_make.sh \
+    && devkitarm-nds-docker/src/install_devkitarm.sh \
+    && devkitarm-nds-docker/src/install_libnds.sh \
+    && devkitarm-nds-docker/src/install_examples.sh \
+    && desmume-docker/src/install_desmume.sh \
+    && desmume-docker/src/install_wrapper.sh \
+    && insight-docker/src/install_insight.sh \
+    && insight-docker/src/install_gdb_multiarch.sh \
+    && insight-docker/src/install_wrapper.sh \
+    && dlditool-docker/src/install_dlditool.sh \
+    && grit-docker/src/install_grit.sh \
+    && git-urv-vpn-docker/src/install_ssh.sh \
+    && git-urv-vpn-docker/src/install_git.sh \
+    && git-urv-vpn-docker/src/install_vpn.sh \
+    && vscode-arm-syntax-docker/src/install_vscode.sh \
     && apt-get install -y --no-install-recommends sudo \
     && rm -rf /var/lib/apt/lists/*
 
@@ -57,7 +57,7 @@ RUN useradd --create-home --uid 1000 --shell /bin/bash bmde \
 USER bmde
 # Extensions are installed for the user
 RUN --mount=type=bind,from=components,target=/components \
-    /components/arm-syntax-vscode-extension/scripts/install_extension.sh
+    /components/arm-syntax-vscode-extension/src/install_extension.sh
 WORKDIR /home/bmde
 
 ENTRYPOINT ["/entrypoint.sh"]

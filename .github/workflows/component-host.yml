@@ -1,21 +1,32 @@
-# Reusable workflow for the repositories of the components: installs the component in an Ubuntu machine with its
-# install scripts, as a student would do (see docs/getting-started/host_components_installation.md), and runs its
-# tests. Scripts run in login shells, which load the environment installed in /etc/profile.d by the previous ones.
+# Reusable workflow for the repositories of the components: downloads its assets and installs the component in an
+# Ubuntu machine with its install scripts, as a student would do (see
+# docs/getting-started/host_components_installation.md), and runs its tests. Scripts run in login shells, which load
+# the environment installed in /etc/profile.d by the previous ones.
 name: Component host installation
 
 on:
   workflow_call:
     inputs:
       install:
-        description: Install scripts of scripts/ to run in order, separated by spaces
+        description: Install scripts of src/ to run in order, separated by spaces
         required: true
         type: string
       tests:
-        description: Test scripts of scripts/ to run after the installation, separated by spaces
+        description: Test scripts of test/ to run after the installation, separated by spaces
         required: true
         type: string
       setup:
-        description: Commands to run before the installation (e.g. to prepare files used by the install scripts)
+        description: Commands to run before downloading the assets (e.g. to install the tools that download them)
+        default: ""
+        type: string
+      assets:
+        description: Assets to download with scripts/download_assets.sh, separated by spaces (all of them by default)
+        default: ""
+        type: string
+      prepare:
+        description: >-
+          Commands to run after downloading the assets, before the installation (e.g. to build files used by the
+          install scripts)
         default: ""
         type: string
       env:
@@ -38,6 +49,15 @@ jobs:
         if: inputs.setup != ''
         run: ${{ inputs.setup }}
 
+      # Building and installing only take the assets from assets/, so they are downloaded first
+      - name: Download assets
+        if: hashFiles('scripts/download_assets.sh') != ''
+        run: scripts/download_assets.sh ${{ inputs.assets }}
+
+      - name: Prepare
+        if: inputs.prepare != ''
+        run: ${{ inputs.prepare }}
+
       - name: Set environment
         if: inputs.env != ''
         env:
@@ -48,7 +68,7 @@ jobs:
         run: |
           for script in ${{ inputs.install }}; do
             echo "::group::${script}"
-            bash --login "scripts/${script}"
+            bash --login "src/${script}"
             echo "::endgroup::"
           done
 
@@ -56,6 +76,6 @@ jobs:
         run: |
           for test in ${{ inputs.tests }}; do
             echo "::group::${test}"
-            bash --login "scripts/${test}"
+            bash --login "test/${test}"
             echo "::endgroup::"
           done

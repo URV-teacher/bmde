@@ -1,7 +1,8 @@
-# Builds the Docker images of the BMDE from this repository: the base image (base/), the image of each component (from
-# the checkouts of the submodules in components/) and the full development environment (shell/). Each image is built
-# on the images being built instead of the published ones, so a change in the base or in a component is tested in all
-# the images that use it.
+# Builds the Docker images of the BMDE from this repository (after downloading the assets of each component with its
+# scripts/download_assets.sh): the base image (base/), the image of each component (from the checkouts of the
+# submodules in components/) and the full development environment (shell/). Each image is built on the images being
+# built instead of the published ones, so a change in the base or in a component is tested in all the images that use
+# it.
 #
 #   docker buildx bake                  # every image
 #   docker buildx bake full --load      # the full development environment (and the images it needs)
@@ -81,7 +82,7 @@ target "vpn" {
 
 target "vscode" {
   context = "components/vscode-arm-syntax-docker"
-  # The install script of the extension, from its checkout instead of from GitHub
+  # The install script of the extension and its release (src/ and assets/), from its checkout
   contexts = merge(BASE_IMAGE, {
     extension = "components/arm-syntax-vscode-extension"
   })

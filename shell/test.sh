@@ -7,10 +7,10 @@ set -Eeuo pipefail
 IMAGE="${1:-aleixmt/bmde-full:latest}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Tests that need the credentials of a user of the course
-MANUAL_TESTS=" git-urv-vpn-docker/scripts/test_operation.sh "
+MANUAL_TESTS=" git-urv-vpn-docker/test/test_operation.sh "
 
 failed=()
-for test in "${ROOT}"/components/*/scripts/test_*.sh; do
+for test in "${ROOT}"/components/*/test/test_*.sh; do
   test="${test#"${ROOT}/components/"}"
   if [[ "${MANUAL_TESTS}" == *" ${test} "* ]]; then
     continue
