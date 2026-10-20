@@ -60,17 +60,15 @@ def test_run_filesystem(tmp_path: Path):
     elif isinstance(ret, int):
         assert ret == 0, "Patch failed"
 
-    # 4. Prepare FAT image: an empty one, with the format of the image of the course (the same that
-    # scripts/create_fat_image.sh of desmume-docker creates)
+    # 4. Prepare FAT image: an empty one, created by the script of desmume-docker (submodule)
+    create_fat_image = Path(__file__).resolve().parents[2] / "components/desmume-docker/scripts/create_fat_image.sh"
+    if not create_fat_image.is_file():
+        pytest.skip(f"{create_fat_image} not found (submodule components/desmume-docker not checked out)")
     if not shutil.which("mkfs.fat"):
         pytest.skip("mkfs.fat not found (package dosfstools)")
     print("Creating FAT image...")
     fat_img_path = tmp_path / "fat.img"
-    subprocess.run(
-        ["mkfs.fat", "-C", "-F", "16", "-S", "512", "-s", "4", "-R", "4", "-r", "512", "-g", "64/32"]
-        + [str(fat_img_path), "131072"],
-        check=True,
-    )
+    subprocess.run([str(create_fat_image), str(fat_img_path)], check=True)
     os.chmod(fat_img_path, 0o777)
     print(f"Using FAT image: {fat_img_path}")
 
