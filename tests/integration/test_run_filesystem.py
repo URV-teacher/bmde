@@ -3,8 +3,6 @@ import os
 import shutil
 import subprocess
 import time
-import urllib.request
-import zipfile
 from pathlib import Path
 
 import pytest
@@ -22,7 +20,7 @@ def test_run_filesystem(tmp_path: Path):
     1. Clones filesystem-nds repo.
     2. Builds it.
     3. Patches the ROM.
-    4. Downloads a FAT image.
+    4. Creates an empty FAT image.
     5. Runs the ROM with the FAT image.
     6. Verifies output.txt is written to the FAT image.
     """
@@ -62,27 +60,17 @@ def test_run_filesystem(tmp_path: Path):
     elif isinstance(ret, int):
         assert ret == 0, "Patch failed"
 
-    # 4. Prepare FAT image
-    print("Downloading FAT image...")
-    fat_zip_url = "https://raw.githubusercontent.com/URV-teacher/desmume-docker/master/fs/fat.zip"
-    fat_zip_path = tmp_path / "fat.zip"
-    try:
-        urllib.request.urlretrieve(fat_zip_url, fat_zip_path)
-    except Exception as e:
-        pytest.fail(f"Failed to download FAT image: {e}")
-
-    print("Extracting FAT image...")
-    with zipfile.ZipFile(fat_zip_path, "r") as zip_ref:
-        zip_ref.extractall(tmp_path)
-
-    # Locate extracted .img file
-    fat_imgs = list(tmp_path.glob("*.img"))
-    if not fat_imgs:
-        # Try looking inside extracted folders if any
-        fat_imgs = list(tmp_path.rglob("*.img"))
-
-    assert len(fat_imgs) > 0, "No .img file found in extracted zip"
-    fat_img_path = fat_imgs[0]
+    # 4. Prepare FAT image: an empty one, with the format of the image of the course (the same that
+    # scripts/create_fat_image.sh of desmume-docker creates)
+    if not shutil.which("mkfs.fat"):
+        pytest.skip("mkfs.fat not found (package dosfstools)")
+    print("Creating FAT image...")
+    fat_img_path = tmp_path / "fat.img"
+    subprocess.run(
+        ["mkfs.fat", "-C", "-F", "16", "-S", "512", "-s", "4", "-R", "4", "-r", "512", "-g", "64/32"]
+        + [str(fat_img_path), "131072"],
+        check=True,
+    )
     os.chmod(fat_img_path, 0o777)
     print(f"Using FAT image: {fat_img_path}")
 
