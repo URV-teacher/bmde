@@ -13,3 +13,5 @@ class SpecExecOpts(BaseSpec):
     interactive: bool
     entrypoint: Path | None
     arguments: list[str] | None
+    # File where the output of the command is written instead of the terminal
+    log_file: Path | None = None

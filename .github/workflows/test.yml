@@ -1,12 +1,8 @@
 name: test
 
 on:
-  push:
-    branches:
-      - '**'        # matches every branch
   pull_request:
-    branches:
-      - '**'        # matches every branch
+
 
 
 permissions:
@@ -19,6 +15,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6
 
+      # The integration tests use scripts of the components (e.g. the creation of FAT images of desmume-docker)
+      - name: Checkout desmume-docker
+        run: git submodule update --init components/desmume-docker
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -27,6 +27,10 @@ jobs:
 
       - name: Install Dependencies
         run: make dev
+
+      # The integration tests create (desmume-docker/scripts/create_fat_image.sh) and read FAT images
+      - name: Install FAT tools
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends dosfstools mtools
 
       - name: Configure BMDE logging
         run: |

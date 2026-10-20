@@ -14,4 +14,6 @@ class RunSettings(BaseModel):
     debug: bool | None = False
     arm9_debug_port: int | None = 1024
     fat_image: Path | None = None
+    sound: bool | None = True
+    controls: Path | None = None
     docker_network: str | None = DOCKER_DESMUME_DEBUG_NETWORK

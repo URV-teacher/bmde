@@ -18,9 +18,7 @@ from .backend import GitBackend
 log = logging.get_logger(__name__)
 
 
-def _run_vpn(
-    spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str
-) -> int | None | subprocess.Popen[bytes]:
+def _run_vpn(spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str) -> int | None | subprocess.Popen[bytes]:
     docker_img = "aleixmt/forticlient:latest"
 
     envs: list[str] = [
@@ -82,9 +80,7 @@ def _run_vpn(
     return run_cmd(run_args, exec_opts)
 
 
-def _ensure_vpn_healthy(
-    spec: GitSpecOpts, exec_opts: ExecOptions, timeout_s: int = 20000
-) -> None:
+def _ensure_vpn_healthy(spec: GitSpecOpts, exec_opts: ExecOptions, timeout_s: int = 20000) -> None:
     """
     Ensure the 'forti-vpn' service is running and HEALTHY.
     If absent or not healthy, start with `docker compose up -d forti-vpn` and wait.
@@ -97,17 +93,11 @@ def _ensure_vpn_healthy(
         log.debug("VPN is healthy")
         return
     elif docker_container_exists(container_name):
-        log.debug(
-            f"Container '{container_name}' exists but is not healthy ({status}); removing it..."
-        )
+        log.debug(f"Container '{container_name}' exists but is not healthy ({status}); removing it...")
         try:
-            subprocess.run(
-                ["docker", "rm", "-f", container_name], check=True, text=True
-            )
+            subprocess.run(["docker", "rm", "-f", container_name], check=True, text=True)
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(
-                f"Failed to remove unhealthy container '{container_name}': {e}"
-            ) from e
+            raise RuntimeError(f"Failed to remove unhealthy container '{container_name}': {e}") from e
 
     log.info("Running VPN")
     _run_vpn(spec, exec_opts, container_name)
@@ -121,14 +111,10 @@ def _ensure_vpn_healthy(
             log.info("VPN is healthy.")
             return
         elif status == "starting":
-            log.info(
-                f"VPN health: {status}. Please, wait. The VPN connection usually takes 120 seconds."
-            )
+            log.info(f"VPN health: {status}. Please, wait. The VPN connection usually takes 120 seconds.")
             previous_state = status
         else:
-            log.info(
-                f"VPN health: {status}. Please, wait. The VPN connection usually takes 120 seconds."
-            )
+            log.info(f"VPN health: {status}. Please, wait. The VPN connection usually takes 120 seconds.")
             if previous_state == "starting":
                 log.error(
                     f"'{container_name}' was starting and now it is not healthy, meaning the container could not "
@@ -138,9 +124,7 @@ def _ensure_vpn_healthy(
             previous_state = status
         time.sleep(10)
 
-    raise TimeoutError(
-        f"'{container_name}' did not become healthy within {timeout_s} seconds"
-    )
+    raise TimeoutError(f"'{container_name}' did not become healthy within {timeout_s} seconds")
 
 
 # --------------------------- Git Runner ----------------------------
@@ -150,9 +134,7 @@ class DockerRunner(GitBackend):
     def is_available(self) -> bool:
         return can_run_docker()
 
-    def run(
-        self, spec: GitSpecOpts, exec_opts: ExecOptions
-    ) -> int | subprocess.Popen[bytes]:
+    def run(self, spec: GitSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         """
         1) Ensure 'forti-vpn' compose service is up & healthy (start in background if needed).
         2) Run the git container sharing the network namespace with 'forti-vpn' with the command.
@@ -161,9 +143,7 @@ class DockerRunner(GitBackend):
         docker_img = "aleixmt/git-sshpass:latest"
 
         # 2) Ensure VPN is healthy (starts `docker compose up -d forti-vpn` if needed)
-        _ensure_vpn_healthy(
-            spec, exec_opts, timeout_s=getattr(spec, "vpn_timeout_s", 300)
-        )
+        _ensure_vpn_healthy(spec, exec_opts, timeout_s=getattr(spec, "vpn_timeout_s", 300))
 
         # 3) Build docker run args for the git container
         entry = []

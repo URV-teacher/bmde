@@ -14,13 +14,10 @@ from .types import BackendOptions
 log = logging.get_logger(__name__)
 
 SpecType = TypeVar("SpecType", bound=BaseSpec)  # will be GitSpec, BuildSpec, etc.
-BackendType = TypeVar(
-    "BackendType", bound=Backend[Any], covariant=True
-)  # will be BuildBackend, RunBackend, etc.
+BackendType = TypeVar("BackendType", bound=Backend[Any], covariant=True)  # will be BuildBackend, RunBackend, etc.
 
 
 class Service(Generic[SpecType, BackendType], ABC):
-
     def __init__(
         self,
         order: list[BackendOptions | BackendOptions],
@@ -31,9 +28,7 @@ class Service(Generic[SpecType, BackendType], ABC):
         self.order = order
         self.mapping = mapping
 
-    def choose_backend(
-        self, env: BackendOptions | BackendOptions | None
-    ) -> list[BackendType]:
+    def choose_backend(self, env: BackendOptions | BackendOptions | None) -> list[BackendType]:
         order = self.order
         if env:
             order = [env]  # force

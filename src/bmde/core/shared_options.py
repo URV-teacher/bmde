@@ -10,7 +10,7 @@ from typing import Annotated
 import typer
 
 from bmde.config.show_config import show_config_callback, show_default_config_callback
-from bmde.core.types import BackendOptions, DockerOutputOptions
+from bmde.core.types import BackendOptions, DebuggerOptions, DockerOutputOptions
 
 # Backend option for the rest of commands other than run
 BackendOpt = Annotated[
@@ -18,7 +18,7 @@ BackendOpt = Annotated[
     typer.Option(
         "-b",
         "--backend",
-        help="Backend to execute command:" " host|docker|flatpak",
+        help="Backend to execute command: host|docker|flatpak",
         case_sensitive=False,
     ),
 ]
@@ -66,9 +66,7 @@ InteractiveOpt = Annotated[
     ),
 ]
 
-LogFileOpt = Annotated[
-    Path | None, typer.Option("-l", "--log-file", help="Path to log file (optional)")
-]
+LogFileOpt = Annotated[Path | None, typer.Option("-l", "--log-file", help="Path to log file (optional)")]
 
 ShowConfigOpt = Annotated[
     bool,
@@ -97,9 +95,7 @@ ShowDefaultConfigOpt = Annotated[
 
 VerboseOpt = Annotated[
     bool,
-    typer.Option(
-        "-v", "--verbose", "--debug", help="Verbose output (debug)", is_flag=True
-    ),
+    typer.Option("-v", "--verbose", "--debug", help="Verbose output (debug)", is_flag=True),
 ]
 
 # Very verbose flag
@@ -117,27 +113,24 @@ QuietOpt = Annotated[
 # Very quiet flag
 VeryQuietOpt = Annotated[
     bool,
-    typer.Option(
-        "-Q", "--Quiet", "--no-output", help="Quiet mode (no output)", is_flag=True
-    ),
+    typer.Option("-Q", "--Quiet", "--no-output", help="Quiet mode (no output)", is_flag=True),
 ]
 
 ConfigOpt = Annotated[
     Path | None,
-    typer.Option(
-        "-c", "--config", help="Execution-specific config file (highest file priority)"
-    ),
+    typer.Option("-c", "--config", help="Execution-specific config file (highest file priority)"),
 ]
 
 # --- Run options ---
 # To specify debug in run options
-DebugOpt = Annotated[
-    bool, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)
-]
+DebugOpt = Annotated[bool, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)]
 
 # To specify the debug port in options
-PortOpt = Annotated[
-    int, typer.Option("-p", "--port", help="Debug port (implies --debug)")
+PortOpt = Annotated[int | None, typer.Option("-p", "--port", help="Debug port (implies --debug)")]
+
+DebuggerOpt = Annotated[
+    DebuggerOptions | None,
+    typer.Option("-g", "--debugger", help="Debugger connected to the emulator"),
 ]
 
 DockerNetworkOpt = Annotated[
@@ -197,6 +190,14 @@ ElfRomOpt = Annotated[
     ),
 ]
 
+SoundOpt = Annotated[
+    bool | None,
+    typer.Option(
+        "--sound/--no-sound",
+        help="Play the emulator sound on the host (docker: shares the host PulseAudio/PipeWire socket)",
+    ),
+]
+
 FatImageOpt = Annotated[
     Path | None,
     typer.Option(
@@ -211,6 +212,19 @@ FatImageOpt = Annotated[
     ),
 ]
 
+ControlsOpt = Annotated[
+    Path | None,
+    typer.Option(
+        "--controls",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        resolve_path=True,
+        help="Path to a DeSmuME desmume.ini with custom controls (and HUD options) (optional)",
+    ),
+]
+
 # Git
 
 
@@ -221,14 +235,10 @@ SshUsernameOpt = Annotated[
 
 SshPasswordOpt = Annotated[
     str | None,
-    typer.Option(
-        "--ssh-password", help="User password for the SSH authentication of git"
-    ),
+    typer.Option("--ssh-password", help="User password for the SSH authentication of git"),
 ]
 
-SshHostOpt = Annotated[
-    str | None, typer.Option("--ssh-server", help="Hostname of the ssh server")
-]
+SshHostOpt = Annotated[str | None, typer.Option("--ssh-server", help="Hostname of the ssh server")]
 
 GitNameOpt = Annotated[
     str | None,
@@ -250,21 +260,13 @@ VpnPasswordOpt = Annotated[
     typer.Option("--vpn-password", help="User password for forticlient authentication"),
 ]
 
-VpnHostOpt = Annotated[
-    str | None, typer.Option("--vpn-gateway", help="VPN gateway for forticlient")
-]
+VpnHostOpt = Annotated[str | None, typer.Option("--vpn-gateway", help="VPN gateway for forticlient")]
 
-VpnPortOpt = Annotated[
-    int | None, typer.Option("--vpn-port", help="VPN port for forticlient")
-]
+VpnPortOpt = Annotated[int | None, typer.Option("--vpn-port", help="VPN port for forticlient")]
 
-VpnRealmOpt = Annotated[
-    str | None, typer.Option("--vpn-realm", help="VPN realm for forticlient")
-]
+VpnRealmOpt = Annotated[str | None, typer.Option("--vpn-realm", help="VPN realm for forticlient")]
 
-VpnCertOpt = Annotated[
-    str | None, typer.Option("--vpn-cert", help="VPN cert for forticlient")
-]
+VpnCertOpt = Annotated[str | None, typer.Option("--vpn-cert", help="VPN cert for forticlient")]
 
 VpnTestDnsOpt = Annotated[
     str | None,
@@ -304,6 +306,9 @@ __all__ = [
     "LogFileOpt",
     "NdsRomOpt",
     "FatImageOpt",
+    "SoundOpt",
+    "DebuggerOpt",
+    "ControlsOpt",
     "SshUsernameOpt",
     "SshPasswordOpt",
     "SshHostOpt",

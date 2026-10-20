@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 from bmde.config.command_settings import ExecutionSettings
