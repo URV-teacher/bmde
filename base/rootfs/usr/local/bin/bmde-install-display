@@ -1,0 +1,7 @@
+#!/bin/sh
+# Installs the X11 / VNC stack used by the graphical output of the entrypoints (MODE=vnc of
+# /usr/local/lib/bmde/entrypoint.sh). Run by the images of the components with a graphical interface.
+set -eu
+apt-get update
+apt-get install -y --no-install-recommends xvfb xauth x11vnc xfonts-base
+rm -rf /var/lib/apt/lists/*

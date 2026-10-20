@@ -1,0 +1,61 @@
+# Reusable workflow for the repositories of the components: installs the component in an Ubuntu machine with its
+# install scripts, as a student would do (see docs/getting-started/host_components_installation.md), and runs its
+# tests. Scripts run in login shells, which load the environment installed in /etc/profile.d by the previous ones.
+name: Component host installation
+
+on:
+  workflow_call:
+    inputs:
+      install:
+        description: Install scripts of scripts/ to run in order, separated by spaces
+        required: true
+        type: string
+      tests:
+        description: Test scripts of scripts/ to run after the installation, separated by spaces
+        required: true
+        type: string
+      setup:
+        description: Commands to run before the installation (e.g. to prepare files used by the install scripts)
+        default: ""
+        type: string
+      env:
+        description: Environment variables for the install scripts, as NAME=VALUE lines
+        default: ""
+        type: string
+
+jobs:
+  host:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Virtual display for the tests of graphical programs
+      - name: Install virtual display
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends xvfb xauth
+
+      - name: Setup
+        if: inputs.setup != ''
+        run: ${{ inputs.setup }}
+
+      - name: Set environment
+        if: inputs.env != ''
+        env:
+          INSTALL_ENV: ${{ inputs.env }}
+        run: printf '%s\n' "${INSTALL_ENV}" >> "${GITHUB_ENV}"
+
+      - name: Install
+        run: |
+          for script in ${{ inputs.install }}; do
+            echo "::group::${script}"
+            bash --login "scripts/${script}"
+            echo "::endgroup::"
+          done
+
+      - name: Run tests
+        run: |
+          for test in ${{ inputs.tests }}; do
+            echo "::group::${test}"
+            bash --login "scripts/${test}"
+            echo "::endgroup::"
+          done
