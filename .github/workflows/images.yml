@@ -31,12 +31,24 @@ jobs:
           sudo apt-get update && sudo apt-get install -y --no-install-recommends cvs rsync
           for script in components/*/scripts/download_assets.sh; do
             echo "::group::${script}"
-            "${script}"
+            if [ "${script}" = components/dlditool-docker/scripts/download_assets.sh ]; then
+              # Its test ROM (libfatdir.nds) is built after the images
+              "${script}" dlditool-linux-x86_64.zip mpcf.dldi
+            else
+              "${script}"
+            fi
             echo "::endgroup::"
           done
 
       - name: Build images
         run: docker buildx bake full --load
+
+      # The test ROM of dlditool is built from the examples of devkitPro, so with the devkitARM just built (in the full
+      # development environment) instead of the published one
+      - name: Build the test ROM of dlditool
+        env:
+          DEVKITARM_IMAGE: aleixmt/bmde-full:latest
+        run: components/dlditool-docker/scripts/download_assets.sh libfatdir.nds
 
       - name: Run the tests of the components in the full development environment
         run: shell/test.sh aleixmt/bmde-full:latest
