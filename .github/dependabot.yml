@@ -14,6 +14,8 @@ updates:
         patterns:
           - "*"
 
+  # Updates the pins of requirements/<group>.txt by re-running the pip-compile command of their header (with the
+  # Python of .python-version) on requirements/<group>.in
   - package-ecosystem: "pip"
     directory: "/"
     schedule:

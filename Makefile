@@ -31,6 +31,8 @@ GIT        := git
 
 PKG_NAME   := bmde
 
+LOCK_DIR   := requirements
+
 # ---- build ------------------------------------------------------------------
 
 dist: $(VENV_BIN)/pyproject-build  ## Build source and wheel distribution
@@ -49,12 +51,12 @@ $(VENV_BIN)/bmde: $(VENV_BIN)/python pyproject.toml
 	@$(GIT) submodule update --init --recursive
 
 # Install the package in editable mode plus one dependency group of pyproject.toml (test, lint, docs or dev, which has
-# them all). A stamp file is the target because the editable install of hatchling leaves no file in the tree whose
-# timestamp pip bumps, and tool binaries (e.g. ruff) keep theirs when they are already up to date.
-# --group needs pip 25.1, which may be newer than the pip of an existing venv.
-$(VENV_DIR)/.group-%: $(VENV_BIN)/python pyproject.toml
-	@$(PIP) install --quiet --upgrade "pip>=25.1"
-	@$(PIP) install -e . --group $*
+# them all), at the versions pinned in requirements/<group>.txt (see `make lock`), so CI does not break when something
+# upstream changes. A stamp file is the target because the editable install of hatchling leaves no file in the tree
+# whose timestamp pip bumps, and tool binaries (e.g. ruff) keep theirs when they are already up to date.
+$(VENV_DIR)/.group-%: $(VENV_BIN)/python pyproject.toml $(LOCK_DIR)/%.txt
+	@$(PIP) install -r "$(LOCK_DIR)/$*.txt"
+	@$(PIP) install --no-deps -e .
 	@touch "$@"
 
 $(VENV_BIN)/pyproject-build: $(VENV_BIN)/python
@@ -74,6 +76,28 @@ install-docs: $(VENV_DIR)/.group-docs  ## Install the package and the documentat
 
 dev: $(VENV_DIR)/.group-dev  ## Install the package, every dependency group and the pre-commit hooks
 	@$(PRE_COMMIT) install
+
+# ---- dependencies -----------------------------------------------------------
+#
+# pyproject.toml declares the dependencies and requirements/<group>.txt pins them, with every transitive dependency.
+# Dependabot updates the pins weekly (.github/dependabot.yml); run `make lock` after editing the dependencies.
+
+# pip-compile pins for the Python that runs it, so it runs in the Python of CI (also in .python-version, which is the
+# one Dependabot uses when it re-runs pip-compile)
+LOCK_IMAGE        := python:3.11-slim
+PIP_TOOLS_VERSION := 7.6.2
+
+lock:  ## Pin the dependencies into requirements/<group>.txt, keeping the current pins that still fit (needs Docker)
+	@$(PYTHON_BIN) scripts/export-requirements.py
+	@docker run --rm -v "$(CURDIR):/src" -w /src -u "$$(id -u):$$(id -g)" -e HOME=/tmp \
+		-e PIP_DISABLE_PIP_VERSION_CHECK=1 $(LOCK_IMAGE) sh -c ' \
+		pip install --quiet --user --no-warn-script-location pip-tools==$(PIP_TOOLS_VERSION) \
+		&& for f in $(LOCK_DIR)/*.in; do \
+			python -m piptools compile --quiet --strip-extras $(LOCK_ARGS) --output-file "$${f%.in}.txt" "$$f"; \
+		done'
+
+lock-upgrade: LOCK_ARGS := --upgrade
+lock-upgrade: lock  ## Pin every dependency to its latest version (needs Docker)
 
 # ---- quality ----------------------------------------------------------------
 #
@@ -161,7 +185,10 @@ lint-ai-ignore:  ## Check the AI ignore files are up to date with .aiexclude (fi
 	done
 	exit $$status
 
-lint: lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
+lint-requirements:  ## Check requirements/ is up to date with the dependencies of pyproject.toml (fix with make lock)
+	@$(PYTHON) scripts/export-requirements.py --check
+
+lint: lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-requirements lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
 
 test:  ## Run tests with coverage (fails under the fail_under of pyproject.toml)
 	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s --cov --cov-report=term --cov-report=xml
@@ -196,7 +223,8 @@ clean:  ## Remove build/test artifacts
 
 # ---- meta -------------------------------------------------------------------
 
-.PHONY: venv install install-test install-lint install-docs dev run clean help dist readme docs-serve docs-build docs-deploy \
+.PHONY: venv install install-test install-lint install-docs dev lock lock-upgrade run clean help dist readme docs-serve \
+        docs-build docs-deploy lint-requirements \
         fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene \
         lint lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
         lint-shellcheck lint-secrets test

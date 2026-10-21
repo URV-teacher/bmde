@@ -20,6 +20,10 @@ cd bmde
 make dev    # creates venv/, installs bmde with every dependency group and the pre-commit hooks
 ```
 
+The dependencies are declared in `pyproject.toml` and installed at the versions pinned in `requirements/<group>.txt`,
+so everyone (and CI) gets the same ones. After adding or removing a dependency, run `make lock` (it needs Docker) and
+commit `requirements/`; `make lint` fails until you do. Dependabot opens a weekly pull request that updates the pins.
+
 Run `make help` to list every target. The ones you will use most:
 
 ```shell

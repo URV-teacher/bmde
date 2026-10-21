@@ -11,13 +11,18 @@ These files define the project's identity, build process, and developer experien
 *   **`pyproject.toml`**
     *   **Purpose**: The central configuration file for the Python project (PEP 621).
     *   **Usage**:
-        *   **Dependencies**: Defines runtime requirements (`typer`, `pydantic`, `rich`, etc.) and the `dev` extra (tests, linters, docs).
+        *   **Dependencies**: Defines runtime requirements (`typer`, `pydantic`, `rich`, etc.) and the `test`, `lint`, `docs` and `dev` dependency groups (PEP 735).
         *   **Build System**: Configures `hatchling` as the build backend, `hatch-vcs` for dynamic versioning from Git tags, and the files of the source distribution (`[tool.hatch.build.targets.sdist]`).
         *   **Tool Config**: Centralizes settings for `ruff` (linting/formatting), `pytest`, `coverage`, `mypy`, and `python-semantic-release`.
     *   **Operations**:
         *   `pip install .` / `make install`: Reads dependencies.
         *   `make lint` / `make test`: Reads tool configs.
         *   `make dist` / CI Release: Reads build-system and semantic-release configs.
+
+*   **`requirements/`**
+    *   **Purpose**: The lockfiles: every dependency of each group, transitive ones included, pinned to an exact version.
+    *   **Usage**: `<group>.in` is generated from `pyproject.toml` and `<group>.txt` is compiled from it by `pip-compile` in the Python of CI (`.python-version`). `make install-<group>` and `make dev` install from the `.txt`, so CI does not break when something upstream changes.
+    *   **Operations**: `make lock` (after editing the dependencies), `make lock-upgrade` (move every pin to its latest version), Dependabot (weekly pull request updating the pins), `make lint` (fails if the files are out of date).
 
 *   **`Makefile`**
     *   **Purpose**: A command-line task runner for common development workflows.

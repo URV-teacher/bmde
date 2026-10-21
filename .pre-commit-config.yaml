@@ -74,6 +74,12 @@ repos:
         language: system
         pass_filenames: false
 
+      - id: lint-requirements
+        name: lint-requirements (make lint-requirements)
+        entry: make lint-requirements
+        language: system
+        pass_filenames: false
+
       - id: lint-secrets
         name: lint-secrets (make lint-secrets)
         entry: make lint-secrets
