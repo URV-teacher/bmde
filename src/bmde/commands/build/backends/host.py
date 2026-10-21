@@ -36,9 +36,7 @@ class HostRunner(BuildBackend):
         # Check DEVKITPRO env vartk
 
         if "DEVKITPRO" not in os.environ:
-            log.warning(
-                "DEVKITPRO environment variable not set. Some tools might fail."
-            )
+            log.warning("DEVKITPRO environment variable not set. Some tools might fail.")
 
         # Check DEVKITARM env var
         if "DEVKITARM" not in os.environ:
@@ -46,9 +44,7 @@ class HostRunner(BuildBackend):
 
         return checks_passed
 
-    def run(
-        self, spec: BuildSpecOpts, exec_opts: ExecOptions
-    ) -> int | subprocess.Popen[bytes]:
+    def run(self, spec: BuildSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         if exec_opts.entrypoint is not None:
             entry = str(exec_opts.entrypoint)
         else:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from contextlib import ExitStack
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -20,6 +21,8 @@ class ExecOptions:
     backend: BackendOptions | None = None
     entrypoint: Path | None = None
     arguments: list[str] | None = None
+    # File where stdout and stderr are written instead of the terminal
+    log_file: Path | None = None
 
 
 def run_cmd(cmd: list[str], opts: ExecOptions) -> int | subprocess.Popen[bytes]:
@@ -35,15 +38,16 @@ def run_cmd(cmd: list[str], opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         log.info("[dry-run] %s", pretty)
         return 0
 
-    if opts.background:
-        # Non-blocking execution
-        proc = subprocess.Popen(
-            args,
-            env=opts.env,
-            cwd=opts.cwd,
-        )
-        return proc  # caller can manage it
-    else:
-        return subprocess.call(
-            args, env=opts.env, cwd=opts.cwd
-        )  # no shell injection risk
+    # The child process keeps its own copy of the file descriptor, so the file can be closed right after starting it
+    with ExitStack() as stack:
+        log_file = stack.enter_context(open(opts.log_file, "wb")) if opts.log_file is not None else None
+        stderr = subprocess.STDOUT if log_file is not None else None
+        result: int | subprocess.Popen[bytes]
+        if opts.background:
+            # Non-blocking execution, the caller can manage the process
+            result = subprocess.Popen(args, env=opts.env, cwd=opts.cwd, stdout=log_file, stderr=stderr)
+        else:
+            result = subprocess.call(
+                args, env=opts.env, cwd=opts.cwd, stdout=log_file, stderr=stderr
+            )  # no shell injection risk
+    return result

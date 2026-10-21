@@ -40,9 +40,7 @@ def cli_global_callback(
     )
 
     if more_than_one_flag:
-        log.warning(
-            "More than one log level arguments was provided, the log level with more verbosity will be used."
-        )
+        log.warning("More than one log level arguments was provided, the log level with more verbosity will be used.")
     # Load settings
     settings = load_settings(explicit_config=config)
 

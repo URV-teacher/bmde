@@ -16,16 +16,12 @@ class HostRunner(RunBackend):
         return self.check()
 
     def check(self) -> bool:
-        available = is_command_available("desmume") or is_command_available(
-            "desmume-cli"
-        )
+        available = is_command_available("desmume") or is_command_available("desmume-cli")
         if not available:
             log.error("desmume or desmume-cli not found in PATH.")
         return available
 
-    def run(
-        self, spec: RunSpecOpts, exec_opts: ExecOptions
-    ) -> int | subprocess.Popen[bytes]:
+    def run(self, spec: RunSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         if exec_opts.entrypoint is not None:
             entry = str(exec_opts.entrypoint)
         else:
@@ -42,6 +38,10 @@ class HostRunner(RunBackend):
             args += ["--cflash-image", str(spec.fat_image)]
         if spec.debug:
             args += ["--arm9gdb-port", str(spec.arm9_debug_port), "--gdb-stub"]
+        if not spec.sound:
+            args += ["--disable-sound"]
+        if spec.controls:
+            log.warning(f"Custom controls are only applied with the docker backend, ignoring {spec.controls}")
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)
         return run_cmd(args, exec_opts)

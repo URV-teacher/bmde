@@ -15,9 +15,7 @@ class DockerRunner(PatchBackend):
     def is_available(self) -> bool:
         return can_run_docker()
 
-    def run(
-        self, spec: PatchSpecOpts, exec_opts: ExecOptions
-    ) -> int | subprocess.Popen[bytes]:
+    def run(self, spec: PatchSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         entry = []
         if exec_opts.entrypoint:
             entry = ["--entrypoint", str(exec_opts.entrypoint)]

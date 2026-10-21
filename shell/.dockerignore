@@ -1,0 +1,4 @@
+# Only the Dockerfile and the entrypoint are needed: the scripts of the components come from the named context
+# "components" (see docker-bake.hcl)
+*
+!entrypoint.sh

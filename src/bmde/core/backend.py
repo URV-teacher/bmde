@@ -28,6 +28,4 @@ class Backend(ABC, Generic[SpecType]):
         return True
 
     @abstractmethod
-    def run(
-        self, spec: SpecType, exec_opts: ExecOptions
-    ) -> int | subprocess.Popen[bytes]: ...
+    def run(self, spec: SpecType, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]: ...

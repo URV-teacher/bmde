@@ -7,6 +7,7 @@ from bmde.core.shared_options import (
     ArgumentsOpt,
     BackendOpt,
     BackgroundOpt,
+    DebuggerOpt,
     DockerScreenOpt,
     DryRunOpt,
     ElfRomOpt,
@@ -23,15 +24,16 @@ def debug_controller(
     nds: NdsRomOpt = None,
     elf: ElfRomOpt = None,
     arguments: ArgumentsOpt = None,
+    debugger: DebuggerOpt = None,
     docker_screen: DockerScreenOpt = None,
     # common flags
     backend: BackendOpt = None,
     background: BackgroundOpt = False,
     entrypoint: EntrypointOpt = None,
-    port: PortOpt = 1024,
+    port: PortOpt = None,
     dry_run: DryRunOpt = False,
 ) -> None:
-    """desmume wrapper. Runs an NDS ROM."""
+    """Debugs an NDS ROM: runs it in desmume in debug mode, and a debugger (Insight by default) connected to it."""
 
     settings: Settings = ctx.obj["settings"]
 
@@ -40,20 +42,12 @@ def debug_controller(
         f"- Arguments: {str(arguments)}\n"
         f"- Backend: {str(backend)}\n"
         f"- Background: {str(background)}\n"
+        f"- Debugger: {str(debugger)}\n"
         f"- Entrypoint: {str(entrypoint)}\n"
         f"- Docker screen: {str(docker_screen)}\n"
         f"- NDS ROM: {str(nds)}\n"
-    )
-
-    log.debug(
-        "Final settings for debug command:\n"
-        f"- Arguments: {str(arguments)}\n"
-        f"- Backend: {str(backend if backend is not None else settings.debug.execution_settings.backend)}\n"
-        f"- Background: {str(background)}\n"
-        f"- Entrypoint: {str(entrypoint if entrypoint is not None else settings.debug.execution_settings.entrypoint)}\n"
-        f"- Dry run: {str(dry_run)}\n"
-        f"- Docker screen: {str(docker_screen if docker_screen is not None else settings.debug.docker_screen)}\n"
-        f"- NDS ROM: {str(nds)}\n"
+        f"- ELF: {str(elf)}\n"
+        f"- Port: {str(port)}\n"
     )
 
     ret = debug_command(
@@ -62,6 +56,7 @@ def debug_controller(
         arguments=arguments,
         backend=backend,
         background=background,
+        debugger=debugger,
         docker_screen=docker_screen,
         dry_run=dry_run,
         entrypoint=entrypoint,

@@ -23,18 +23,18 @@ bmde = "bmde.__main__:main"
 
 [project.optional-dependencies]
 dev = [
-  "black",
   "pytest",
   "mypy",
   "ruff",
   "pre-commit",
+  "pre-commit-hooks",
+  "shellcheck-py",
   "build",
   "hatchling",
   "hatch-vcs",
   "mkdocs-material>=9.0.0",
   "mkdocs>=1.5.0",
   "pymdown-extensions>=10.0",
-  "mkdocs-material",
   "mkdocstrings[python]",
   "mkdocs-autorefs",
   "mkdocs-typer",

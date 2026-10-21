@@ -12,9 +12,7 @@ class HostRunner(PatchBackend):
     def is_available(self) -> bool:
         return is_command_available("dlditool")
 
-    def run(
-        self, spec: PatchSpecOpts, exec_opts: ExecOptions
-    ) -> int | subprocess.Popen[bytes]:
+    def run(self, spec: PatchSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         if exec_opts.entrypoint is not None:
             entry = str(exec_opts.entrypoint)
         else:

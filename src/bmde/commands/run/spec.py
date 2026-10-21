@@ -14,6 +14,8 @@ class RunSpecOpts(BaseSpec):
     docker_network: str
     fat_image: Path | None
     graphical_output: DockerOutputOptions | None
+    sound: bool = True
+    controls: Path | None = None
 
 
 @dataclass
