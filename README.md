@@ -123,6 +123,10 @@ The configuration files allows an easy usage to bmde: Provided arguments via con
 arguments of the CLI call to bmde, allowing shorter commands and skipping the need to provide things like credentials
 for authentication in each call to bmde.
 
+Run `bmde config` (or `bmde config <command>`, e.g. `bmde config git`) to create or update a configuration file
+interactively, and `bmde --show-default-config` to print a documented template with every option and its default value
+(see [`examples/bmde.toml`](examples/bmde.toml)).
+
 Default arguments can be customized via (from less to more priority)
 system variables, global configuration file, specific configuration file of the
 repo, specific

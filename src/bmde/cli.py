@@ -14,6 +14,7 @@ from rich.console import Console
 
 import bmde.commands.build.cli
 import bmde.commands.check.cli
+import bmde.commands.config.cli
 import bmde.commands.debug.cli
 import bmde.commands.git.cli
 import bmde.commands.patch.cli
@@ -34,6 +35,7 @@ app.command("patch")(bmde.commands.patch.cli.patch_controller)
 app.command("run")(bmde.commands.run.cli.run_controller)
 app.command("debug")(bmde.commands.debug.cli.debug_controller)
 app.command("check")(bmde.commands.check.cli.check_controller)
+app.command("config")(bmde.commands.config.cli.config_controller)
 
 if __name__ == "__main__":
     app()
