@@ -68,6 +68,12 @@ repos:
         language: system
         pass_filenames: false
 
+      - id: lint-ai-ignore
+        name: lint-ai-ignore (make lint-ai-ignore)
+        entry: make lint-ai-ignore
+        language: system
+        pass_filenames: false
+
       - id: lint-secrets
         name: lint-secrets (make lint-secrets)
         entry: make lint-secrets

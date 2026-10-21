@@ -95,7 +95,18 @@ EXAMPLE_CONFIG := examples/bmde.toml
 fmt-example-config:  ## Regenerate examples/bmde.toml with every option and its default value
 	@$(PYTHON) -m $(PKG_NAME) --show-default-config > "$(EXAMPLE_CONFIG)"
 
-fmt: fmt-ruff fmt-ruff-format fmt-example-config fmt-hygiene  ## Auto-format and fix everything that can be fixed
+# Every AI tool reads its own ignore file, all in gitignore syntax: .aiexclude is the one to edit and the rest are
+# copies, so a tool can never see a file that another one is told to skip.
+AI_IGNORE_SOURCE := .aiexclude
+AI_IGNORE_COPIES := .geminiignore .cursorignore .aiderignore .codeiumignore .aiignore
+AI_IGNORE_HEADER := \# GENERATED from $(AI_IGNORE_SOURCE) by `make fmt-ai-ignore`, edit that file instead
+
+fmt-ai-ignore:  ## Regenerate the ignore files of the other AI tools from .aiexclude
+	@for f in $(AI_IGNORE_COPIES); do
+		{ echo '$(AI_IGNORE_HEADER)'; cat "$(AI_IGNORE_SOURCE)"; } > "$$f"
+	done
+
+fmt: fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene  ## Auto-format and fix everything that can be fixed
 
 # ---- linting (non-mutating: fails on violation, used by CI and pre-commit) ----
 
@@ -132,7 +143,15 @@ lint-example-config:  ## Check examples/bmde.toml is up to date with the setting
 	@$(PYTHON) -m $(PKG_NAME) --show-default-config | diff -u "$(EXAMPLE_CONFIG)" - \
 		|| { echo "$(EXAMPLE_CONFIG) is outdated, run 'make fmt'"; exit 1; }
 
-lint: lint-ruff lint-mypy lint-example-config lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
+lint-ai-ignore:  ## Check the AI ignore files are up to date with .aiexclude (fix with make fmt)
+	@status=0
+	for f in $(AI_IGNORE_COPIES); do
+		{ echo '$(AI_IGNORE_HEADER)'; cat "$(AI_IGNORE_SOURCE)"; } | diff -u "$$f" - \
+			|| { echo "$$f is outdated, run 'make fmt'"; status=1; }
+	done
+	exit $$status
+
+lint: lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
 
 test:  ## Run tests with coverage (fails under the fail_under of pyproject.toml)
 	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s --cov --cov-report=term --cov-report=xml
@@ -168,8 +187,8 @@ clean:  ## Remove build/test artifacts
 # ---- meta -------------------------------------------------------------------
 
 .PHONY: venv install dev run clean help dist readme docs-serve docs-build docs-deploy \
-        fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-hygiene \
-        lint lint-ruff lint-mypy lint-example-config lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
+        fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene \
+        lint lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
         lint-shellcheck lint-secrets test
 
 help:  ## Show this help
