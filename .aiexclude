@@ -1,5 +1,10 @@
+# Local configuration with credentials (VPN, SSH) - never send it to an AI tool
+bmde.toml
+.env
+# Generated or vendored
 workspace
 logs
-examples/bmde.toml
-.git
+venv
+site
 src/bmde.egg-info
+.git

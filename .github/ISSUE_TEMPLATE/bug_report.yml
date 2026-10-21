@@ -1,0 +1,52 @@
+name: Bug report
+description: Something in bmde doesn't work as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Before sending it, remove any password, username or certificate from the outputs and
+        config you paste: a `bmde.toml` may contain your VPN and SSH credentials.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What you did, what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and output
+      description: The exact command you ran and its full output, ideally with `--trace` (e.g. `bmde --trace build`).
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: bmde version
+      description: Output of `bmde --version`.
+    validations:
+      required: true
+  - type: dropdown
+    id: backend
+    attributes:
+      label: Backend
+      options:
+        - docker
+        - host
+        - flatpak
+        - I don't know
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: e.g. Ubuntu 24.04, Windows 11 + WSL2, macOS 15
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else?
+      description: Configuration (without credentials), screenshots, links...

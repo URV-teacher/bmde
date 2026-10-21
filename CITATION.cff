@@ -1,10 +1,22 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-authors:
-- family-names: "Mariné-Tena"
-  given-names: "Aleix"
-  email: "aleix.marine@urv.cat"
+type: software
 title: "Bare Metal Development Environment (BMDE) CLI"
-version: latest
-date-released: 2024-01-01
-url: "https://github.com/URV-teacher/bmde"
+abstract: >-
+  Command line interface that wraps the Bare Metal Development Environment, a set of Docker images and host tools
+  (devkitARM, DeSmuME, Insight, dlditool, grit, git over the URV VPN) for Nintendo DS development, used in the
+  practical exercises of the Computers subject at Universitat Rovira i Virgili.
+authors:
+  - family-names: "Mariné-Tena"
+    given-names: "Aleix"
+    email: "aleix.marine@urv.cat"
+    affiliation: "Universitat Rovira i Virgili"
+repository-code: "https://github.com/URV-teacher/bmde"
+url: "https://urv-teacher.github.io/bmde/"
+license: GPL-3.0-or-later
+keywords:
+  - nintendo-ds
+  - devkitpro
+  - bare-metal
+  - development-environment
+  - education

@@ -6,7 +6,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![Unlicense License][license-shield]][license-url]
+[![License: GPL-3.0][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 [![Testing PyTest)][pytest-shield]][pytest-url]
 [![Style (Ruff)][ruff-shield]][ruff-url]
@@ -31,9 +31,9 @@
     <br />
     <!-- <a href="https://github.com/URV-teacher/bmde">View Demo</a>
     &middot;-->
-    <a href="https://github.com/URV-teacher/bmde/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/URV-teacher/bmde/issues/new?template=bug_report.yml">Report Bug</a>
     &middot;
-    <a href="https://github.com/URV-teacher/bmde/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/URV-teacher/bmde/issues/new?template=feature_request.yml">Request Feature</a>
   </p>
 </div>
 

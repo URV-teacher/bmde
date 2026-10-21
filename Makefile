@@ -128,8 +128,8 @@ lint-example-config:  ## Check examples/bmde.toml is up to date with the setting
 
 lint: lint-ruff lint-mypy lint-example-config lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck  ## Run every non-mutating check
 
-test:  ## Run tests
-	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s
+test:  ## Run tests with coverage (fails under the fail_under of pyproject.toml)
+	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s --cov --cov-report=term --cov-report=xml
 
 # ---- run ------------------------------------------------------------------
 
@@ -156,7 +156,8 @@ docs-deploy: dev  ## Deploy the documentation site to GitHub Pages
 # ---- maintenance ------------------------------------------------------------
 
 clean:  ## Remove build/test artifacts
-	@rm -rf .pytest_cache .mypy_cache .ruff_cache dist build *.egg-info src/*.egg-info site "$(VENV_DIR)"
+	@rm -rf .pytest_cache .mypy_cache .ruff_cache .coverage coverage.xml htmlcov dist build *.egg-info src/*.egg-info \
+		site "$(VENV_DIR)"
 
 # ---- meta -------------------------------------------------------------------
 
@@ -167,4 +168,4 @@ clean:  ## Remove build/test artifacts
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'

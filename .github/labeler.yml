@@ -10,11 +10,12 @@ documentation:
 docker:
   - changed-files:
     - any-glob-to-any-file:
-      - "Dockerfile"
       - "**/Dockerfile"
-      - "docker-compose.yml"
-      - "**/compose.yml"
-      - ".dockerignore"
+      - "**/*.Dockerfile"
+      - "**/.dockerignore"
+      - "docker-bake.hcl"
+      - "base/**"
+      - "shell/**"
 
 python:
   - changed-files:
@@ -23,13 +24,13 @@ python:
       - "src/**"
       - "tests/**"
       - "pyproject.toml"
-      - "requirements.txt"
 
 ci:
   - changed-files:
     - any-glob-to-any-file:
-      - ".github/workflows/**"
+      - ".github/**"
       - "Makefile"
+      - ".pre-commit-config.yaml"
 
 components:
   - changed-files:

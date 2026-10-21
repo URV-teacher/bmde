@@ -12,10 +12,8 @@
 # Mark generated files or vendor files to exclude them from language stats
 *.min.js linguist-vendored
 *.min.css linguist-vendored
-docs/ linguist-documentation
-site/ linguist-generated
-venv/ linguist-vendored
-.github/ linguist-vendored
+docs/** linguist-documentation
+examples/bmde.toml linguist-generated
 
 # Ensure specific files always use LF (Linux/macOS) line endings
 *.sh text eol=lf
@@ -26,6 +24,10 @@ venv/ linguist-vendored
 *.yaml text eol=lf
 *.json text eol=lf
 *.md text eol=lf
+*.hcl text eol=lf
+*.cff text eol=lf
+Dockerfile text eol=lf
+*.Dockerfile text eol=lf
 Makefile text eol=lf
 
 # Ensure Windows batch files use CRLF

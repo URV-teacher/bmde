@@ -1,21 +1,19 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Only the latest release of `bmde` on PyPI and the `latest` Docker images receive fixes. Update with
+`pip install --upgrade bmde` before reporting a problem.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.x.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
+Do not open a public issue. Report it privately through
+[GitHub's private vulnerability reporting](https://github.com/URV-teacher/bmde/security/advisories/new), or by email
+to [aleix.marine@urv.cat](mailto:aleix.marine@urv.cat).
 
-Use this section to tell people how to report a vulnerability.
+Include the version, how to reproduce the problem and its impact. You will get an answer within a week. If the
+report is confirmed, the fix is released as soon as possible and you are credited in the advisory unless you prefer
+otherwise.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-rejected, etc.
-
-Please report vulnerabilities to [aleix.marine@urv.cat](mailto:aleix.marine@urv.cat).
+Keep in mind that a `bmde.toml` may contain your VPN and SSH credentials: never attach it to an issue or report
+without removing them.

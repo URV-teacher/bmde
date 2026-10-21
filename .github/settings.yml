@@ -17,6 +17,8 @@ repository:
     - development-environment
     - cli
     - python
+    - nintendo-ds
+    - education
 
   # Either `true` to make the repository private, or `false` to make it public.
   private: false
@@ -47,3 +49,6 @@ repository:
   # Either `true` to allow rebase-merging pull requests, or `false` to prevent
   # rebase-merging.
   allow_rebase_merge: true
+
+  # Either `true` to delete the head branch of a pull request when it is merged (GitHub Flow: branches are short-lived)
+  delete_branch_on_merge: true
