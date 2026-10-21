@@ -14,15 +14,13 @@ USER root
 # - python3-venv, python3-pip: `make dev` creates the venv of the project (the Python of the image is the one of the
 #   system, newer than the 3.11 the project supports, which ruff and mypy still check against)
 # - dosfstools, mtools: the integration tests create and read FAT images
-# - docker.io: the docker backend of the CLI and the integration tests run containers. The daemon runs inside the dev
-#   container (Docker in Docker), so the paths the CLI mounts exist for it; devcontainer.json starts it
+# The Docker client comes from the docker-outside-of-docker feature of devcontainer.json, which uses the daemon of the
+# host
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-venv \
     python3-pip \
     dosfstools \
     mtools \
-    docker.io \
-    && rm -rf /var/lib/apt/lists/* \
-    && usermod --append --groups docker bmde
+    && rm -rf /var/lib/apt/lists/*
 
 USER bmde

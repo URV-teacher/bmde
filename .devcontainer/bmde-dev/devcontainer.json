@@ -7,26 +7,33 @@
 	"remoteUser": "bmde",
 	"init": true,
 
+	// Docker client using the daemon of the host (Docker outside of Docker), which shares its images with the host. The
+	// docker backend of the CLI and the integration tests mount paths of this container in the containers they run,
+	// which the daemon looks for in the host, so the project is mounted at its path of the host and the temporary
+	// files go to its tmp/ (ignored by git) instead of /tmp.
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"moby": false
+		}
+	},
+	"workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+	"workspaceFolder": "${localWorkspaceFolder}",
+
 	// Graphical programs open their windows in the X server of the host. For VNC, see .devcontainer/nds/devcontainer.json
 	"containerEnv": {
 		"MODE": "host",
-		"DISPLAY": "${localEnv:DISPLAY}"
+		"DISPLAY": "${localEnv:DISPLAY}",
+		"TMPDIR": "${localWorkspaceFolder}/tmp"
 	},
+	"mounts": [
+		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"
+	],
 	"initializeCommand": "xhost +SI:localuser:$(id -un) >/dev/null 2>&1 || true",
 
-	// - Docker daemon of the container (Docker in Docker): the docker backend of the CLI and the integration tests mount
-	//   paths of this container in their containers, which a daemon of the host could not see. Its images are kept in
-	//   a volume, so they survive rebuilding the container.
-	// - The VPN of the URV creates a PPP interface.
-	"privileged": true,
-	"mounts": [
-		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
-		"source=bmde-dev-docker,target=/var/lib/docker,type=volume"
-	],
+	// The VPN of the URV creates a PPP interface
 	"runArgs": ["--cap-add=NET_ADMIN", "--device=/dev/ppp"],
-	"postStartCommand": "pgrep -x dockerd >/dev/null || sudo setsid dockerd >/tmp/dockerd.log 2>&1 &",
 
-	"postCreateCommand": "git submodule update --init --recursive && make dev",
+	"postCreateCommand": "mkdir -p tmp && git submodule update --init --recursive && make dev",
 
 	"customizations": {
 		"vscode": {
