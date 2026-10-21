@@ -6,8 +6,9 @@
 # Verbosity of the CLI output
 # Allowed values: trace, debug, info, warning, error, quiet
 level = "info"
-# Path of the log file. If unset, a new timestamped file is created on each execution
-# file = "logs/bmde/<date>.log"
+# Path of the log file. If unset, a new timestamped file is created on each execution in the log directory of the user
+# (~/.local/state/bmde/log on Linux)
+# file = "<user log directory>/<date>.log"
 # Hide sensitive values (e.g. passwords) in the logs
 hide_sensibles = true
 

@@ -139,7 +139,11 @@ VeryQuietOpt = Annotated[
 
 ConfigOpt = Annotated[
     Path | None,
-    typer.Option("-c", "--config", help="Execution-specific config file (highest file priority)"),
+    typer.Option(
+        "-c",
+        "--config",
+        help="Execution-specific config file (beats the other files and the BMDE_* environment variables)",
+    ),
 ]
 
 # --- Run options ---
