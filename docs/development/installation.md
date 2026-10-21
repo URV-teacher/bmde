@@ -4,8 +4,9 @@
 
 The repository has a [dev container](https://code.visualstudio.com/docs/devcontainers/containers) with everything
 needed to develop the CLI, `.devcontainer/bmde-dev/`, on the `aleixmt/bmde-dev` image: the full development environment
-of the BMDE (`aleixmt/bmde-full`, every NDS tool) plus Python, the packages of the integration tests and its own Docker
-daemon, so the docker backend of the CLI and the integration tests work inside it.
+of the BMDE (`aleixmt/bmde-full`, every NDS tool) plus Python, the packages of the integration tests and a Docker client
+that uses the Docker of your computer (Docker outside of Docker), so the docker backend of the CLI and the integration
+tests work inside it and share the images of your computer.
 
 1. Clone the repository and open it in VS Code, with the
    [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
@@ -14,8 +15,10 @@ daemon, so the docker backend of the CLI and the integration tests work inside i
 3. Run `make lint`, `make test` or `make run CMD="--help"` in its terminal.
 
 Graphical programs open in the X server of the host, like in the [dev container of the students](../getting-started/devcontainer.md).
-The container is privileged (Docker in Docker) and keeps the images of its Docker daemon in the `bmde-dev-docker`
-volume, so they survive rebuilding it. Git worktrees can't be opened in it (their `.git` points to a path of the host).
+The Docker daemon of your computer looks for the paths the CLI and the tests mount in your computer, not in the
+container, so the project is mounted at the same path as in your computer and the temporary files go to its `tmp/`
+(`TMPDIR`, ignored by git). That is why this dev container is meant for Linux hosts (or WSL 2). Git worktrees can't be
+opened in it (their `.git` points to a path of the host).
 
 The other configuration, **BMDE: NDS development** (`.devcontainer/nds/`), is the template for the projects of the
 students.

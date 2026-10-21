@@ -51,8 +51,8 @@ download script first. Every external resource is listed in [external resources]
   the components, and runs the install scripts of all the components. It is also the image of the dev container of
   the students (`.devcontainer/nds/`).
 * `.devcontainer/bmde-dev/`: development environment of the bmde CLI (`aleixmt/bmde-dev`), the full development
-  environment plus Python, the packages of the integration tests and Docker. Image of the dev container
-  `.devcontainer/bmde-dev/`.
+  environment plus Python and the packages of the integration tests (the Docker client comes from a feature of the dev
+  container). Image of the dev container `.devcontainer/bmde-dev/`.
 
 The Dockerfiles name the published images they use as stages (e.g. `FROM aleixmt/bmde-base:latest AS bmde-base`).
 [`docker-bake.hcl`](https://github.com/URV-teacher/bmde/blob/master/docker-bake.hcl) builds every image replacing those
@@ -80,7 +80,14 @@ images of the components are versioned by their own repositories.
   and runs its tests.
 * This repository downloads the assets of every component, builds every image with `docker-bake.hcl` and runs the tests
   of every component inside the full development environment (`shell/test.sh`) on every pull request
-  (`.github/workflows/images.yml`). On every push to master, `.github/workflows/release.yml` runs semantic-release and
-  then, in parallel, publishes the package to PyPI (only if there is a new version) and calls `images.yml` to publish
-  the base image, the full development environment and the development environment of the CLI (with the version tags
-  if there is a new version). A failure of the images does not stop the package from being published.
+  (`.github/workflows/images.yml`).
+* On every push to master, `.github/workflows/release.yml` runs, in order and each step only if everything before it
+  succeeded:
+    1. the checks: lint, tests, and the images, built, tested and pushed with only the tag `sha-<commit>`;
+    2. semantic-release, which tags the new version (if the commits make one) and creates its GitHub release;
+    3. the upload of the package to PyPI, only if there is a new version;
+    4. the publication of the tested images (retagged, not rebuilt) as `latest` and, if there is a new version, `X.Y.Z`,
+       `X.Y` and `X`.
+
+  If a step fails, nothing after it is published. The `sha-<commit>` tags stay in Docker Hub as a record of every
+  tested build.
