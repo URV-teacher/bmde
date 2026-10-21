@@ -110,7 +110,7 @@ These files define the project's identity, build process, and developer experien
     *   **Usage**: Prevents AI agents from reading specific files (similar to `.gitignore` but for AI contexts), most importantly a local `bmde.toml` with credentials.
 
 ### Directories (Root Level)
-*   **`.devcontainer/`**: Contains `devcontainer.json` for configuring VS Code Dev Containers / GitHub Codespaces.
+*   **`.devcontainer/`**: Dev container configurations: `bmde-dev/` (development of the CLI, with the Dockerfile of `aleixmt/bmde-dev`) and `nds/` (NDS development, template for the projects of the students).
 *   **`.github/`**: Contains GitHub Actions workflows, templates, dependabot config, and other platform-specific settings.
 *   **`.gemini/`**: Settings for the Gemini AI tools.
 *   **`src/`**: The source code of the Python package.

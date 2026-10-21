@@ -1,15 +1,25 @@
 # Downloads the assets of the components and builds the Docker images of the BMDE with docker-bake.hcl (the base
-# image, the image of each component from the submodules and the full development environment), runs the tests of
-# every component inside the full development environment and, on master, publishes the base image and the full
-# development environment. The image of each component is published by the CI of its own repository.
+# image, the image of each component from the submodules, the full development environment and the development
+# environment of the bmde CLI) and runs the tests of every component inside the full development environment.
+#
+# On pull requests it only builds and tests. On master, release.yml calls it with candidate: true, which pushes the
+# tested base image, full development environment and development environment of the CLI to Docker Hub with the tag
+# sha-<commit> only; release.yml gives them their public tags (latest and the version) once the release has been made.
+# The image of each component is published by the CI of its own repository.
 name: Images
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      candidate:
+        description: Push the tested images with the tag sha-<commit>, for release.yml to publish them
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
 
 jobs:
   full:
@@ -40,7 +50,7 @@ jobs:
           done
 
       - name: Build images
-        run: docker buildx bake full --load
+        run: docker buildx bake full dev --load
 
       # The test ROM of dlditool is built from the examples of devkitPro, so with the devkitARM just built (in the full
       # development environment) instead of the published one
@@ -52,13 +62,22 @@ jobs:
       - name: Run the tests of the components in the full development environment
         run: shell/test.sh aleixmt/bmde-full:latest
 
+      # The development environment of the CLI only adds packages to the full one: check they work
+      - name: Check the development environment of the CLI
+        run: |
+          docker run --rm --entrypoint bash aleixmt/bmde-dev:latest -c \
+            'python3 -m venv /tmp/venv && /tmp/venv/bin/pip --version && command -v mkfs.fat mcopy'
+
       - name: Log in to Docker Hub
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: inputs.candidate
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Publish base image and full development environment
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: docker buildx bake --push base full
+      # Pushes the images just built and tested (from the cache of buildx) with only the tag sha-<commit>
+      - name: Push the candidate images
+        if: inputs.candidate
+        env:
+          TAG: sha-${{ github.sha }}
+        run: docker buildx bake --push base full dev

@@ -48,7 +48,11 @@ download script first. Every external resource is listed in [external resources]
 * `components/*/Dockerfile`: image of each component, built on the base image, which installs the component with its
   scripts, run from a bind mount of the build context (with the assets already downloaded).
 * `shell/`: full development environment (`aleixmt/bmde-full`). It copies the programs already built by the images of
-  the components, and runs the install scripts of all the components.
+  the components, and runs the install scripts of all the components. It is also the image of the dev container of
+  the students (`.devcontainer/nds/`).
+* `.devcontainer/bmde-dev/`: development environment of the bmde CLI (`aleixmt/bmde-dev`), the full development
+  environment plus Python and the packages of the integration tests (the Docker client comes from a feature of the dev
+  container). Image of the dev container `.devcontainer/bmde-dev/`.
 
 The Dockerfiles name the published images they use as stages (e.g. `FROM aleixmt/bmde-base:latest AS bmde-base`).
 [`docker-bake.hcl`](https://github.com/URV-teacher/bmde/blob/master/docker-bake.hcl) builds every image replacing those
@@ -59,13 +63,31 @@ it:
 for script in components/*/scripts/download_assets.sh; do "${script}"; done   # assets of every component
 docker buildx bake full --load   # full development environment, and the images it needs
 shell/test.sh                    # tests of every component inside it
+docker buildx bake dev --load    # development environment of the CLI
 ```
+
+## Versions
+
+The images published by this repository (`bmde-base`, `bmde-full` and `bmde-dev`) are tagged `latest` on every push to
+master and, when that push releases a new version of bmde, also with that version: `X.Y.Z`, `X.Y` and `X` (e.g.
+`aleixmt/bmde-full:1.14.0`, `:1.14` and `:1`). The tags come from the `VERSION` variable of `docker-bake.hcl`. The
+images of the components are versioned by their own repositories.
 
 ## CI
 * Each component runs the reusable workflows of this repository (`.github/workflows/component-image.yml` and
   `component-host.yml`): it downloads its assets, builds its image, runs its tests inside it and its tests of
   `test/image/` (publishing it from its default branch), and installs it in an Ubuntu machine with its install scripts
   and runs its tests.
-* This repository downloads the assets of every component, builds every image with `docker-bake.hcl`, runs the tests
-  of every component inside the full development environment (`shell/test.sh`) and publishes the base image and the
-  full development environment from master (`.github/workflows/images.yml`).
+* This repository downloads the assets of every component, builds every image with `docker-bake.hcl` and runs the tests
+  of every component inside the full development environment (`shell/test.sh`) on every pull request
+  (`.github/workflows/images.yml`).
+* On every push to master, `.github/workflows/release.yml` runs, in order and each step only if everything before it
+  succeeded:
+    1. the checks: lint, tests, and the images, built, tested and pushed with only the tag `sha-<commit>`;
+    2. semantic-release, which tags the new version (if the commits make one) and creates its GitHub release;
+    3. the upload of the package to PyPI, only if there is a new version;
+    4. the publication of the tested images (retagged, not rebuilt) as `latest` and, if there is a new version, `X.Y.Z`,
+       `X.Y` and `X`.
+
+  If a step fails, nothing after it is published. The `sha-<commit>` tags stay in Docker Hub as a record of every
+  tested build.

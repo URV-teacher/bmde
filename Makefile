@@ -14,11 +14,12 @@ SHELL := bash
 
 # ---- config ---------------------------------------------------------------
 
-# Check if python3.11 exists, otherwise default to python
+# Prefer python3.11 (the oldest supported version, the one of CI), otherwise python3 (e.g. recent Debian/Ubuntu, which
+# have no `python` command)
 ifneq ($(shell command -v python3.11 2> /dev/null),)
     PYTHON_BIN ?= python3.11
 else
-    PYTHON_BIN ?= python
+    PYTHON_BIN ?= python3
 endif
 
 VENV_DIR   ?= venv
@@ -40,7 +41,7 @@ dist: $(VENV_BIN)/pyproject-build  ## Build source and wheel distribution
 # Create virtualenv
 $(VENV_BIN)/python:
 	@$(PYTHON_BIN) -m venv "$(VENV_DIR)"
-	@$(PYTHON_BIN) -m pip install --upgrade pip
+	@$(PYTHON) -m pip install --upgrade pip
 
 # Install runtime dependencies (creates the bmde executable)
 $(VENV_BIN)/bmde: $(VENV_BIN)/python pyproject.toml

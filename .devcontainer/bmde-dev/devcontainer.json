@@ -1,0 +1,67 @@
+// Development environment of the bmde CLI: Python, the tools of `make dev` and Docker, on top of the NDS development
+// environment of the BMDE (see .devcontainer/nds/), so the commands of the CLI can be run against the real tools.
+// Image: .devcontainer/bmde-dev/Dockerfile, published as aleixmt/bmde-dev.
+{
+	"name": "BMDE: bmde CLI development",
+	"image": "aleixmt/bmde-dev:latest",
+	"remoteUser": "bmde",
+	"init": true,
+
+	// Docker client using the daemon of the host (Docker outside of Docker), which shares its images with the host. The
+	// docker backend of the CLI and the integration tests mount paths of this container in the containers they run,
+	// which the daemon looks for in the host, so the project is mounted at its path of the host and the temporary
+	// files go to its tmp/ (ignored by git) instead of /tmp.
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"moby": false
+		}
+	},
+	"workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+	"workspaceFolder": "${localWorkspaceFolder}",
+
+	// Graphical programs open their windows in the X server of the host. For VNC, see .devcontainer/nds/devcontainer.json
+	"containerEnv": {
+		"MODE": "host",
+		"DISPLAY": "${localEnv:DISPLAY}",
+		"TMPDIR": "${localWorkspaceFolder}/tmp"
+	},
+	"mounts": [
+		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"
+	],
+	"initializeCommand": "xhost +SI:localuser:$(id -un) >/dev/null 2>&1 || true",
+
+	// The VPN of the URV creates a PPP interface
+	"runArgs": ["--cap-add=NET_ADMIN", "--device=/dev/ppp"],
+
+	"postCreateCommand": "mkdir -p tmp && git submodule update --init --recursive && make dev",
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-python.mypy-type-checker",
+				"charliermarsh.ruff",
+				"editorconfig.editorconfig",
+				"tamasfe.even-better-toml",
+				"redhat.vscode-yaml",
+				"ms-azuretools.vscode-docker",
+				"timonwong.shellcheck",
+				"aleixmt.nds-arm-assembly-syntax-highlight",
+				"ms-vscode.cpptools",
+				"ms-vscode.makefile-tools"
+			],
+			"settings": {
+				"python.defaultInterpreterPath": "${containerWorkspaceFolder}/venv/bin/python",
+				"[python]": {
+					"editor.defaultFormatter": "charliermarsh.ruff",
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.fixAll": "explicit",
+						"source.organizeImports": "explicit"
+					}
+				}
+			}
+		}
+	}
+}

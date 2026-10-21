@@ -2,6 +2,8 @@ name: lint
 
 on:
   pull_request:
+  # Called by release.yml on every push to master
+  workflow_call:
 
 permissions:
   contents: read
