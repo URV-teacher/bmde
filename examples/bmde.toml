@@ -1,85 +1,201 @@
 # This file can be generated with the shell command 'bmde --show-default-config > bmde.toml'
+# Options that are commented out are unset by default. Uncomment them to set a value.
 
+# Logging of the CLI.
 [logging]
+# Verbosity of the CLI output
+# Allowed values: trace, debug, info, warning, error, quiet
 level = "info"
-file = "logs/bmde/2025-12-28 23:45:48.log"
+# Path of the log file. If unset, a new timestamped file is created on each execution
+# file = "logs/bmde/<date>.log"
+# Hide sensitive values (e.g. passwords) in the logs
+hide_sensibles = true
 
+# Settings of the emulator.
 [run]
+# Method to show the emulator screen with the "docker" backend: a desktop window (host), VNC on port 5900 of localhost
+# (vnc) or not shown (none)
+# Allowed values: vnc, host, none
 graphical_output = "host"
+# Enable the GDB stub of the emulator if supported
 debug = false
-arm9_debug_port = 1000
-# fat_image = "null"
+# Port of the GDB stub of the ARM9 processor
+arm9_debug_port = 1024
+# Path to a FAT image loaded into the emulator
+# fat_image = "<path>"
+# Play the emulator sound on the host
+sound = true
+# Path to a DeSmuME desmume.ini with custom controls (and HUD options)
+# controls = "<path>"
+# Name of the Docker network shared by the emulator and the debugger with the "docker" backend
 docker_network = "bmde-debug"
 
+# How the command is executed.
 [run.execution_settings]
-# entrypoint = "null"
-# arguments = "null"
+# Executable used instead of the default entrypoint of the backend
+# entrypoint = "<path>"
+# Arguments passed to the entrypoint
+# arguments = ["<arg>", ...]
+# Run the command in the background
 background = false
+# Simulate actions without executing them
 dry_run = false
-backend = "docker"
+# Run in interactive mode (allocates a TTY)
+interactive = true
+# Backend used to execute the command. If unset, the first available backend is used
+# Allowed values: host, docker, flatpak
+# backend = "<host|docker|flatpak>"
 
+# Settings of the build command.
+[build]
+
+# How the command is executed.
 [build.execution_settings]
-# entrypoint = "null"
-# arguments = "null"
+# Executable used instead of the default entrypoint of the backend
+# entrypoint = "<path>"
+# Arguments passed to the entrypoint
+# arguments = ["<arg>", ...]
+# Run the command in the background
 background = false
+# Simulate actions without executing them
 dry_run = false
-backend = "docker"
+# Run in interactive mode (allocates a TTY)
+interactive = true
+# Backend used to execute the command. If unset, the first available backend is used
+# Allowed values: host, docker, flatpak
+# backend = "<host|docker|flatpak>"
 
+# Settings of the git command.
+[git]
+
+# How the command is executed.
 [git.execution_settings]
-# entrypoint = "null"
-# arguments = "null"
+# Executable used instead of the default entrypoint of the backend
+# entrypoint = "<path>"
+# Arguments passed to the entrypoint
+# arguments = ["<arg>", ...]
+# Run the command in the background
 background = false
+# Simulate actions without executing them
 dry_run = false
-backend = "docker"
+# Run in interactive mode (allocates a TTY)
+interactive = true
+# Backend used to execute the command. If unset, the first available backend is used
+# Allowed values: host, docker, flatpak
+# backend = "<host|docker|flatpak>"
 
+# Identity used in the git commits.
 [git.git]
-# name = "null"
-# email = "null"
+# User name for git commit signature
+# name = "<str>"
+# User email for git commit signature
+# email = "<str>"
 
+# SSH authentication of git.
 [git.ssh]
-# username = "null"
-# password = "null"
-# host = "null"
+# User name for the SSH authentication of git
+# username = "<str>"
+# User password for the SSH authentication of git
+# password = "<str>"
+# Hostname of the SSH server
+# host = "<str>"
 
+# VPN (forticlient) used to reach the git server.
 [git.vpn]
+# Connect to the VPN before running git
 enabled = true
-# username = "null"
-# password = "null"
-# host = "null"
-# port = "null"
-# cert = "null"
-# realm = "null"
-# test_dns = "null"
-# test_ip = "null"
+# User name for forticlient authentication
+# username = "<str>"
+# User password for forticlient authentication
+# password = "<str>"
+# VPN gateway for forticlient
+# host = "<str>"
+# VPN port for forticlient
+# port = <int>
+# VPN cert for forticlient
+# cert = "<str>"
+# VPN realm for forticlient
+# realm = "<str>"
+# DNS name requested to validate that the internal network is reachable
+# test_dns = "<str>"
+# IP address requested to validate that the internal network is reachable
+# test_ip = "<str>"
 
+# Settings of the patch command.
+[patch]
+
+# How the command is executed.
 [patch.execution_settings]
-# entrypoint = "null"
-# arguments = "null"
+# Executable used instead of the default entrypoint of the backend
+# entrypoint = "<path>"
+# Arguments passed to the entrypoint
+# arguments = ["<arg>", ...]
+# Run the command in the background
 background = false
+# Simulate actions without executing them
 dry_run = false
-backend = "docker"
+# Run in interactive mode (allocates a TTY)
+interactive = true
+# Backend used to execute the command. If unset, the first available backend is used
+# Allowed values: host, docker, flatpak
+# backend = "<host|docker|flatpak>"
 
+# Settings of the debug command.
 [debug]
-# docker_screen = "null"
-# docker_network = "null"
+# Debugger connected to the emulator
+# Allowed values: insight, gdb-multiarch
+debugger = "insight"
+# Method to show the debugger screen with the "docker" backend
+# Allowed values: vnc, host, none
+docker_screen = "host"
 
+# Settings of the emulator.
 [debug.run]
+# Method to show the emulator screen with the "docker" backend: a desktop window (host), VNC on port 5900 of localhost
+# (vnc) or not shown (none)
+# Allowed values: vnc, host, none
 graphical_output = "host"
+# Enable the GDB stub of the emulator if supported
 debug = false
-arm9_debug_port = 1000
-# fat_image = "null"
+# Port of the GDB stub of the ARM9 processor
+arm9_debug_port = 1024
+# Path to a FAT image loaded into the emulator
+# fat_image = "<path>"
+# Play the emulator sound on the host
+sound = true
+# Path to a DeSmuME desmume.ini with custom controls (and HUD options)
+# controls = "<path>"
+# Name of the Docker network shared by the emulator and the debugger with the "docker" backend
 docker_network = "bmde-debug"
 
+# How the command is executed.
 [debug.run.execution_settings]
-# entrypoint = "null"
-# arguments = "null"
+# Executable used instead of the default entrypoint of the backend
+# entrypoint = "<path>"
+# Arguments passed to the entrypoint
+# arguments = ["<arg>", ...]
+# Run the command in the background
 background = false
+# Simulate actions without executing them
 dry_run = false
-backend = "docker"
+# Run in interactive mode (allocates a TTY)
+interactive = true
+# Backend used to execute the command. If unset, the first available backend is used
+# Allowed values: host, docker, flatpak
+# backend = "<host|docker|flatpak>"
 
+# How the command is executed.
 [debug.execution_settings]
-# entrypoint = "null"
-# arguments = "null"
+# Executable used instead of the default entrypoint of the backend
+# entrypoint = "<path>"
+# Arguments passed to the entrypoint
+# arguments = ["<arg>", ...]
+# Run the command in the background
 background = false
+# Simulate actions without executing them
 dry_run = false
-backend = "docker"
+# Run in interactive mode (allocates a TTY)
+interactive = true
+# Backend used to execute the command. If unset, the first available backend is used
+# Allowed values: host, docker, flatpak
+# backend = "<host|docker|flatpak>"

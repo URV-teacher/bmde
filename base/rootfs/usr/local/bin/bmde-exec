@@ -1,0 +1,6 @@
+#!/bin/sh
+# Runs a command with the environment of the BMDE programs installed in /URV/bmde, for the images whose entrypoint is
+# a program instead of a shell script.
+# shellcheck source=/dev/null
+. /etc/bmde/env.sh
+exec "$@"

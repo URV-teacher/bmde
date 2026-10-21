@@ -49,31 +49,19 @@ def create_git_spec(
     return GitSpec(
         GitSpecOpts=GitSpecOpts(
             d=d,
-            ssh_username=(
-                ssh_username if ssh_username is not None else settings.ssh.username
-            ),
-            ssh_password=(
-                ssh_password if ssh_password is not None else settings.ssh.password
-            ),
+            ssh_username=(ssh_username if ssh_username is not None else settings.ssh.username),
+            ssh_password=(ssh_password if ssh_password is not None else settings.ssh.password),
             ssh_host=ssh_host if ssh_host is not None else settings.ssh.host,
             git_name=git_name if git_name is not None else settings.git.name,
             git_email=git_email if git_email is not None else settings.git.email,
-            vpn_username=(
-                vpn_username if vpn_username is not None else settings.vpn.username
-            ),
-            vpn_password=(
-                vpn_password if vpn_password is not None else settings.vpn.password
-            ),
+            vpn_username=(vpn_username if vpn_username is not None else settings.vpn.username),
+            vpn_password=(vpn_password if vpn_password is not None else settings.vpn.password),
             vpn_host=vpn_host if vpn_host is not None else settings.vpn.host,
             vpn_port=vpn_port if vpn_port is not None else settings.vpn.port,
             vpn_realm=vpn_realm if vpn_realm is not None else settings.vpn.realm,
             vpn_cert=vpn_cert if vpn_cert is not None else settings.vpn.cert,
-            vpn_test_dns=(
-                vpn_test_dns if vpn_test_dns is not None else settings.vpn.test_dns
-            ),
-            vpn_test_ip=(
-                vpn_test_ip if vpn_test_ip is not None else settings.vpn.test_ip
-            ),
+            vpn_test_dns=(vpn_test_dns if vpn_test_dns is not None else settings.vpn.test_dns),
+            vpn_test_ip=(vpn_test_ip if vpn_test_ip is not None else settings.vpn.test_ip),
         ),
         SpecExecOpts=SpecExecOpts(
             backend=(
@@ -85,25 +73,13 @@ def create_git_spec(
                     else BackendOptions.DOCKER
                 )
             ),
-            entrypoint=(
-                entrypoint
-                if entrypoint is not None
-                else settings.execution_settings.entrypoint
-            ),
+            entrypoint=(entrypoint if entrypoint is not None else settings.execution_settings.entrypoint),
             arguments=arguments,
-            dry_run=(
-                dry_run if dry_run is not None else settings.execution_settings.dry_run
-            ),
+            dry_run=(dry_run if dry_run is not None else settings.execution_settings.dry_run),
             background=(
-                settings.execution_settings.background
-                if settings.execution_settings.background is not None
-                else False
+                settings.execution_settings.background if settings.execution_settings.background is not None else False
             ),
-            interactive=(
-                interactive
-                if interactive is not None
-                else settings.execution_settings.interactive
-            ),
+            interactive=(interactive if interactive is not None else settings.execution_settings.interactive),
         ),
     )
 

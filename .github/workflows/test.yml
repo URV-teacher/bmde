@@ -13,16 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+
+      # The integration tests use scripts of the components (e.g. the creation of FAT images of desmume-docker)
+      - name: Checkout desmume-docker
+        run: git submodule update --init components/desmume-docker
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.11' # Matches your dev environment
           cache: 'pip' # Speeds up future runs
 
       - name: Install Dependencies
         run: make dev
+
+      # The integration tests create (desmume-docker/scripts/create_fat_image.sh) and read FAT images
+      - name: Install FAT tools
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends dosfstools mtools
 
       - name: Configure BMDE logging
         run: |

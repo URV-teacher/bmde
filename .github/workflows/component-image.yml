@@ -1,0 +1,86 @@
+# Reusable workflow for the repositories of the components: downloads its assets, builds the Docker image of the
+# component, runs its tests inside it and, on the default branch, publishes it. The tests are scripts of test/, run
+# with the repository (and its assets) mounted in /component, and scripts of test/image/, run in the machine with the
+# image as argument (to test the image from outside, e.g. running it with docker run).
+name: Component image
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Name of the image, without tag (e.g. aleixmt/desmume)
+        required: true
+        type: string
+      dockerfile:
+        description: Dockerfile of the image
+        default: Dockerfile
+        type: string
+      tests:
+        description: Test scripts of test/ to run inside the image, separated by spaces
+        required: true
+        type: string
+      image_tests:
+        description: Test scripts of test/image/ to run in the machine with the image as argument, separated by spaces
+        default: ""
+        type: string
+      setup:
+        description: Commands to run before downloading the assets (e.g. to install the tools that download them)
+        default: ""
+        type: string
+      assets:
+        description: Assets to download with scripts/download_assets.sh, separated by spaces (all of them by default)
+        default: ""
+        type: string
+    secrets:
+      DOCKER_USERNAME:
+        required: false
+      DOCKER_PASSWORD:
+        required: false
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup
+        if: inputs.setup != ''
+        run: ${{ inputs.setup }}
+
+      # Building and installing only take the assets from assets/, so they are downloaded first
+      - name: Download assets
+        if: hashFiles('scripts/download_assets.sh') != ''
+        run: scripts/download_assets.sh ${{ inputs.assets }}
+
+      - name: Build image
+        run: docker build --pull -t "${{ inputs.image }}:latest" -f "${{ inputs.dockerfile }}" .
+
+      - name: Run tests inside the image
+        run: |
+          for test in ${{ inputs.tests }}; do
+            echo "::group::${test}"
+            docker run --rm --entrypoint bash -v "${PWD}:/component:ro" "${{ inputs.image }}:latest" \
+              "/component/test/${test}"
+            echo "::endgroup::"
+          done
+
+      - name: Run tests of the image
+        if: inputs.image_tests != ''
+        run: |
+          for test in ${{ inputs.image_tests }}; do
+            echo "::group::${test}"
+            "test/image/${test}" "${{ inputs.image }}:latest"
+            echo "::endgroup::"
+          done
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push image
+        if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        run: docker push "${{ inputs.image }}:latest"

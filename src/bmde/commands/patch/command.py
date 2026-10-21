@@ -50,20 +50,10 @@ def create_patch_spec(
                     else BackendOptions.DOCKER
                 )
             ),
-            entrypoint=(
-                entrypoint
-                if entrypoint is not None
-                else settings.execution_settings.entrypoint
-            ),
+            entrypoint=(entrypoint if entrypoint is not None else settings.execution_settings.entrypoint),
             arguments=arguments,
-            dry_run=(
-                dry_run if dry_run is not None else settings.execution_settings.dry_run
-            ),
-            background=(
-                background
-                if background is not None
-                else settings.execution_settings.background
-            ),
+            dry_run=(dry_run if dry_run is not None else settings.execution_settings.dry_run),
+            background=(background if background is not None else settings.execution_settings.background),
             interactive=interactive,
         ),
     )

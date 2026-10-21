@@ -77,7 +77,7 @@ def git_controller(
 
     settings: Settings = ctx.obj["settings"]
 
-    log.trace("Final settings for git command:\n" f"- {str(settings.git)}\n")
+    log.trace(f"Final settings for git command:\n- {str(settings.git)}\n")
 
     git_command(
         d=directory,

@@ -29,7 +29,7 @@
     <a href="https://urv-teacher.github.io/bmde/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <!-- <a href="https://github.com/URV-teacher/bmde">View Demo</a> 
+    <!-- <a href="https://github.com/URV-teacher/bmde">View Demo</a>
     &middot;-->
     <a href="https://github.com/URV-teacher/bmde/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     &middot;
@@ -84,10 +84,10 @@
 
 ![Product Name Screen Shot][product-screenshot]
 
-Operating system agnostic CLI wrapping the Bare Metal Development Environment (BMDE) and other related utilities 
-to manage the complete software life-cycle of a NDS C and / or assembly project using 
-either host or Dockerized installations of the software components of the BMDE, plus opinionated features to be used in 
-the development of the practical exercises from the subject Computers, Operating Systems Structure and in minor cases 
+Operating system agnostic CLI wrapping the Bare Metal Development Environment (BMDE) and other related utilities
+to manage the complete software life-cycle of a NDS C and / or assembly project using
+either host or Dockerized installations of the software components of the BMDE, plus opinionated features to be used in
+the development of the practical exercises from the subject Computers, Operating Systems Structure and in minor cases
 Computer Fundamentals from the university degree of Computer Engineering in the University Rovira i Virgili (URV).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -96,22 +96,22 @@ Computer Fundamentals from the university degree of Computer Engineering in the 
 
 ## General features
 ### Naive components
-Each component is independent and can be used individually without using bmde. 
+Each component is independent and can be used individually without using bmde.
 
 ### One module wraps one software
 Each module corresponds to a wrapper around one software and its environment.
 
 ### Flexibility using backend: Docker vs host (or others)
-Each module can be executed using as entrypoint the corresponding binary in your machine (host) or a binary provided by 
+Each module can be executed using as entrypoint the corresponding binary in your machine (host) or a binary provided by
 Docker embedded in bmde. This allows using bmde but either using a Docker installation that is already provided, or your
 own host installations. You can do this for each module (WIP).
 
-In the same sense, some additional backends may be provided, for example, the run command which wraps desmume, also 
-provides the FlatHub (`flathub`) backend. 
+In the same sense, some additional backends may be provided, for example, the run command which wraps desmume, also
+provides the FlatHub (`flathub`) backend.
 
 ### Config and arguments
 A native toml schema is included to provide default values to arguments to bmde. bmde also reads configuration from various
-sources with different priority, allowing for fine-grained control over each repository. The priority is the following, 
+sources with different priority, allowing for fine-grained control over each repository. The priority is the following,
 with later mentioned sources overriding previous:
 * Environment variables.
 * `/etc/bmde/bmde.toml`
@@ -119,12 +119,16 @@ with later mentioned sources overriding previous:
 * Closest `bmde.toml` upward in the tree
 * Explicit configuration via arguments pointing to a valid .toml file.
 
-The configuration files allows an easy usage to bmde: Provided arguments via config files can be omitted from the 
-arguments of the CLI call to bmde, allowing shorter commands and skipping the need to provide things like credentials 
-for authentication in each call to bmde. 
+The configuration files allows an easy usage to bmde: Provided arguments via config files can be omitted from the
+arguments of the CLI call to bmde, allowing shorter commands and skipping the need to provide things like credentials
+for authentication in each call to bmde.
 
-Default arguments can be customized via (from less to more priority) 
-system variables, global configuration file, specific configuration file of the 
+Run `bmde config` (or `bmde config <command>`, e.g. `bmde config git`) to create or update a configuration file
+interactively, and `bmde --show-default-config` to print a documented template with every option and its default value
+(see [`examples/bmde.toml`](examples/bmde.toml)).
+
+Default arguments can be customized via (from less to more priority)
+system variables, global configuration file, specific configuration file of the
 repo, specific
 configuration args for the execution.
 
@@ -134,7 +138,7 @@ configuration args for the execution.
 
 ### Built With
 
-This section lists any major languages/frameworks/libraries/tools used in this project. 
+This section lists any major languages/frameworks/libraries/tools used in this project.
 
 * [![Python][Python]][python-url]
 * [![Docker][Docker]][Docker-url]
@@ -166,7 +170,7 @@ This section lists any major languages/frameworks/libraries/tools used in this p
 ### Prerequisites
 To run `bmde` you will need Python 3.11 installed in your system.
 
-To run a command you will need either Docker with permissions for the user executing `bmde` `COMMAND` or the 
+To run a command you will need either Docker with permissions for the user executing `bmde` `COMMAND` or the
 software that the command wraps directly installed in your system. For simplicity, we recommend sticking to Docker.
 
 [Check out the docs for a full explanation on the prerequisites][docs-prerequisites].
@@ -219,7 +223,7 @@ bmde run
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [project roadmap][roadmap-url] for a full list of proposed features, and known [issues][issues-url] and its 
+See the [project roadmap][roadmap-url] for a full list of proposed features, and known [issues][issues-url] and its
 implementation state).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

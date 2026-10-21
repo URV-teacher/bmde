@@ -14,6 +14,7 @@ from rich.console import Console
 
 import bmde.commands.build.cli
 import bmde.commands.check.cli
+import bmde.commands.config.cli
 import bmde.commands.debug.cli
 import bmde.commands.git.cli
 import bmde.commands.patch.cli
@@ -23,9 +24,7 @@ import bmde.commands.run.cli
 import bmde.core.cli_global
 
 console = Console()
-app = typer.Typer(
-    add_completion=False, help="BMDE CLI", no_args_is_help=True
-)  # TODO Completion does not work
+app = typer.Typer(add_completion=False, help="BMDE CLI", no_args_is_help=True)  # TODO Completion does not work
 
 # Use the imported modules directly
 app.callback()(bmde.core.cli_global.cli_global_callback)
@@ -36,6 +35,7 @@ app.command("patch")(bmde.commands.patch.cli.patch_controller)
 app.command("run")(bmde.commands.run.cli.run_controller)
 app.command("debug")(bmde.commands.debug.cli.debug_controller)
 app.command("check")(bmde.commands.check.cli.check_controller)
+app.command("config")(bmde.commands.config.cli.config_controller)
 
 if __name__ == "__main__":
     app()
