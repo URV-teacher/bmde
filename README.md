@@ -7,7 +7,6 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![License: GPL-3.0][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
 [![Testing PyTest)][pytest-shield]][pytest-url]
 [![Style (Ruff)][ruff-shield]][ruff-url]
 [![PyPI][pypi-shield]][pypi-url]
@@ -284,8 +283,6 @@ The teachers of URV who have collaborated.
 [issues-url]: https://github.com/URV-teacher/bmde/issues
 [license-shield]: https://img.shields.io/github/license/URV-teacher/bmde.svg?style=for-the-badge
 [license-url]: https://github.com/URV-teacher/bmde/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/aleixmt
 [pytest-shield]: https://github.com/URV-teacher/bmde/actions/workflows/test.yml/badge.svg
 [pytest-url]: https://github.com/URV-teacher/bmde/actions/workflows/test.yml
 [ruff-shield]: https://github.com/URV-teacher/bmde/actions/workflows/lint.yml/badge.svg
