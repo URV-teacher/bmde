@@ -1,32 +1,50 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from bmde.config.command_settings import ExecutionSettings
 
 
 class VpnAuthSettings(BaseModel):
-    enabled: bool = True
-    username: str | None = None
-    password: str | None = None
-    host: str | None = None
-    port: int | None = None
-    cert: str | None = None
-    realm: str | None = None
-    test_dns: str | None = None
-    test_ip: str | None = None
+    """VPN (forticlient) used to reach the git server."""
+
+    enabled: bool = Field(default=True, description="Connect to the VPN before running git")
+    username: str | None = Field(default=None, description="User name for forticlient authentication")
+    password: str | None = Field(
+        default=None, description="User password for forticlient authentication", json_schema_extra={"secret": True}
+    )
+    host: str | None = Field(default=None, description="VPN gateway for forticlient")
+    port: int | None = Field(default=None, description="VPN port for forticlient")
+    cert: str | None = Field(default=None, description="VPN cert for forticlient")
+    realm: str | None = Field(default=None, description="VPN realm for forticlient")
+    test_dns: str | None = Field(
+        default=None, description="DNS name requested to validate that the internal network is reachable"
+    )
+    test_ip: str | None = Field(
+        default=None, description="IP address requested to validate that the internal network is reachable"
+    )
 
 
 class GitSshSettings(BaseModel):
-    username: str | None = None
-    password: str | None = None
-    host: str | None = None
+    """SSH authentication of git."""
+
+    username: str | None = Field(default=None, description="User name for the SSH authentication of git")
+    password: str | None = Field(
+        default=None,
+        description="User password for the SSH authentication of git",
+        json_schema_extra={"secret": True},
+    )
+    host: str | None = Field(default=None, description="Hostname of the SSH server")
 
 
 class GitConfigSettings(BaseModel):
-    name: str | None = None
-    email: str | None = None
+    """Identity used in the git commits."""
+
+    name: str | None = Field(default=None, description="User name for git commit signature")
+    email: str | None = Field(default=None, description="User email for git commit signature")
 
 
 class GitSettings(BaseModel):
+    """Settings of the git command."""
+
     execution_settings: ExecutionSettings = ExecutionSettings()
 
     git: GitConfigSettings = GitConfigSettings()

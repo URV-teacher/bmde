@@ -89,7 +89,12 @@ fmt-hygiene:  ## Fix trailing whitespace and missing final newlines on every tra
 	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/trailing-whitespace-fixer $(TEXT_FILES) || true
 	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/end-of-file-fixer $(TEXT_FILES) || true
 
-fmt: fmt-ruff fmt-ruff-format fmt-hygiene  ## Auto-format and fix everything that can be fixed
+EXAMPLE_CONFIG := examples/bmde.toml
+
+fmt-example-config:  ## Regenerate examples/bmde.toml with every option and its default value
+	@$(PYTHON) -m $(PKG_NAME) --show-default-config > "$(EXAMPLE_CONFIG)"
+
+fmt: fmt-ruff fmt-ruff-format fmt-example-config fmt-hygiene  ## Auto-format and fix everything that can be fixed
 
 # ---- linting (non-mutating: fails on violation, used by CI and pre-commit) ----
 
@@ -117,7 +122,11 @@ lint-case-conflict:  ## Check for filenames that only differ by case
 lint-shellcheck:  ## Lint shell scripts with shellcheck
 	@test -z "$(SH_FILES)" || $(VENV_BIN)/shellcheck --external-sources $(SH_FILES)
 
-lint: lint-ruff lint-mypy lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck  ## Run every non-mutating check
+lint-example-config:  ## Check examples/bmde.toml is up to date with the settings schema (fix with make fmt)
+	@$(PYTHON) -m $(PKG_NAME) --show-default-config | diff -u "$(EXAMPLE_CONFIG)" - \
+		|| { echo "$(EXAMPLE_CONFIG) is outdated, run 'make fmt'"; exit 1; }
+
+lint: lint-ruff lint-mypy lint-example-config lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck  ## Run every non-mutating check
 
 test:  ## Run tests
 	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s
@@ -152,8 +161,8 @@ clean:  ## Remove build/test artifacts
 # ---- meta -------------------------------------------------------------------
 
 .PHONY: venv install dev run clean help dist readme docs-serve docs-build docs-deploy \
-        fmt fmt-ruff fmt-ruff-format fmt-hygiene \
-        lint lint-ruff lint-mypy lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
+        fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-hygiene \
+        lint lint-ruff lint-mypy lint-example-config lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
         lint-shellcheck test
 
 help:  ## Show this help
