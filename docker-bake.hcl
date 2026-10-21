@@ -1,6 +1,7 @@
 # Builds the Docker images of the BMDE from this repository (after downloading the assets of each component with its
 # scripts/download_assets.sh): the base image (base/), the image of each component (from the checkouts of the
-# submodules in components/) and the full development environment (shell/). Each image is built on the images being
+# submodules in components/), the full development environment (shell/) and the development environment of the bmde
+# CLI (.devcontainer/bmde-dev/). Each image is built on the images being
 # built instead of the published ones, so a change in the base or in a component is tested in all the images that use
 # it.
 #
@@ -8,6 +9,7 @@
 #   docker buildx bake full --load      # the full development environment (and the images it needs)
 #   docker buildx bake desmume --load   # one component
 #   docker buildx bake --push           # build and publish every image
+#   VERSION=1.14.0 docker buildx bake --push base full dev   # also tag the published images 1.14.0, 1.14 and 1
 
 variable "REGISTRY" {
   default = "aleixmt"
@@ -17,8 +19,26 @@ variable "TAG" {
   default = "latest"
 }
 
+# Version of the bmde release the images belong to (X.Y.Z, without the v). When set, the images published by this
+# repository (base, full and dev) are also tagged X.Y.Z, X.Y and X, besides TAG
+variable "VERSION" {
+  default = ""
+}
+
+function "tags" {
+  params = [image]
+  result = concat(
+    ["${REGISTRY}/${image}:${TAG}"],
+    VERSION == "" ? [] : [
+      "${REGISTRY}/${image}:${VERSION}",
+      "${REGISTRY}/${image}:${join(".", slice(split(".", VERSION), 0, 2))}",
+      "${REGISTRY}/${image}:${split(".", VERSION)[0]}",
+    ]
+  )
+}
+
 group "default" {
-  targets = ["base", "components", "full"]
+  targets = ["base", "components", "full", "dev"]
 }
 
 group "components" {
@@ -27,7 +47,7 @@ group "components" {
 
 target "base" {
   context = "base"
-  tags    = ["${REGISTRY}/bmde-base:${TAG}"]
+  tags    = tags("bmde-base")
 }
 
 # The Dockerfiles name the published images they use as stages (e.g. FROM aleixmt/bmde-base:latest AS bmde-base), so
@@ -100,5 +120,13 @@ target "full" {
     grit       = "target:grit"
     vscode     = "target:vscode"
   })
-  tags = ["${REGISTRY}/bmde-full:${TAG}"]
+  tags = tags("bmde-full")
+}
+
+target "dev" {
+  context = ".devcontainer/bmde-dev"
+  contexts = {
+    bmde-full = "target:full"
+  }
+  tags = tags("bmde-dev")
 }

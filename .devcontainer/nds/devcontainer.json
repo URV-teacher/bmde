@@ -1,0 +1,43 @@
+// NDS development environment of the BMDE: devkitARM, libnds, DeSmuME, Insight, dlditool, grit, git and the URV VPN,
+// ready in VS Code. Template for the projects of the students: copy this .devcontainer/ folder into the root of the
+// project and run "Dev Containers: Reopen in Container".
+{
+	"name": "BMDE: NDS development",
+	"image": "aleixmt/bmde-full:latest",
+	"remoteUser": "bmde",
+	"init": true,
+
+	// Graphical programs (DeSmuME, Insight) open their windows in the X server of the host. Works in Linux and in
+	// Windows 11 with the project opened inside WSL; for macOS or GitHub Codespaces, use the VNC block below instead.
+	"containerEnv": {
+		"MODE": "host",
+		"DISPLAY": "${localEnv:DISPLAY}"
+	},
+	"mounts": [
+		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"
+	],
+	// Lets the user of the container (same UID as yours) use your X server, also under Wayland (Xwayland)
+	"initializeCommand": "xhost +SI:localuser:$(id -un) >/dev/null 2>&1 || true",
+
+	// VNC instead of X11: delete or comment out containerEnv, mounts and initializeCommand above, uncomment the
+	// following lines and connect a VNC viewer to localhost:5900.
+	// "containerEnv": {
+	// 	"MODE": "vnc",
+	// 	"DISPLAY": ":99"
+	// },
+	// "forwardPorts": [5900],
+	// "postStartCommand": "setsid bash -c 'source /usr/local/lib/bmde/entrypoint.sh && setup_display && sleep infinity' >/tmp/display.log 2>&1 &",
+
+	// The VPN of the URV (to reach the git server of the course) creates a PPP interface
+	"runArgs": ["--cap-add=NET_ADMIN", "--device=/dev/ppp"],
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"aleixmt.nds-arm-assembly-syntax-highlight",
+				"ms-vscode.cpptools",
+				"ms-vscode.makefile-tools"
+			]
+		}
+	}
+}
