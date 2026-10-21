@@ -46,6 +46,22 @@ To reach the git server of the course from outside the URV, the container can co
 needs the `--cap-add=NET_ADMIN --device=/dev/ppp` of `runArgs`. If your Docker has no `/dev/ppp` and the container does
 not start, remove that line (you will not be able to use the VPN from the container).
 
+## Without VS Code
+
+[`shell/compose.yml`](https://github.com/URV-teacher/bmde/blob/master/shell/compose.yml) runs the same image from a
+terminal, on the project of the current directory, with everything the components need: the windows and the sound of
+your computer, the VPN, and the settings of DeSmuME and VS Code kept between runs:
+
+```shell
+cd ~/nds/my-project
+docker compose -f /path/to/bmde/shell/compose.yml run --rm bmde        # a shell: make, desmume, insight, git...
+docker compose -f /path/to/bmde/shell/compose.yml run --rm bmde make   # or a single command
+```
+
+For the VPN and the git server, write your credentials in `shell/.env` (`VPN_USERNAME`, `VPN_PASSWORD`, `SSH_USERNAME`,
+... listed at the top of the file); git ignores it, never commit it. On a computer without an X server (e.g. macOS),
+switch to VNC as explained in the comments of the file. `BMDE_TAG=1.14.0` pins a version of the image.
+
 ## Version
 
 The template uses `aleixmt/bmde-full:latest`, so rebuilding the container (**Dev Containers: Rebuild Container**)
