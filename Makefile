@@ -123,11 +123,16 @@ lint-case-conflict:  ## Check for filenames that only differ by case
 lint-shellcheck:  ## Lint shell scripts with shellcheck
 	@test -z "$(SH_FILES)" || $(VENV_BIN)/shellcheck --external-sources $(SH_FILES)
 
+# Mark a false positive with a `pragma: allowlist secret` comment on its line rather than with a baseline file, which
+# detect-secrets would rewrite every time the line numbers of a known finding shift.
+lint-secrets:  ## Check no credential or private key is committed
+	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/detect-secrets-hook $(TEXT_FILES)
+
 lint-example-config:  ## Check examples/bmde.toml is up to date with the settings schema (fix with make fmt)
 	@$(PYTHON) -m $(PKG_NAME) --show-default-config | diff -u "$(EXAMPLE_CONFIG)" - \
 		|| { echo "$(EXAMPLE_CONFIG) is outdated, run 'make fmt'"; exit 1; }
 
-lint: lint-ruff lint-mypy lint-example-config lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck  ## Run every non-mutating check
+lint: lint-ruff lint-mypy lint-example-config lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
 
 test:  ## Run tests with coverage (fails under the fail_under of pyproject.toml)
 	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s --cov --cov-report=term --cov-report=xml
@@ -165,7 +170,7 @@ clean:  ## Remove build/test artifacts
 .PHONY: venv install dev run clean help dist readme docs-serve docs-build docs-deploy \
         fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-hygiene \
         lint lint-ruff lint-mypy lint-example-config lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
-        lint-shellcheck test
+        lint-shellcheck lint-secrets test
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \
