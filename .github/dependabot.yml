@@ -14,8 +14,6 @@ updates:
         patterns:
           - "*"
 
-  # Updates the pins of requirements/<group>.txt by re-running the pip-compile command of their header (with the
-  # Python of .python-version) on requirements/<group>.in
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
@@ -25,6 +23,19 @@ updates:
       include: "scope"
     groups:
       pip:
+        patterns:
+          - "*"
+
+  # The revs of the hooks of .pre-commit-config.yaml (the local hooks are skipped)
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      pre-commit:
         patterns:
           - "*"
 

@@ -50,12 +50,11 @@ test = [
   "pytest",
   "pytest-cov",
 ]
+# Only the tools that need the project: ruff, shellcheck, detect-secrets and the other checks are pinned in
+# .pre-commit-config.yaml, which installs them in environments of its own
 lint = [
+  "pre-commit",
   "mypy",
-  "ruff",
-  "pre-commit-hooks",
-  "shellcheck-py",
-  "detect-secrets",
 ]
 docs = [
   "mkdocs-material>=9.0.0",
@@ -68,7 +67,6 @@ docs = [
   "mkdocs-include-markdown-plugin",
 ]
 dev = [
-  "pre-commit",
   "build",
   { include-group = "test" },
   { include-group = "lint" },

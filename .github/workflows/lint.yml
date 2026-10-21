@@ -18,12 +18,20 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version-file: .python-version
+          python-version: '3.11'
           cache: 'pip'
-          cache-dependency-path: requirements/*.txt
 
       - name: Install Dependencies
         run: make install-lint
 
+      # The environments where pre-commit installs the tools of the hooks, rebuilt only when their revs change
+      - name: Cache the environments of the hooks
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-py3.11-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      # make lint runs every hook of .pre-commit-config.yaml on every tracked file, and shows the diff of any file a
+      # hook would change (e.g. a file not formatted with ruff format)
       - name: Run linters
         run: make lint

@@ -20,10 +20,6 @@ cd bmde
 make dev    # creates venv/, installs bmde with every dependency group and the pre-commit hooks
 ```
 
-The dependencies are declared in `pyproject.toml` and installed at the versions pinned in `requirements/<group>.txt`,
-so everyone (and CI) gets the same ones. After adding or removing a dependency, run `make lock` (it needs Docker) and
-commit `requirements/`; `make lint` fails until you do. Dependabot opens a weekly pull request that updates the pins.
-
 Run `make help` to list every target. The ones you will use most:
 
 ```shell
@@ -34,8 +30,9 @@ make run CMD="build --help"
 make docs-serve
 ```
 
-The pre-commit hooks run the same checks on every commit (and the tests before every push), so CI should not
-surprise you.
+The checks are defined in `.pre-commit-config.yaml`. The pre-commit hooks run them on the files you commit (not on your
+unstaged edits or untracked files) and the tests before every push; `make lint` and CI run them on every file, so CI
+should not surprise you. Add a check there, not in the Makefile; Dependabot updates the versions of the hooks.
 
 ## Workflow
 

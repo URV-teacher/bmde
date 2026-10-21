@@ -31,8 +31,6 @@ GIT        := git
 
 PKG_NAME   := bmde
 
-LOCK_DIR   := requirements
-
 # ---- build ------------------------------------------------------------------
 
 dist: $(VENV_BIN)/pyproject-build  ## Build source and wheel distribution
@@ -51,12 +49,12 @@ $(VENV_BIN)/bmde: $(VENV_BIN)/python pyproject.toml
 	@$(GIT) submodule update --init --recursive
 
 # Install the package in editable mode plus one dependency group of pyproject.toml (test, lint, docs or dev, which has
-# them all), at the versions pinned in requirements/<group>.txt (see `make lock`), so CI does not break when something
-# upstream changes. A stamp file is the target because the editable install of hatchling leaves no file in the tree
-# whose timestamp pip bumps, and tool binaries (e.g. ruff) keep theirs when they are already up to date.
-$(VENV_DIR)/.group-%: $(VENV_BIN)/python pyproject.toml $(LOCK_DIR)/%.txt
-	@$(PIP) install -r "$(LOCK_DIR)/$*.txt"
-	@$(PIP) install --no-deps -e .
+# them all). A stamp file is the target because the editable install of hatchling leaves no file in the tree whose
+# timestamp pip bumps, and tool binaries (e.g. ruff) keep theirs when they are already up to date.
+# --group needs pip 25.1, which may be newer than the pip of an existing venv.
+$(VENV_DIR)/.group-%: $(VENV_BIN)/python pyproject.toml
+	@$(PIP) install --quiet --upgrade "pip>=25.1"
+	@$(PIP) install -e . --group $*
 	@touch "$@"
 
 $(VENV_BIN)/pyproject-build: $(VENV_BIN)/python
@@ -77,40 +75,10 @@ install-docs: $(VENV_DIR)/.group-docs  ## Install the package and the documentat
 dev: $(VENV_DIR)/.group-dev  ## Install the package, every dependency group and the pre-commit hooks
 	@$(PRE_COMMIT) install
 
-# ---- dependencies -----------------------------------------------------------
-#
-# pyproject.toml declares the dependencies and requirements/<group>.txt pins them, with every transitive dependency.
-# Dependabot updates the pins weekly (.github/dependabot.yml); run `make lock` after editing the dependencies.
-
-# pip-compile pins for the Python that runs it, so it runs in the Python of CI (also in .python-version, which is the
-# one Dependabot uses when it re-runs pip-compile)
-LOCK_IMAGE        := python:3.11-slim
-PIP_TOOLS_VERSION := 7.6.2
-
-lock:  ## Pin the dependencies into requirements/<group>.txt, keeping the current pins that still fit (needs Docker)
-	@$(PYTHON_BIN) scripts/export-requirements.py
-	@docker run --rm -v "$(CURDIR):/src" -w /src -u "$$(id -u):$$(id -g)" -e HOME=/tmp \
-		-e PIP_DISABLE_PIP_VERSION_CHECK=1 $(LOCK_IMAGE) sh -c ' \
-		pip install --quiet --user --no-warn-script-location pip-tools==$(PIP_TOOLS_VERSION) \
-		&& for f in $(LOCK_DIR)/*.in; do \
-			python -m piptools compile --quiet --strip-extras $(LOCK_ARGS) --output-file "$${f%.in}.txt" "$$f"; \
-		done'
-
-lock-upgrade: LOCK_ARGS := --upgrade
-lock-upgrade: lock  ## Pin every dependency to its latest version (needs Docker)
-
 # ---- quality ----------------------------------------------------------------
 #
-# Every check lives here: .pre-commit-config.yaml and CI just call these targets, so there is a single place that
-# defines what "linted", "formatted" and "tested" mean for this repo, using the tool versions of pyproject.toml.
-
-# -c core.quotepath=false so filenames with non-ASCII characters aren't octal-escaped in the output.
-GIT_NQ      := git -c core.quotepath=false
-TEXT_FILES  := $(shell $(GIT_NQ) grep -Il '' -- . 2>/dev/null)
-YAML_FILES  := $(shell $(GIT_NQ) ls-files '*.yml' '*.yaml')
-TOML_FILES  := $(shell $(GIT_NQ) ls-files '*.toml')
-SH_FILES    := $(shell $(GIT_NQ) ls-files '*.sh' '*.bash')
-ALL_FILES   := $(shell $(GIT_NQ) ls-files)
+# The checks are defined in .pre-commit-config.yaml: `git commit` runs them on the staged files, and `make lint` (also
+# run by CI) on every tracked file. The targets below are the ones its local hooks call, because they need the venv.
 
 # ---- formatting (mutating: fixes what it can) ----
 
@@ -123,6 +91,7 @@ fmt-ruff-format:  ## Auto-format with ruff format
 fmt-hygiene:  ## Fix trailing whitespace and missing final newlines on every tracked text file
 	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/trailing-whitespace-fixer $(TEXT_FILES)
 	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/end-of-file-fixer $(TEXT_FILES)
+
 
 EXAMPLE_CONFIG := examples/bmde.toml
 
@@ -140,38 +109,18 @@ fmt-ai-ignore:  ## Regenerate the ignore files of the other AI tools from .aiexc
 		{ echo '$(AI_IGNORE_HEADER)'; cat "$(AI_IGNORE_SOURCE)"; } > "$$f"
 	done
 
-fmt: fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene  ## Auto-format and fix everything that can be fixed
+fmt: fmt-example-config fmt-ai-ignore  ## Auto-format and fix everything that can be fixed, in every tracked file
+	@for hook in $(FIX_HOOKS); do
+		$(PRE_COMMIT) run --all-files "$$hook" || true
+	done
 
-# ---- linting (non-mutating: fails on violation, used by CI and pre-commit) ----
+# ---- linting (fails on violation) ----
 
-lint-ruff:  ## Check lint rules with ruff
-	@$(VENV_BIN)/ruff check .
+lint:  ## Run every check of .pre-commit-config.yaml on every tracked file (what CI runs)
+	@$(PRE_COMMIT) run --all-files --show-diff-on-failure
 
 lint-mypy:  ## Check types with mypy --strict
 	@$(VENV_BIN)/mypy src
-
-lint-yaml:  ## Check YAML files parse
-	@test -z "$(YAML_FILES)" || $(VENV_BIN)/check-yaml $(YAML_FILES)
-
-lint-toml:  ## Check TOML files parse
-	@test -z "$(TOML_FILES)" || $(VENV_BIN)/check-toml $(TOML_FILES)
-
-lint-large-files:  ## Check no accidentally large file was added
-	@$(VENV_BIN)/check-added-large-files --enforce-all $(ALL_FILES)
-
-lint-merge-conflict:  ## Check for leftover merge conflict markers
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/check-merge-conflict --assume-in-merge $(TEXT_FILES)
-
-lint-case-conflict:  ## Check for filenames that only differ by case
-	@$(VENV_BIN)/check-case-conflict
-
-lint-shellcheck:  ## Lint shell scripts with shellcheck
-	@test -z "$(SH_FILES)" || $(VENV_BIN)/shellcheck --external-sources $(SH_FILES)
-
-# Mark a false positive with a `pragma: allowlist secret` comment on its line rather than with a baseline file, which
-# detect-secrets would rewrite every time the line numbers of a known finding shift.
-lint-secrets:  ## Check no credential or private key is committed
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/detect-secrets-hook $(TEXT_FILES)
 
 lint-example-config:  ## Check examples/bmde.toml is up to date with the settings schema (fix with make fmt)
 	@$(PYTHON) -m $(PKG_NAME) --show-default-config | diff -u "$(EXAMPLE_CONFIG)" - \
@@ -184,11 +133,6 @@ lint-ai-ignore:  ## Check the AI ignore files are up to date with .aiexclude (fi
 			|| { echo "$$f is outdated, run 'make fmt'"; status=1; }
 	done
 	exit $$status
-
-lint-requirements:  ## Check requirements/ is up to date with the dependencies of pyproject.toml (fix with make lock)
-	@$(PYTHON) scripts/export-requirements.py --check
-
-lint: lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-requirements lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
 
 test:  ## Run tests with coverage (fails under the fail_under of pyproject.toml)
 	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s --cov --cov-report=term --cov-report=xml
@@ -223,11 +167,8 @@ clean:  ## Remove build/test artifacts
 
 # ---- meta -------------------------------------------------------------------
 
-.PHONY: venv install install-test install-lint install-docs dev lock lock-upgrade run clean help dist readme docs-serve \
-        docs-build docs-deploy lint-requirements \
-        fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene \
-        lint lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
-        lint-shellcheck lint-secrets test
+.PHONY: venv install install-test install-lint install-docs dev run clean help dist readme docs-serve docs-build docs-deploy \
+        fmt fmt-example-config fmt-ai-ignore lint lint-mypy lint-example-config lint-ai-ignore test
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \

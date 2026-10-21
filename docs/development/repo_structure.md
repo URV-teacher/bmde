@@ -19,24 +19,19 @@ These files define the project's identity, build process, and developer experien
         *   `make lint` / `make test`: Reads tool configs.
         *   `make dist` / CI Release: Reads build-system and semantic-release configs.
 
-*   **`requirements/`**
-    *   **Purpose**: The lockfiles: every dependency of each group, transitive ones included, pinned to an exact version.
-    *   **Usage**: `<group>.in` is generated from `pyproject.toml` and `<group>.txt` is compiled from it by `pip-compile` in the Python of CI (`.python-version`). `make install-<group>` and `make dev` install from the `.txt`, so CI does not break when something upstream changes.
-    *   **Operations**: `make lock` (after editing the dependencies), `make lock-upgrade` (move every pin to its latest version), Dependabot (weekly pull request updating the pins), `make lint` (fails if the files are out of date).
-
 *   **`Makefile`**
     *   **Purpose**: A command-line task runner for common development workflows.
     *   **Usage**: Simplifies complex commands into short targets (`install`, `lint`, `test`, `docs-serve`). It manages the virtual environment creation (`venv`) and ensures tools are run from the correct path.
     *   **Operations**:
         *   `make install`: Creates venv and installs package in editable mode.
-        *   `make lint`: Runs every non-mutating check (`ruff`, `mypy`, YAML/TOML, `shellcheck`, `detect-secrets`, ...).
+        *   `make lint`: Runs every check of `.pre-commit-config.yaml` on every tracked file (`ruff`, `mypy`, YAML/TOML, `shellcheck`, `detect-secrets`, ...).
         *   `make test`: Runs `pytest` with coverage.
         *   `make docs-serve`: Serves MkDocs locally.
 
 ### Developer Experience & Quality
 *   **`.pre-commit-config.yaml`**
-    *   **Purpose**: Configuration for `pre-commit` hooks.
-    *   **Usage**: Runs the `make fmt-*` and `make lint-*` targets before every `git commit`, and `make test` before every `git push`.
+    *   **Purpose**: Defines every check of the repository (the source of truth: `make lint` and CI run it with `pre-commit run --all-files`).
+    *   **Usage**: Before every `git commit`, runs the checks on the staged files only; before every `git push`, `make test`. The public hooks (ruff, pre-commit-hooks, shellcheck, detect-secrets) are pinned by `rev` and installed by pre-commit in environments of its own; the local ones (mypy, and the checks that generated files are up to date) call `make lint-*` targets, which use the venv.
     *   **Operations**: `git commit`, `git push` (blocked if a check fails).
 
 *   **`.editorconfig`**
