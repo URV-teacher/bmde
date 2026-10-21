@@ -4,6 +4,7 @@ Reusable CLI argument definition.
 
 from __future__ import annotations
 
+from importlib.metadata import version
 from pathlib import Path
 from typing import Annotated
 
@@ -89,6 +90,26 @@ ShowDefaultConfigOpt = Annotated[
         callback=show_default_config_callback,
         is_eager=True,
         help="Show default configuration options. Can be used as template of a bmde.toml configuration file",
+        is_flag=True,
+    ),
+]
+
+
+def version_callback(value: bool) -> None:
+    if value:
+        # The version of the installed distribution, which hatch-vcs takes from the git tag (also for editable installs)
+        typer.echo(f"bmde {version('bmde')}")
+        raise typer.Exit()
+
+
+VersionOpt = Annotated[
+    bool,
+    typer.Option(
+        "-V",
+        "--version",
+        callback=version_callback,
+        is_eager=True,
+        help="Show the version of bmde and exit",
         is_flag=True,
     ),
 ]
