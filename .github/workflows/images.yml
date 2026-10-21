@@ -26,12 +26,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       # The images are built only from the assets in the assets/ of each component (the sources of Insight are
       # reconstructed from the CVS repository of sourceware.org, with cvs and rsync)
@@ -70,7 +70,7 @@ jobs:
 
       - name: Log in to Docker Hub
         if: inputs.candidate
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
