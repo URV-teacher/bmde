@@ -35,6 +35,7 @@ A component can be understood as an independent piece of software. One or more c
 operation of the BMDE.
 
 This guide will explain how to:
+
 * Install each component, either the explanation of each step and the proposed commands to do it.
 * Test the installation of each needed component.
 * Test that each operation is working as expected.
@@ -74,11 +75,13 @@ All scripts follow the same conventions:
 Each code snippet assume that previous snippets have been run successfully.
 
 Snippets can be executed:
+
 * Manually, copying code line by line to a terminal
 * Using the corresponding file for that snippet. The corresponding file for each snippet can be found in the source code
   of each snippet in this guide. This is because each snippet is embedded in the docs with mkdocs or with the script
   `scripts/render-guide.py`. Each script can be run with `bash components/COMPONENT/src/SCRIPT.sh` (or
   `bash components/COMPONENT/test/SCRIPT.sh` for the tests).
+
 * Using an IDE that supports running markdown snippets or installing extensions for that purpose. In PyCharm
   you can click in the green button of each snippet to run it in the embedded terminal. We recommend unchecking
   `Close session when it ends`, in *Settings->Tools->Terminal* to see the results after running the script. Also, notice
@@ -94,6 +97,7 @@ SSH) they use a virtual one, which needs `xvfb-run` (package `xvfb`).
 # Operations
 ## Build Operation
 Components:
+
 * `make`
 * devkitARM r46:
   * `arm-none-eabi-gcc`
@@ -157,9 +161,14 @@ components/devkitarm-nds-docker/scripts/download_assets.sh
 
 #### libnds
 ##### Explanation
-Decompress the file `libnds.tar.bz2` into `$DEVKITPRO`. The file `libnds.tar.bz2` has been obtained directly from the
-original BMDE folder implementation, so in case of update of the original BMDE, it will be needed to update the provided
-file.
+Download and decompress the file `libnds.tar.bz2` into `$DEVKITPRO`. The file `libnds.tar.bz2` has been obtained
+directly
+from the original BMDE folder implementation, so in case of update of the original BMDE, it will be needed to update
+the provided file.
+
+This component is only used in the compilation of projects, so its testing involves the building of a NDS project
+(operation test). That is why the test will be skipped for this component and the
+corresponding folder `hello-world-nds` is provided.
 
 ###### Proposed command
 ```shell
@@ -171,6 +180,9 @@ The test builds a small program with libnds:
 ```shell
 --8<-- "components/devkitarm-nds-docker/test/test_libnds.sh"
 ```
+
+It may be possible that you need to modify a minor thing in the internal file `ds_rules`, that provides building rules
+for NDS projects.
 
 #### devkitPro NDS project examples (optional)
 ##### Explanation
@@ -202,6 +214,7 @@ for NDS projects.
 
 ### Run Operation
 Components:
+
 * DeSmuME 0.9.11
 * `$DESMUME/DeSmuME.exe` and `$DESMUME/DeSmuME_dev.exe` wrappers (optional, to be compatible with `Makefile`s)
 * `make`, for `make run` target (`make` already explained in build section)
@@ -210,6 +223,9 @@ Components:
 #### Component installation
 ##### desmume
 ###### Explanation
+Install `desmume` using your package manager. The installed binary is expected to be automatically included in your
+`$PATH` by the package manager and because of that available directly through shell commands.
+
 The distributions do not provide DeSmuME 0.9.11 (the version of the course) anymore, nor with the HUD (display of FPS,
 input...) and the GDB stub that the course needs, so it is built from the sources of its Debian package into
 `/URV/bmde/DeSmuME_0.9.11`. The build takes a few minutes.
@@ -367,6 +383,7 @@ Standard multi-architecture GDB provided via package manager.
 
 ##### `$(DEVKITPRO)/insight/bin/arm-eabi-insight` wrappers
 ###### Explanation
+Insight is the original debugger (and simulator for FC) in the BMDE debugger.
 Optionally, to make the installation of Insight compatible with the `debug` target of `Makefile`s, we need to make
 available the files `$(DEVKITPRO)/insight/bin/arm-eabi-insight` and `arm-eabi-insight.exe`, because they are explicitly
 referenced by the `Makefile`s.
@@ -441,16 +458,70 @@ The test patches a ROM that uses the filesystem:
 --8<-- "components/dlditool-docker/test/test_dlditool.sh"
 ```
 
+You should see appear the window of Insight.
+
+
+
+
+#### Test operation through `make debug`
+Test the debug operation using `Makefile` and the example program Mastermind. The binary is already built in Mastermind
+folder, but if you build it
+make sure
+that the flags `-gdwarf-3` and `-O0` are in the `CFLAGS` (arguments passed to `gcc`) of the `Makefile`. This applies to
+all programs that you want to debug:
+```shell
+--8<-- "components/insight-docker/scripts/test_make_debug.sh"
+```
+
+After running the commands you should see both the Insight window and the DeSmuME window similarly to this:
+
+To start the debug session you need to do the following
+1. Click in the terminal icon of Insight ![img_1.png](host_components_installation_assets/img_1.png)
+2. In the Insight GDB console, execute:
+    ```gdb
+    target remote :1000
+    break main
+    continue
+    ```
+3. You should see Insight stopping at the first line of the line.
+4. You can change the source code mode to see different
+   versions of the source code (ARM, mixed...) like this:
+5. Then, introduce the command `break MM_check` to set a breakpoint into the ARM function `MM_check`.
+6. Then, you should introduce the command `continue` in the GDB console. After that, the debugger window should be blocked
+   and DeSmuME already running and waiting for input.
+7. Use the keyboard to press the buttons of the emulated NDS and introduce the required input for the Mastermind
+   program. In this case, you need to press they key Z three times.
+8. After that, it will be the opposite: DeSmuME window is blocked and the debugger is answering again.
+9. Introduce the command `continue`. After that, the debugger window should be blocked
+   and DeSmuME already running and waiting for input.
+10. Introduce the required input with the buttons into MasterMind program.
+11. DeSmuME window is blocked and the debugger is answering again.
+12. Now press again source code to see the ARM source code.
+13. Now press other buttons of the GUI to evaluate its functionality.
+
+
+#### Test operation manually
+You can also test the debug operation "manually" calling directly the commands to do a debug session. Instead of
+Insight, you may use any other GDB command, but we will explain the test using inside because it is the most
+featured debugger:
+```shell
+--8<-- "components/insight-docker/scripts/test_debug.sh"
+```
+
+What you should see afterward is the same as in the previous section.
+
 ---
 
 
 
 ### Edit Operation
 Components:
+
 * Visual Studio Code
 * arm-nds-vscode-extension
 
 The goal is to provide an IDE to edit code and have syntax highlight for:
+
 * ARM v5 assembly (Nintendo DS)
 * C language
 
@@ -535,6 +606,7 @@ Then, open a `.s` file of a project of the course in the IDE. You should see the
 
 ### VCS Operation
 Components:
+
 * git
 * ssh-client
 * forticlient or openfortivpn
@@ -594,6 +666,7 @@ When connected to the VPN (or on campus), the following command should work:
 ```
 
 This requires:
+
 * The Git server to be active
 * The repository `comp_25` to exist
 * Proper access permissions
