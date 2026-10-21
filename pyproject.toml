@@ -42,26 +42,36 @@ Issues = "https://github.com/URV-teacher/bmde/issues"
 [project.scripts]
 bmde = "bmde.__main__:main"
 
-[project.optional-dependencies]
-dev = [
+# PEP 735 groups (not extras, so they are not published to PyPI). Each CI job installs only its own group with
+# `make install-<group>`; `make dev` installs all of them.
+[dependency-groups]
+test = [
   "pytest",
   "pytest-cov",
+]
+lint = [
   "mypy",
   "ruff",
-  "pre-commit",
   "pre-commit-hooks",
   "shellcheck-py",
   "detect-secrets",
-  "build",
+]
+docs = [
   "mkdocs-material>=9.0.0",
   "mkdocs>=1.5.0",
   "pymdown-extensions>=10.0",
   "mkdocstrings[python]",
   "mkdocs-autorefs",
-  "mkdocs-typer",
   "mkdocs-awesome-pages-plugin",
   "mkdocs-typer2",
-  "mkdocs-include-markdown-plugin"
+  "mkdocs-include-markdown-plugin",
+]
+dev = [
+  "pre-commit",
+  "build",
+  { include-group = "test" },
+  { include-group = "lint" },
+  { include-group = "docs" },
 ]
 
 [tool.hatch.version]

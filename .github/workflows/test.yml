@@ -26,7 +26,7 @@ jobs:
           cache: 'pip'
 
       - name: Install Dependencies
-        run: make dev
+        run: make install-test
 
       # The integration tests create (desmume-docker/scripts/create_fat_image.sh) and read FAT images
       - name: Install FAT tools

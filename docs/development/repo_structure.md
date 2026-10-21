@@ -184,7 +184,7 @@ The source for the project's website.
 
 *   **`mkdocs.yml`** (Root): Configuration for MkDocs. Defines the theme, plugins (`mkdocstrings`, `typer`), and navigation structure.
 *   **`*.md` files**: The actual content.
-    *   **`components/*.md`**: Documentation for specific commands. These often use `::: mkdocs-typer` to auto-generate CLI references from the Python code.
+    *   **`components/*.md`**: Documentation for specific commands. These often use `::: mkdocs-typer2` to auto-generate CLI references from the Python code.
     *   **`getting-started/host_components_installation.md`**: A special file that embeds scripts from `components/` using the `pymdownx.snippets` extension to ensure documentation stays in sync with actual installation scripts.
 *   **Usage**: Processed by `mkdocs build` to generate a static HTML site in `site/`.
 

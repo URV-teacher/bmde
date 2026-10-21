@@ -48,11 +48,14 @@ $(VENV_BIN)/bmde: $(VENV_BIN)/python pyproject.toml
 	@$(PIP) install -e .
 	@$(GIT) submodule update --init --recursive
 
-# Install dev dependencies. PKG-INFO is used as the target because pip updates it when dependencies change,
-# avoiding a rebuild loop when tool binaries (e.g. ruff) don't get their timestamp bumped by pip.
-src/bmde.egg-info/PKG-INFO: $(VENV_BIN)/python pyproject.toml
-	@$(PIP) install -e ".[dev]"
-	@$(PRE_COMMIT) install
+# Install the package in editable mode plus one dependency group of pyproject.toml (test, lint, docs or dev, which has
+# them all). A stamp file is the target because the editable install of hatchling leaves no file in the tree whose
+# timestamp pip bumps, and tool binaries (e.g. ruff) keep theirs when they are already up to date.
+# --group needs pip 25.1, which may be newer than the pip of an existing venv.
+$(VENV_DIR)/.group-%: $(VENV_BIN)/python pyproject.toml
+	@$(PIP) install --quiet --upgrade "pip>=25.1"
+	@$(PIP) install -e . --group $*
+	@touch "$@"
 
 $(VENV_BIN)/pyproject-build: $(VENV_BIN)/python
 	@$(PIP) install build
@@ -63,7 +66,14 @@ venv: $(VENV_BIN)/python  ## Create virtualenv
 
 install: $(VENV_BIN)/bmde  ## Install the package in editable mode
 
-dev: src/bmde.egg-info/PKG-INFO  ## Install the package, dev dependencies and pre-commit hooks
+install-test: $(VENV_DIR)/.group-test  ## Install the package and the test dependencies (what CI tests with)
+
+install-lint: $(VENV_DIR)/.group-lint  ## Install the package and the lint dependencies (what CI lints with)
+
+install-docs: $(VENV_DIR)/.group-docs  ## Install the package and the documentation dependencies
+
+dev: $(VENV_DIR)/.group-dev  ## Install the package, every dependency group and the pre-commit hooks
+	@$(PRE_COMMIT) install
 
 # ---- quality ----------------------------------------------------------------
 #
@@ -169,13 +179,13 @@ run: install  ## Run the bmde CLI (python -m bmde)
 readme:  ## Render the README guide
 	./scripts/render-guide.py
 
-docs-serve: dev  ## Serve the documentation site locally with hot reload
+docs-serve: install-docs  ## Serve the documentation site locally with hot reload
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs serve
 
-docs-build: dev  ## Build the static documentation site into site/
+docs-build: install-docs  ## Build the static documentation site into site/
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs build
 
-docs-deploy: dev  ## Deploy the documentation site to GitHub Pages
+docs-deploy: install-docs  ## Deploy the documentation site to GitHub Pages
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs gh-deploy --force
 
 # ---- maintenance ------------------------------------------------------------
@@ -186,7 +196,7 @@ clean:  ## Remove build/test artifacts
 
 # ---- meta -------------------------------------------------------------------
 
-.PHONY: venv install dev run clean help dist readme docs-serve docs-build docs-deploy \
+.PHONY: venv install install-test install-lint install-docs dev run clean help dist readme docs-serve docs-build docs-deploy \
         fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene \
         lint lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
         lint-shellcheck lint-secrets test

@@ -17,7 +17,7 @@ You need Python 3.11+, git, make and Docker (for the Docker backends and the int
 ```shell
 git clone --recurse-submodules https://github.com/URV-teacher/bmde
 cd bmde
-make dev    # creates venv/, installs bmde with the dev extras and the pre-commit hooks
+make dev    # creates venv/, installs bmde with every dependency group and the pre-commit hooks
 ```
 
 Run `make help` to list every target. The ones you will use most:

@@ -22,7 +22,7 @@ jobs:
           cache: 'pip'
 
       - name: Install Dependencies
-        run: make dev
+        run: make install-lint
 
       - name: Run linters
         run: make lint
