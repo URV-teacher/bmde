@@ -24,7 +24,7 @@ These files define the project's identity, build process, and developer experien
     *   **Usage**: Simplifies complex commands into short targets (`install`, `lint`, `test`, `docs-serve`). It manages the virtual environment creation (`venv`) and ensures tools are run from the correct path.
     *   **Operations**:
         *   `make install`: Creates venv and installs package in editable mode.
-        *   `make lint`: Runs every non-mutating check (`ruff`, `mypy`, YAML/TOML, `shellcheck`, ...).
+        *   `make lint`: Runs every non-mutating check (`ruff`, `mypy`, YAML/TOML, `shellcheck`, `detect-secrets`, ...).
         *   `make test`: Runs `pytest` with coverage.
         *   `make docs-serve`: Serves MkDocs locally.
 

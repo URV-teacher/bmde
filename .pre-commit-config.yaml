@@ -68,6 +68,12 @@ repos:
         language: system
         pass_filenames: false
 
+      - id: lint-secrets
+        name: lint-secrets (make lint-secrets)
+        entry: make lint-secrets
+        language: system
+        pass_filenames: false
+
       - id: test
         name: test (make test)
         entry: make test
