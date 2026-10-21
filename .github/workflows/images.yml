@@ -1,0 +1,65 @@
+# Downloads the assets of the components and builds the Docker images of the BMDE with docker-bake.hcl (the base
+# image, the image of each component from the submodules and the full development environment), runs the tests of
+# every component inside the full development environment and, on master, publishes the base image and the full
+# development environment. The image of each component is published by the CI of its own repository.
+name: Images
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  full:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # The images are built only from the assets in the assets/ of each component (the sources of Insight are
+      # reconstructed from the CVS repository of sourceware.org, with cvs and rsync)
+      - name: Download the assets of the components
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends cvs rsync
+          for script in components/*/scripts/download_assets.sh; do
+            echo "::group::${script}"
+            if [ "${script}" = components/dlditool-docker/scripts/download_assets.sh ]; then
+              # Its test ROM (libfatdir.nds) is built after the images
+              "${script}" dlditool-linux-x86_64.zip mpcf.dldi
+            else
+              "${script}"
+            fi
+            echo "::endgroup::"
+          done
+
+      - name: Build images
+        run: docker buildx bake full --load
+
+      # The test ROM of dlditool is built from the examples of devkitPro, so with the devkitARM just built (in the full
+      # development environment) instead of the published one
+      - name: Build the test ROM of dlditool
+        env:
+          DEVKITARM_IMAGE: aleixmt/bmde-full:latest
+        run: components/dlditool-docker/scripts/download_assets.sh libfatdir.nds
+
+      - name: Run the tests of the components in the full development environment
+        run: shell/test.sh aleixmt/bmde-full:latest
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Publish base image and full development environment
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: docker buildx bake --push base full
