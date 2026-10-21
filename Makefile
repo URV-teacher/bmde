@@ -87,8 +87,8 @@ fmt-ruff-format:  ## Auto-format with ruff format
 	@$(VENV_BIN)/ruff format .
 
 fmt-hygiene:  ## Fix trailing whitespace and missing final newlines on every tracked text file
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/trailing-whitespace-fixer $(TEXT_FILES) || true
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/end-of-file-fixer $(TEXT_FILES) || true
+	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/trailing-whitespace-fixer $(TEXT_FILES)
+	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/end-of-file-fixer $(TEXT_FILES)
 
 EXAMPLE_CONFIG := examples/bmde.toml
 
