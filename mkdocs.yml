@@ -74,5 +74,6 @@ plugins:
       pretty: true
   - include-markdown
 
-exclude:
-  - 'getting-started/host_components_installation_substituted.md'
+# Generated from host_components_installation.md
+exclude_docs: |
+  getting-started/host_components_installation_substituted.md

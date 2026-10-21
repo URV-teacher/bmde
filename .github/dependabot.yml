@@ -1,72 +1,50 @@
+# PRs go to master (the default branch) and are reviewed by the CODEOWNERS. Commit messages use the `build` type of
+# Conventional Commits, so dependency bumps don't trigger a release on their own.
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    reviewers:
-      - "AleixMT"
-    target-branch: "develop"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
     groups:
-      dependencies:
+      github-actions:
         patterns:
           - "*"
 
-  # Maintain dependencies for Python
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
-    reviewers:
-      - "AleixMT"
-    target-branch: "develop"
+    commit-message:
+      prefix: "build"
+      include: "scope"
     groups:
-      dependencies:
+      pip:
         patterns:
           - "*"
 
-  # Maintain dependencies for Docker
+  # The base image of every BMDE image. The Dockerfiles of the components live in their own repositories (Dependabot
+  # can't update files inside submodules), so they need their own dependabot.yml there.
   - package-ecosystem: "docker"
-    directory: "/components/desmume-docker"
+    directory: "/base"
     schedule:
       interval: "monthly"
-    reviewers:
-      - "AleixMT"
-    target-branch: "develop"
+    commit-message:
+      prefix: "build"
+      include: "scope"
 
-
-  - package-ecosystem: "docker"
-    directory: "/components/insight-docker"
+  # Moves the submodules of components/ to the latest commit of each component
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
     schedule:
-      interval: "monthly"
-    reviewers:
-      - "AleixMT"
-    target-branch: "develop"
-
-
-  - package-ecosystem: "docker"
-    directory: "/components/devkitarm-nds-docker"
-    schedule:
-      interval: "monthly"
-    reviewers:
-      - "AleixMT"
-    target-branch: "develop"
-
-
-  - package-ecosystem: "docker"
-    directory: "/components/dlditool-docker"
-    schedule:
-      interval: "monthly"
-    reviewers:
-      - "AleixMT"
-    target-branch: "develop"
-
-
-  - package-ecosystem: "docker"
-    directory: "/components/git-urv-vpn-docker"
-    schedule:
-      interval: "monthly"
-    reviewers:
-      - "AleixMT"
-    target-branch: "develop"
+      interval: "weekly"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    groups:
+      components:
+        patterns:
+          - "*"

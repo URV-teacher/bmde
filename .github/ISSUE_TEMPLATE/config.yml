@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://urv-teacher.github.io/bmde/
+    about: Installation, usage and the reference of every command.
+  - name: Report a security vulnerability
+    url: https://github.com/URV-teacher/bmde/security/advisories/new
+    about: Please report security problems privately, not in a public issue.

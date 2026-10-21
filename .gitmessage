@@ -1,22 +1,25 @@
-# <type>: <subject>
+# <type>[optional scope][!]: <subject>
 #
-# Allowed types:
-# ADDED:    New feature or capability
-# UPDATED:  Improvement to existing feature
-# REMOVED:  Removal of a feature
-# FIXED:    Bug fix
-# RELEASED: Release of a new version
-# CHANGED:  Changes that don't fit other categories (refactor, style, etc.)
+# Conventional Commits (https://www.conventionalcommits.org). The type decides the next release
+# (python-semantic-release, see pyproject.toml):
+#   feat:      new feature or capability             -> minor release
+#   fix:       bug fix                                -> patch release
+#   perf:      performance improvement                -> patch release
+#   docs:      documentation only                     -> no release
+#   refactor:  code change that is not a feat or fix  -> no release
+#   test:      tests only                             -> no release
+#   build:     packaging, dependencies, Docker images -> no release
+#   ci:        GitHub Actions workflows               -> no release
+#   chore:     anything else (repo housekeeping)      -> no release
+# A `!` after the type/scope or a "BREAKING CHANGE: ..." footer makes a major release.
 #
-# Subject: Brief summary of changes (imperative mood, no period at end)
-#
-# Body: More detailed explanation (optional). Wrap at 72 chars.
-#
-# Footer: Breaking changes, issue references (optional)
+# Subject: imperative mood, lowercase, no period at the end, at most 72 chars.
+# Body (optional): what and why, wrapped at 72 chars.
+# Footer (optional): BREAKING CHANGE: ..., Closes #123
 #
 # Example:
-# ADDED: Add new build command
+#   feat(run): add --fat-image option
 #
-# Implements the build command using devkitARM docker container.
+#   Lets the emulator mount a FAT image as the SD card of the NDS.
 #
-# Closes #123
+#   Closes #123

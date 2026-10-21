@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatchling>=1.27", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -8,8 +8,23 @@ dynamic = ["version"]
 description = "Bare Metal Development Environment CLI; for NDS development for the practical exercises of Computers"
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{name="AleixMT"}]
-license = {text="GPL-3.0-or-later"}
+authors = [{ name = "Aleix Mariné-Tena", email = "aleix.marine@urv.cat" }]
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+keywords = ["nds", "nintendo-ds", "devkitpro", "devkitarm", "bare-metal", "development-environment", "cli", "education"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Embedded Systems",
+    "Typing :: Typed",
+]
 dependencies = [
     "typer>=0.9.0",
     "pydantic>=2.0.0",
@@ -18,20 +33,25 @@ dependencies = [
     "pydantic-settings"
 ]
 
+[project.urls]
+Homepage = "https://github.com/URV-teacher/bmde"
+Documentation = "https://urv-teacher.github.io/bmde/"
+Repository = "https://github.com/URV-teacher/bmde"
+Issues = "https://github.com/URV-teacher/bmde/issues"
+
 [project.scripts]
 bmde = "bmde.__main__:main"
 
 [project.optional-dependencies]
 dev = [
   "pytest",
+  "pytest-cov",
   "mypy",
   "ruff",
   "pre-commit",
   "pre-commit-hooks",
   "shellcheck-py",
   "build",
-  "hatchling",
-  "hatch-vcs",
   "mkdocs-material>=9.0.0",
   "mkdocs>=1.5.0",
   "pymdown-extensions>=10.0",
@@ -46,39 +66,53 @@ dev = [
 [tool.hatch.version]
 source = "vcs"
 
+# hatchling ignores MANIFEST.in and would otherwise put every non-ignored file in the sdist, including the
+# checkouts of the submodules in components/ (hundreds of MB once their assets are downloaded)
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/README.md", "/LICENSE"]
+
+# The version comes from the git tag (hatch-vcs), so semantic-release only has to tag and publish the GitHub release
+# (commit: false in .github/workflows/release.yml). Commits follow Conventional Commits: feat bumps the minor, fix and
+# perf the patch, and a `!` after the type or a BREAKING CHANGE footer the major.
 [tool.semantic_release]
-version_source = "tag"
-commit_version_number = true
 tag_format = "v{version}"
-
-[tool.semantic_release.changelog]
-mode = "update"
-
-[tool.semantic_release.commit_parser_options]
-allowed_tags = ["ADDED", "UPDATED", "REMOVED", "FIXED", "RELEASED", "CHANGED"]
-minor_tags = ["ADDED", "UPDATED", "CHANGED"]
-patch_tags = ["FIXED", "REMOVED"]
-major_tags = ["RELEASED"]
+commit_parser = "conventional"
 
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
 
+[tool.coverage.run]
+branch = true
+source_pkgs = ["bmde"]
+omit = ["*/bmde/__main__.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+# Slightly below the measured coverage (68%), so it only catches real drops; raise it as tests are added
+fail_under = 65
+exclude_also = [
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "@(abc\\.)?abstractmethod",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+]
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
 [tool.mypy]
 python_version = "3.11"
 strict = true
 
-# Ruff configuration
 [tool.ruff]
 line-length = 120
 target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "B", "I", "UP", "SIM"]
-ignore = []
 
 [tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "auto"
+line-ending = "lf"

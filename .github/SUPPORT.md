@@ -18,5 +18,5 @@ When asking for help, please provide as much information as possible, including:
 *   The version of BMDE you are using (`bmde --version`).
 *   Your operating system and version.
 *   The exact command you ran.
-*   The full output/error message you received.
+*   The full output/error message you received, ideally with `--trace` (remove any credentials first).
 *   Steps to reproduce the issue.

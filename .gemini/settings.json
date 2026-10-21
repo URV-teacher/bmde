@@ -9,6 +9,9 @@
   },
   "context": {
     "includeGitHistory": true,
-    "searchDepth": 3
+    "searchDepth": 3,
+    "fileName": [
+      "AGENTS.md"
+    ]
   }
 }

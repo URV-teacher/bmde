@@ -3,8 +3,6 @@ name: test
 on:
   pull_request:
 
-
-
 permissions:
   contents: read
 
@@ -22,8 +20,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.11' # Matches your dev environment
-          cache: 'pip' # Speeds up future runs
+          python-version: '3.11'
+          cache: 'pip'
 
       - name: Install Dependencies
         run: make dev
@@ -37,6 +35,13 @@ jobs:
           echo "[logging]" > bmde.toml
           echo 'level = "trace"' >> bmde.toml
 
-      - name: Run Tests
-        run: |
-              XDG_RUNTIME_DIR=/tmp make test
+      - name: Run tests with coverage
+        run: XDG_RUNTIME_DIR=/tmp make test
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+          if-no-files-found: ignore

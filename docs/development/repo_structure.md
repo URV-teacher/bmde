@@ -11,9 +11,9 @@ These files define the project's identity, build process, and developer experien
 *   **`pyproject.toml`**
     *   **Purpose**: The central configuration file for the Python project (PEP 621).
     *   **Usage**:
-        *   **Dependencies**: Defines runtime requirements (`typer`, `docker`, etc.) and optional dev groups (`dev`, `docs`).
-        *   **Build System**: Configures `hatchling` as the build backend and `hatch-vcs` for dynamic versioning from Git tags.
-        *   **Tool Config**: Centralizes settings for `ruff` (linting/formatting), `pytest`, `mypy`, and `python-semantic-release`.
+        *   **Dependencies**: Defines runtime requirements (`typer`, `pydantic`, `rich`, etc.) and the `dev` extra (tests, linters, docs).
+        *   **Build System**: Configures `hatchling` as the build backend, `hatch-vcs` for dynamic versioning from Git tags, and the files of the source distribution (`[tool.hatch.build.targets.sdist]`).
+        *   **Tool Config**: Centralizes settings for `ruff` (linting/formatting), `pytest`, `coverage`, `mypy`, and `python-semantic-release`.
     *   **Operations**:
         *   `pip install .` / `make install`: Reads dependencies.
         *   `make lint` / `make test`: Reads tool configs.
@@ -24,35 +24,20 @@ These files define the project's identity, build process, and developer experien
     *   **Usage**: Simplifies complex commands into short targets (`install`, `lint`, `test`, `docs-serve`). It manages the virtual environment creation (`venv`) and ensures tools are run from the correct path.
     *   **Operations**:
         *   `make install`: Creates venv and installs package in editable mode.
-        *   `make lint`: Runs `ruff` and `mypy`.
-        *   `make test`: Runs `pytest`.
+        *   `make lint`: Runs every non-mutating check (`ruff`, `mypy`, YAML/TOML, `shellcheck`, ...).
+        *   `make test`: Runs `pytest` with coverage.
         *   `make docs-serve`: Serves MkDocs locally.
-
-*   **`requirements.txt`**
-    *   **Purpose**: Legacy or specific environment lock file.
-    *   **Usage**: While `pyproject.toml` is the source of truth, this file can be used for reproducible builds in some environments or by specific tools that don't support `pyproject.toml` fully yet.
-    *   **Operations**: `pip install -r requirements.txt`.
-
-*   **`MANIFEST.in`**
-    *   **Purpose**: Controls files included in the source distribution (`sdist`).
-    *   **Usage**: Explicitly includes non-Python files (like `components/` scripts, `README.md`, `LICENSE`) that wouldn't be picked up automatically by `hatchling`.
-    *   **Operations**: `python -m build` (or `make dist`), creating the tarball uploaded to PyPI.
 
 ### Developer Experience & Quality
 *   **`.pre-commit-config.yaml`**
     *   **Purpose**: Configuration for `pre-commit` hooks.
-    *   **Usage**: Defines checks that run automatically before every `git commit`. Includes `ruff` (formatting), `mypy` (types), `trailing-whitespace`, and `shellcheck`.
-    *   **Operations**: `git commit` (blocks commit if checks fail).
+    *   **Usage**: Runs the `make fmt-*` and `make lint-*` targets before every `git commit`, and `make test` before every `git push`.
+    *   **Operations**: `git commit`, `git push` (blocked if a check fails).
 
 *   **`.editorconfig`**
     *   **Purpose**: Cross-editor configuration for coding style.
     *   **Usage**: Ensures consistent indentation (spaces vs tabs), charset, and line endings across different IDEs (VS Code, PyCharm, etc.).
     *   **Operations**: File editing and saving in IDEs.
-
-*   **`.coveragerc`**
-    *   **Purpose**: Configuration for `coverage.py`.
-    *   **Usage**: Defines which files to include/exclude when calculating test coverage (e.g., omitting `tests/` and `venv/`).
-    *   **Operations**: Running tests with coverage (e.g., `pytest --cov`).
 
 ### Git Configuration
 *   **`.gitignore`**
@@ -67,12 +52,12 @@ These files define the project's identity, build process, and developer experien
 
 *   **`.gitmessage`**
     *   **Purpose**: Template for commit messages.
-    *   **Usage**: Can be configured as the commit template (`git config commit.template .gitmessage`) to remind developers of the project's commit conventions (e.g., `ADDED:`, `FIXED:`).
+    *   **Usage**: Can be configured as the commit template (`git config commit.template .gitmessage`) to remind developers of the project's commit conventions ([Conventional Commits](https://www.conventionalcommits.org): `feat:`, `fix:`, ...), which decide the next version.
     *   **Operations**: `git commit`.
 
 *   **`.gitmodules`**
     *   **Purpose**: Configuration for Git Submodules.
-    *   **Usage**: Tracks external repositories included within this repo (if any).
+    *   **Usage**: Tracks the repositories of the components in `components/`, from which the Docker images are built.
     *   **Operations**: `git submodule update`.
 
 ### Documentation & Metadata
@@ -86,11 +71,6 @@ These files define the project's identity, build process, and developer experien
     *   **Usage**: Defines the site structure (`nav`), theme (`material`), plugins (`mkdocstrings`, `typer`), and extensions.
     *   **Operations**: `mkdocs build`, `mkdocs serve` (and via Makefile).
 
-*   **`CNAME`**
-    *   **Purpose**: Custom domain configuration for GitHub Pages.
-    *   **Usage**: Tells GitHub Pages to serve the site from `docs.bmde.org` instead of the default URL.
-    *   **Operations**: Deployment to GitHub Pages.
-
 *   **`LICENSE`**
     *   **Purpose**: Legal terms of distribution (GPL-3.0-or-later).
     *   **Usage**: Defines how others can use, modify, and distribute the software.
@@ -99,14 +79,14 @@ These files define the project's identity, build process, and developer experien
     *   **Purpose**: Citation File Format.
     *   **Usage**: Provides metadata for academic citation of the software. GitHub uses this to generate a citation snippet in the sidebar.
 
-*   **`CONTRIBUTORS`**
-    *   **Purpose**: List of project contributors.
+*   **`AUTHORS`**
+    *   **Purpose**: List of the authors of the project.
     *   **Usage**: Recognition of people who have worked on the project.
 
 ### Community Standards
 *   **`CONTRIBUTING.md`**
     *   **Purpose**: Guidelines for contributors.
-    *   **Usage**: Explains how to set up the dev environment, run tests, and submit PRs. Linked from GitHub PR creation page.
+    *   **Usage**: Explains how to set up the dev environment, the GitHub Flow workflow and the commit conventions. Linked from GitHub PR creation page and included in the [contributing page](contributing.md) of these docs.
 
 *   **`CODE_OF_CONDUCT.md`**
     *   **Purpose**: Community standards and enforcement.
@@ -121,26 +101,28 @@ These files define the project's identity, build process, and developer experien
     *   **Usage**: Instructions on how to responsibly report security vulnerabilities.
 
 ### AI & Agent
-*   **`AGENT.md`**
+*   **`AGENTS.md`**
     *   **Purpose**: Context for AI coding agents.
-    *   **Usage**: Provides project-specific context and instructions for AI tools interacting with the codebase.
+    *   **Usage**: Project layout, `make` workflow and code conventions for AI tools working on the codebase. `.gemini/settings.json` points Gemini to it.
 
 *   **`.aiexclude`**
     *   **Purpose**: Exclusion list for AI tools.
-    *   **Usage**: Prevents AI agents from reading or modifying specific files (similar to `.gitignore` but for AI contexts).
+    *   **Usage**: Prevents AI agents from reading specific files (similar to `.gitignore` but for AI contexts), most importantly a local `bmde.toml` with credentials.
 
 ### Directories (Root Level)
 *   **`.devcontainer/`**: Contains `devcontainer.json` for configuring VS Code Dev Containers / GitHub Codespaces.
 *   **`.github/`**: Contains GitHub Actions workflows, templates, dependabot config, and other platform-specific settings.
-*   **`.gemini/`**: (Likely) Configuration or context for Gemini AI tools.
+*   **`.gemini/`**: Settings for the Gemini AI tools.
 *   **`src/`**: The source code of the Python package.
 *   **`components/`**: External tools/Docker definitions wrapped by BMDE.
 *   **`docs/`**: Source markdown files for the documentation site.
 *   **`tests/`**: Automated test suite.
+*   **`base/`**: Dockerfile of the base image of every BMDE image.
+*   **`shell/`**: Dockerfile and tests of the full development environment image (all the components together).
 *   **`dist/`**: (Generated) Directory where build artifacts (wheels, tarballs) are placed after `make dist`.
 *   **`venv/`**: (Generated) The Python virtual environment directory.
-*   **`examples/`**: Contains example projects or usage demonstrations.
-*   **`scripts/`**: (Optional) General utility scripts for repo maintenance (distinct from `components/*/scripts`).
+*   **`examples/`**: `bmde.toml` with every option and its default value (generated by `make fmt`).
+*   **`scripts/`**: Utility scripts for repo maintenance (distinct from `components/*/scripts`).
 
 ---
 
@@ -212,18 +194,21 @@ The source for the project's website.
 Files that configure how GitHub interacts with the repository.
 
 ### Workflows (`workflows/`)
-*   **`test.yml`**: Runs `pytest` on every push to ensure code correctness.
-*   **`lint.yml`**: Runs `ruff` and `mypy` on every push to enforce style and types.
+*   **`test.yml`**: Runs `make test` (pytest with coverage) on every pull request and uploads the coverage report.
+*   **`lint.yml`**: Runs `make lint` on every pull request.
+*   **`codeql.yml`**: Scans the Python code and the workflows with CodeQL on every push to `master`.
+*   **`images.yml`**: Builds the Docker images with `docker-bake.hcl` and tests them; on `master`, publishes them.
 *   **`release.yml`**:
     *   **Trigger**: Push to `master`.
-    *   **Action**: Uses `python-semantic-release` to analyze commits, bump the version, create a Git tag, generate a changelog in the Release body, and publish the package to PyPI.
+    *   **Action**: Uses `python-semantic-release` to analyze the Conventional Commits, create the Git tag of the next version and the GitHub Release, and publish the package to PyPI.
 *   **`docs.yml`**:
     *   **Trigger**: Push to `master`.
     *   **Action**: Builds the MkDocs site and deploys it to GitHub Pages.
-*   **`dependabot.yml`**: Configures the bot to check for updates to Python packages, Docker base images, and GitHub Actions.
+*   **`dependabot.yml`**: Configures the bot to open PRs against `master` that update Python packages, GitHub Actions, the base Docker image and the submodules.
 
 ### Community Files
-*   **`PULL_REQUEST_TEMPLATE/`**: Templates pre-filled when users open PRs (e.g., Bug Fix vs Feature).
+*   **`PULL_REQUEST_TEMPLATE.md`**: Template pre-filled when users open PRs.
+*   **`ISSUE_TEMPLATE/`**: Issue forms for bug reports and feature requests.
 *   **`CODEOWNERS`**: Automatically requests review from `@AleixMT` for PRs.
 *   **`labeler.yml`**: Automatically adds labels (e.g., `documentation`, `docker`) to PRs based on which files were modified.
 
