@@ -113,6 +113,9 @@ fmt: fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene  ## A
 lint-ruff:  ## Check lint rules with ruff
 	@$(VENV_BIN)/ruff check .
 
+lint-ruff-format:  ## Check the code is formatted with ruff format (fix with make fmt)
+	@$(VENV_BIN)/ruff format --check .
+
 lint-mypy:  ## Check types with mypy --strict
 	@$(VENV_BIN)/mypy src
 
@@ -151,7 +154,7 @@ lint-ai-ignore:  ## Check the AI ignore files are up to date with .aiexclude (fi
 	done
 	exit $$status
 
-lint: lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
+lint: lint-ruff lint-ruff-format lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
 
 test:  ## Run tests with coverage (fails under the fail_under of pyproject.toml)
 	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s --cov --cov-report=term --cov-report=xml
@@ -188,7 +191,7 @@ clean:  ## Remove build/test artifacts
 
 .PHONY: venv install dev run clean help dist readme docs-serve docs-build docs-deploy \
         fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene \
-        lint lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
+        lint lint-ruff lint-ruff-format lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
         lint-shellcheck lint-secrets test
 
 help:  ## Show this help
