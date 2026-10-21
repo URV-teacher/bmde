@@ -26,6 +26,19 @@ updates:
         patterns:
           - "*"
 
+  # The revs of the hooks of .pre-commit-config.yaml (the local hooks are skipped)
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    groups:
+      pre-commit:
+        patterns:
+          - "*"
+
   # The base image of every BMDE image. The Dockerfiles of the components live in their own repositories (Dependabot
   # can't update files inside submodules), so they need their own dependabot.yml there.
   - package-ecosystem: "docker"

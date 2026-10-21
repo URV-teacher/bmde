@@ -22,7 +22,7 @@ Everything goes through the Makefile, which uses the project venv in `venv/`. Do
 ```shell
 make dev     # create venv/, install the package with every dependency group and the pre-commit hooks
 make fmt     # auto-fix: ruff check --fix, ruff format, regenerate examples/bmde.toml and the AI ignore files, whitespace
-make lint    # every non-mutating check (ruff, mypy --strict, YAML/TOML, shellcheck, detect-secrets, ...)
+make lint    # every check of .pre-commit-config.yaml on every file (ruff, mypy --strict, shellcheck, detect-secrets, ...)
 make test    # pytest with coverage; fails under the fail_under of pyproject.toml
 make run CMD="run -f demo.nds"
 ```

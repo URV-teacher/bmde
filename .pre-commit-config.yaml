@@ -1,88 +1,76 @@
-# Every check here just calls a Makefile target - the Makefile is the single place that defines what
-# "linted", "formatted" and "tested" mean for this repo, and CI calls the exact same targets (see
-# .github/workflows/lint.yml and test.yml).
+# The checks of this repository. On `git commit` they only see the staged files (pre-commit hides the unstaged edits),
+# and `make lint` (also run by CI) runs them on every tracked file with `pre-commit run --all-files`.
 #
-# This means every tool used by a "make ..." hook must already be installed in the project's own venv
-# (`make dev`) - pre-commit does not manage separate per-hook environments or version pins for them; those
-# versions live solely in the dependency groups of pyproject.toml.
+# The tools of the public hooks are pinned by `rev` and installed by pre-commit in environments of its own, so they do
+# not depend on the venv; Dependabot bumps the revs (.github/dependabot.yml). The local hooks need the project itself
+# (its dependencies, or the bmde package), so they call a Makefile target that uses the venv (`make dev`), and only run
+# when the files they check change.
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+
 repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.1
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: [--enforce-all]
+      # Also outside of a merge, so `make lint` and CI find markers committed by mistake
+      - id: check-merge-conflict
+        args: [--assume-in-merge]
+      - id: check-case-conflict
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1-1
+    hooks:
+      - id: shellcheck
+        args: [--external-sources]
+
+  # Mark a false positive with a `pragma: allowlist secret` comment on its line rather than with a baseline file, which
+  # detect-secrets would rewrite every time the line numbers of a known finding shift
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+
   - repo: local
     hooks:
-      - id: fmt-ruff
-        name: fmt-ruff (make fmt-ruff)
-        entry: make fmt-ruff
-        language: system
-        pass_filenames: false
-
-      - id: fmt-ruff-format
-        name: fmt-ruff-format (make fmt-ruff-format)
-        entry: make fmt-ruff-format
-        language: system
-        pass_filenames: false
-
-      - id: fmt-hygiene
-        name: fmt-hygiene (make fmt-hygiene)
-        entry: make fmt-hygiene
-        language: system
-        pass_filenames: false
-
-      - id: lint-mypy
-        name: lint-mypy (make lint-mypy)
+      # Types cross file boundaries, so mypy checks the whole package whenever a file it depends on changes
+      - id: mypy
+        name: mypy --strict (make lint-mypy)
         entry: make lint-mypy
         language: system
         pass_filenames: false
+        files: ^(src/|pyproject\.toml$)
 
-      - id: lint-yaml
-        name: lint-yaml (make lint-yaml)
-        entry: make lint-yaml
+      - id: example-config
+        name: examples/bmde.toml is up to date (make lint-example-config)
+        entry: make lint-example-config
         language: system
         pass_filenames: false
+        files: ^(src/|examples/bmde\.toml$)
 
-      - id: lint-toml
-        name: lint-toml (make lint-toml)
-        entry: make lint-toml
-        language: system
-        pass_filenames: false
-
-      - id: lint-large-files
-        name: lint-large-files (make lint-large-files)
-        entry: make lint-large-files
-        language: system
-        pass_filenames: false
-
-      - id: lint-merge-conflict
-        name: lint-merge-conflict (make lint-merge-conflict)
-        entry: make lint-merge-conflict
-        language: system
-        pass_filenames: false
-
-      - id: lint-case-conflict
-        name: lint-case-conflict (make lint-case-conflict)
-        entry: make lint-case-conflict
-        language: system
-        pass_filenames: false
-
-      - id: lint-shellcheck
-        name: lint-shellcheck (make lint-shellcheck)
-        entry: make lint-shellcheck
-        language: system
-        pass_filenames: false
-
-      - id: lint-ai-ignore
-        name: lint-ai-ignore (make lint-ai-ignore)
+      - id: ai-ignore
+        name: AI ignore files are up to date (make lint-ai-ignore)
         entry: make lint-ai-ignore
         language: system
         pass_filenames: false
-
-      - id: lint-secrets
-        name: lint-secrets (make lint-secrets)
-        entry: make lint-secrets
-        language: system
-        pass_filenames: false
+        files: ^\.(aiexclude|geminiignore|cursorignore|aiderignore|codeiumignore|aiignore)$
 
       - id: test
         name: test (make test)
         entry: make test
         language: system
         pass_filenames: false
+        always_run: true
         stages: [pre-push]
