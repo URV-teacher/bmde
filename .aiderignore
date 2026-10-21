@@ -1,0 +1,11 @@
+# GENERATED from .aiexclude by `make fmt-ai-ignore`, edit that file instead
+# Local configuration with credentials (VPN, SSH) - never send it to an AI tool
+bmde.toml
+.env
+# Generated or vendored
+workspace
+logs
+venv
+site
+src/bmde.egg-info
+.git

@@ -220,6 +220,9 @@ __marimo__/
 bmde.toml
 !examples/bmde.toml
 
+# Generated from .aiexclude by `make fmt-ai-ignore`; the Cursor rule above would otherwise ignore its copy
+!.cursorignore
+
 # Runtime output of the CLI and of local tests
 workspace
 nds.nds
