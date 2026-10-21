@@ -6,15 +6,20 @@ from __future__ import annotations
 
 import datetime
 import logging
-import os
 import pathlib
 from enum import Enum
+
+import platformdirs
 
 log = logging.getLogger(__name__)  # Types cannot use logging module to avoid circular imports
 
 PROJECT_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-NOW = datetime.datetime.now().strftime(DATE_FORMAT)
+# Taken once, so every default log path of an execution points to the same file
+NOW = datetime.datetime.now()
+# The colons of DATE_FORMAT are not valid in Windows file names
+LOG_FILE_DATE_FORMAT = "%Y-%m-%d_%H-%M-%S"
+APP_NAME = "bmde"
 # Only used by run and debug modules in Docker mode
 DOCKER_DESMUME_DEBUG_NETWORK = "bmde-debug"
 # Name of the emulator container in debug mode, so the debugger can reach it through the Docker network
@@ -129,4 +134,6 @@ class LogLevel(Enum):
 
 
 def get_default_log_path() -> pathlib.Path:
-    return pathlib.Path(str(os.path.join(".", "logs", "bmde", NOW + ".log")))
+    # The per-user log dir of the platform (~/.local/state/bmde/log on Linux) instead of the current directory, which
+    # is usually the repository of a student and would end up with a logs/ folder in its commits
+    return platformdirs.user_log_path(APP_NAME, appauthor=False) / f"{NOW.strftime(LOG_FILE_DATE_FORMAT)}.log"
