@@ -10,7 +10,7 @@
 #   docker buildx bake full --load      # the full development environment (and the images it needs)
 #   docker buildx bake desmume --load   # one component
 #   docker buildx bake --push           # build and publish every image
-#   VERSION=1.14.0 docker buildx bake --push base full dev   # also tag the published images 1.14.0, 1.14 and 1
+#   VERSION=1.14.0 docker buildx bake --push   # also tag the published images 1.14.0, 1.14 and 1
 
 variable "REGISTRY" {
   description = "Docker Hub namespace of the images"
@@ -22,10 +22,11 @@ variable "TAG" {
   default     = "latest"
 }
 
-# Version of the bmde release the images belong to (X.Y.Z, without the v). When set, the images published by this
-# repository (base, full and dev) are also tagged X.Y.Z, X.Y and X, besides TAG
+# Version of the bmde release the images belong to (X.Y.Z, without the v). When set, every image is also tagged X.Y.Z,
+# X.Y and X, besides TAG. The CLI of a release runs the images tagged with its version, so students get the
+# environment it was tested with (and can pin another one with docker.image_tag in bmde.toml)
 variable "VERSION" {
-  description = "bmde release (X.Y.Z) to also tag the base, full and dev images with: X.Y.Z, X.Y and X"
+  description = "bmde release (X.Y.Z) to also tag every image with: X.Y.Z, X.Y and X"
   default     = ""
 }
 
@@ -89,7 +90,7 @@ target "devkitarm" {
   description = "aleixmt/bmde-linux: devkitARM r46 and libnds, to build NDS programs (bmde build)"
   context     = "components/devkitarm-nds-docker"
   contexts    = BASE_IMAGE
-  tags        = ["${REGISTRY}/bmde-linux:${TAG}"]
+  tags        = tags("bmde-linux")
   cache-from  = cache_from("devkitarm")
   cache-to    = cache_to("devkitarm")
 }
@@ -98,7 +99,7 @@ target "desmume" {
   description = "aleixmt/desmume: the DeSmuME 0.9.11 emulator, to run NDS programs (bmde run)"
   context     = "components/desmume-docker"
   contexts    = BASE_IMAGE
-  tags        = ["${REGISTRY}/desmume:${TAG}"]
+  tags        = tags("desmume")
   cache-from  = cache_from("desmume")
   cache-to    = cache_to("desmume")
 }
@@ -107,7 +108,7 @@ target "insight" {
   description = "aleixmt/insight: Insight 7.3.50 and gdb-multiarch, to debug NDS programs (bmde debug)"
   context     = "components/insight-docker"
   contexts    = BASE_IMAGE
-  tags        = ["${REGISTRY}/insight:${TAG}"]
+  tags        = tags("insight")
   cache-from  = cache_from("insight")
   cache-to    = cache_to("insight")
 }
@@ -116,7 +117,7 @@ target "dlditool" {
   description = "aleixmt/dlditool: dlditool, to patch a DLDI driver into NDS programs (bmde patch)"
   context     = "components/dlditool-docker"
   contexts    = BASE_IMAGE
-  tags        = ["${REGISTRY}/dlditool:${TAG}"]
+  tags        = tags("dlditool")
   cache-from  = cache_from("dlditool")
   cache-to    = cache_to("dlditool")
 }
@@ -125,7 +126,7 @@ target "grit" {
   description = "aleixmt/grit: grit, to convert images into graphics data for NDS programs"
   context     = "components/grit-docker"
   contexts    = BASE_IMAGE
-  tags        = ["${REGISTRY}/grit:${TAG}"]
+  tags        = tags("grit")
   cache-from  = cache_from("grit")
   cache-to    = cache_to("grit")
 }
@@ -135,7 +136,7 @@ target "git" {
   context     = "components/git-urv-vpn-docker"
   dockerfile  = "git.Dockerfile"
   contexts    = BASE_IMAGE
-  tags        = ["${REGISTRY}/git-sshpass:${TAG}"]
+  tags        = tags("git-sshpass")
   cache-from  = cache_from("git")
   cache-to    = cache_to("git")
 }
@@ -145,7 +146,7 @@ target "vpn" {
   context     = "components/git-urv-vpn-docker"
   dockerfile  = "vpn.Dockerfile"
   contexts    = BASE_IMAGE
-  tags        = ["${REGISTRY}/forticlient:${TAG}"]
+  tags        = tags("forticlient")
   cache-from  = cache_from("vpn")
   cache-to    = cache_to("vpn")
 }
@@ -157,7 +158,7 @@ target "vscode" {
   contexts = merge(BASE_IMAGE, {
     extension = "components/arm-syntax-vscode-extension"
   })
-  tags       = ["${REGISTRY}/vscode:${TAG}"]
+  tags       = tags("vscode")
   cache-from = cache_from("vscode")
   cache-to   = cache_to("vscode")
 }

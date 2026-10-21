@@ -68,10 +68,19 @@ docker buildx bake dev --load    # development environment of the CLI
 
 ## Versions
 
-The images published by this repository (`bmde-base`, `bmde-full` and `bmde-dev`) are tagged `latest` on every push to
-master and, when that push releases a new version of bmde, also with that version: `X.Y.Z`, `X.Y` and `X` (e.g.
-`aleixmt/bmde-full:1.14.0`, `:1.14` and `:1`). The tags come from the `VERSION` variable of `docker-bake.hcl`. The
-images of the components are versioned by their own repositories.
+Every image built by `docker-bake.hcl`, the ones of the components included, is pushed as `sha-<commit>` on every push
+to master, tagged `latest` once it is released and, when that push releases a new version of bmde, also with that
+version: `X.Y.Z`, `X.Y` and `X` (e.g. `aleixmt/desmume:1.15.0`, `:1.15` and `:1`). The tags come from the `TAG` and
+`VERSION` variables of `docker-bake.hcl`. The repositories of the components also publish `latest` of their own image.
+
+The CLI of a release runs the images tagged with its version (bmde 1.15.0 runs `aleixmt/desmume:1.15.0`), so it keeps
+working with the environment it was tested with; a development version of the CLI runs `latest`. To pin another
+environment, set the tag in `bmde.toml` (or `BMDE_DOCKER_IMAGE_TAG`), e.g. a known-good build:
+
+```toml
+[docker]
+image_tag = "sha-0123456789abcdef0123456789abcdef01234567"
+```
 
 ## CI
 * Each component runs the reusable workflows of this repository (`.github/workflows/component-image.yml` and
@@ -85,9 +94,10 @@ images of the components are versioned by their own repositories.
   succeeded:
     1. the checks: lint, tests, and the images, built, tested and pushed with only the tag `sha-<commit>`;
     2. semantic-release, which tags the new version (if the commits make one) and creates its GitHub release;
-    3. the upload of the package to PyPI, only if there is a new version;
-    4. the publication of the tested images (retagged, not rebuilt) as `latest` and, if there is a new version, `X.Y.Z`,
-       `X.Y` and `X`.
+    3. the publication of the tested images (retagged, not rebuilt) as `latest` and, if there is a new version, `X.Y.Z`,
+       `X.Y` and `X`;
+    4. the upload of the package to PyPI, only if there is a new version. After the images, because the CLI of the
+       release runs the images of its version.
 
   If a step fails, nothing after it is published. The `sha-<commit>` tags stay in Docker Hub as a record of every
   tested build.

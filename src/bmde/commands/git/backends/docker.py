@@ -7,6 +7,7 @@ from bmde.core import logging
 from bmde.core.docker import (
     can_run_docker,
     docker_container_exists,
+    docker_image,
     docker_inspect_health,
 )
 from bmde.core.exec import ExecOptions, run_cmd
@@ -19,7 +20,7 @@ log = logging.get_logger(__name__)
 
 
 def _run_vpn(spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str) -> int | None | subprocess.Popen[bytes]:
-    docker_img = "aleixmt/forticlient:latest"
+    docker_img = docker_image("forticlient")
 
     envs: list[str] = [
         "-e",
@@ -140,7 +141,7 @@ class DockerRunner(GitBackend):
         2) Run the git container sharing the network namespace with 'forti-vpn' with the command.
         """
 
-        docker_img = "aleixmt/git-sshpass:latest"
+        docker_img = docker_image("git-sshpass")
 
         # 2) Ensure VPN is healthy (starts `docker compose up -d forti-vpn` if needed)
         _ensure_vpn_healthy(spec, exec_opts, timeout_s=getattr(spec, "vpn_timeout_s", 300))

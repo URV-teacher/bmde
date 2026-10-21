@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 from bmde.core import logging
-from bmde.core.docker import can_run_docker, docker_project_dir, docker_screen_args
+from bmde.core.docker import can_run_docker, docker_image, docker_project_dir, docker_screen_args
 from bmde.core.exec import ExecOptions, run_cmd
 from bmde.core.types import DOCKER_DESMUME_DEBUG_HOST, BackendOptions
 
@@ -20,7 +20,7 @@ class DockerRunner(DebugBackend):
         return can_run_docker()
 
     def run(self, spec: DebugSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
-        docker_img = "aleixmt/insight:latest"
+        docker_img = docker_image("insight")
         project_dir = docker_project_dir(spec.elf.parent)
         mounts = [
             "-v",

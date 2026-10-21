@@ -2,10 +2,10 @@
 # image, the image of each component from the submodules, the full development environment and the development
 # environment of the bmde CLI) and runs the tests of every component inside the full development environment.
 #
-# On pull requests it only builds and tests. On master, release.yml calls it with candidate: true, which pushes the
-# tested base image, full development environment and development environment of the CLI to Docker Hub with the tag
-# sha-<commit> only; release.yml gives them their public tags (latest and the version) once the release has been made.
-# The image of each component is published by the CI of its own repository.
+# On pull requests it only builds and tests. On master, release.yml calls it with candidate: true, which pushes every
+# tested image to Docker Hub with the tag sha-<commit> only; release.yml gives them their public tags (latest and the
+# version) once the release has been made. The images of the components are published here too (besides by the CI of
+# their own repositories), because the CLI of each release runs the images tagged with its version.
 name: Images
 
 on:
@@ -71,11 +71,12 @@ jobs:
           done
 
       # With the layer cache of GitHub Actions (see CACHE in docker-bake.hcl), each image only rebuilds what changed.
-      # Pull requests read the cache of master and write their own
+      # Pull requests read the cache of master and write their own. Every image, also the ones only the CLI uses (git
+      # and vpn), since all of them are published
       - name: Build images
         env:
           CACHE: gha
-        run: docker buildx bake full dev --load
+        run: docker buildx bake --load
 
       # The test ROM of dlditool is built from the examples of devkitPro, so with the devkitARM just built (in the full
       # development environment) instead of the published one
@@ -105,4 +106,4 @@ jobs:
         if: inputs.candidate
         env:
           TAG: sha-${{ github.sha }}
-        run: docker buildx bake --push base full dev
+        run: docker buildx bake --push

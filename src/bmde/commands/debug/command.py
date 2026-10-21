@@ -14,7 +14,7 @@ from bmde.core import logging
 from bmde.core.exec import ExecOptions
 
 from ...config.loader import load_settings
-from ...core.docker import docker_remove_network
+from ...core.docker import configure_docker_from_settings, docker_remove_network
 from ...core.file_utils import resolve_elf
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
@@ -174,6 +174,7 @@ def debug_command(
     if settings is None:
         full_settings = load_settings()
         configure_logging_from_settings(settings=full_settings)
+        configure_docker_from_settings(settings=full_settings)
         settings = full_settings.debug
 
     log.debug(f"Settings for debug command:\n- {str(settings)}\n")

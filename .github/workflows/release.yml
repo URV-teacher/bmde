@@ -3,8 +3,9 @@
 #      sha-<commit> (images.yml);
 #   2. semantic-release decides from the commits whether there is a new version and, if so, tags it and creates its
 #      GitHub release;
-#   3. the package is published to PyPI, only if there is a new version;
-#   4. the tested images are published as latest and, if there is a new version, also as X.Y.Z, X.Y and X.
+#   3. the tested images are published as latest and, if there is a new version, also as X.Y.Z, X.Y and X;
+#   4. the package is published to PyPI, only if there is a new version. After the images, because the CLI of a
+#      release runs the images tagged with its version, so they must exist before anyone can install it.
 # If a step fails, nothing after it is published.
 name: release
 
@@ -61,7 +62,7 @@ jobs:
   pypi-publish:
     name: Upload release to PyPI
     runs-on: ubuntu-latest
-    needs: release
+    needs: [release, publish-images]
     # Without a new version the package would get a development version (e.g. 1.13.1.dev7+gffa0227a0), which PyPI
     # rejects
     if: needs.release.outputs.released == 'true'
@@ -90,9 +91,7 @@ jobs:
   publish-images:
     name: Publish Docker images
     runs-on: ubuntu-latest
-    needs: [release, pypi-publish]
-    # After PyPI, which is skipped (not failed) when there is no new version
-    if: always() && needs.release.result == 'success' && needs.pypi-publish.result != 'failure' && needs.pypi-publish.result != 'cancelled'
+    needs: release
     steps:
       - uses: actions/checkout@v7
 
@@ -109,7 +108,7 @@ jobs:
           VERSION: ${{ needs.release.outputs.released == 'true' && needs.release.outputs.version || '' }}
           CANDIDATE: sha-${{ github.sha }}
         run: |
-          for target in base full dev; do
+          for target in $(docker buildx bake --print | jq -r '.target | keys[]'); do
             source="$(TAG="${CANDIDATE}" VERSION='' docker buildx bake --print "${target}" | jq -r ".target.${target}.tags[0]")"
             args=()
             while read -r tag; do
