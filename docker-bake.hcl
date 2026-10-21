@@ -5,6 +5,7 @@
 # built instead of the published ones, so a change in the base or in a component is tested in all the images that use
 # it.
 #
+#   docker buildx bake --list=targets   # what can be built (--list=variables for the variables)
 #   docker buildx bake                  # every image
 #   docker buildx bake full --load      # the full development environment (and the images it needs)
 #   docker buildx bake desmume --load   # one component
@@ -12,17 +13,20 @@
 #   VERSION=1.14.0 docker buildx bake --push base full dev   # also tag the published images 1.14.0, 1.14 and 1
 
 variable "REGISTRY" {
-  default = "aleixmt"
+  description = "Docker Hub namespace of the images"
+  default     = "aleixmt"
 }
 
 variable "TAG" {
-  default = "latest"
+  description = "Tag of every image (CI pushes the tested images as sha-<commit>)"
+  default     = "latest"
 }
 
 # Version of the bmde release the images belong to (X.Y.Z, without the v). When set, the images published by this
 # repository (base, full and dev) are also tagged X.Y.Z, X.Y and X, besides TAG
 variable "VERSION" {
-  default = ""
+  description = "bmde release (X.Y.Z) to also tag the base, full and dev images with: X.Y.Z, X.Y and X"
+  default     = ""
 }
 
 # Layer cache: empty (no cache besides the one of the local builder) or "gha", which CI sets so each run only rebuilds
@@ -30,7 +34,8 @@ variable "VERSION" {
 # has its own scope, because targets writing to the same scope would overwrite the cache of each other. mode=max also
 # exports the layers of the build stages (e.g. the one compiling Insight), which are not in the final image
 variable "CACHE" {
-  default = ""
+  description = "Layer cache to read and write, one scope per target: empty (none) or gha (GitHub Actions)"
+  default     = ""
 }
 
 function "cache_from" {
@@ -57,18 +62,21 @@ function "tags" {
 }
 
 group "default" {
-  targets = ["base", "components", "full", "dev"]
+  description = "Every image"
+  targets     = ["base", "components", "full", "dev"]
 }
 
 group "components" {
-  targets = ["devkitarm", "desmume", "insight", "dlditool", "grit", "git", "vpn", "vscode"]
+  description = "The image of each component, from the submodules in components/"
+  targets     = ["devkitarm", "desmume", "insight", "dlditool", "grit", "git", "vpn", "vscode"]
 }
 
 target "base" {
-  cache-from = cache_from("base")
-  cache-to   = cache_to("base")
-  context = "base"
-  tags    = tags("bmde-base")
+  description = "aleixmt/bmde-base: the Ubuntu image, with the users and helpers of the BMDE, of every other image"
+  context     = "base"
+  tags        = tags("bmde-base")
+  cache-from  = cache_from("base")
+  cache-to    = cache_to("base")
 }
 
 # The Dockerfiles name the published images they use as stages (e.g. FROM aleixmt/bmde-base:latest AS bmde-base), so
@@ -78,78 +86,85 @@ BASE_IMAGE = {
 }
 
 target "devkitarm" {
-  cache-from = cache_from("devkitarm")
-  cache-to   = cache_to("devkitarm")
-  context  = "components/devkitarm-nds-docker"
-  contexts = BASE_IMAGE
-  tags     = ["${REGISTRY}/bmde-linux:${TAG}"]
+  description = "aleixmt/bmde-linux: devkitARM r46 and libnds, to build NDS programs (bmde build)"
+  context     = "components/devkitarm-nds-docker"
+  contexts    = BASE_IMAGE
+  tags        = ["${REGISTRY}/bmde-linux:${TAG}"]
+  cache-from  = cache_from("devkitarm")
+  cache-to    = cache_to("devkitarm")
 }
 
 target "desmume" {
-  cache-from = cache_from("desmume")
-  cache-to   = cache_to("desmume")
-  context  = "components/desmume-docker"
-  contexts = BASE_IMAGE
-  tags     = ["${REGISTRY}/desmume:${TAG}"]
+  description = "aleixmt/desmume: the DeSmuME 0.9.11 emulator, to run NDS programs (bmde run)"
+  context     = "components/desmume-docker"
+  contexts    = BASE_IMAGE
+  tags        = ["${REGISTRY}/desmume:${TAG}"]
+  cache-from  = cache_from("desmume")
+  cache-to    = cache_to("desmume")
 }
 
 target "insight" {
-  cache-from = cache_from("insight")
-  cache-to   = cache_to("insight")
-  context  = "components/insight-docker"
-  contexts = BASE_IMAGE
-  tags     = ["${REGISTRY}/insight:${TAG}"]
+  description = "aleixmt/insight: Insight 7.3.50 and gdb-multiarch, to debug NDS programs (bmde debug)"
+  context     = "components/insight-docker"
+  contexts    = BASE_IMAGE
+  tags        = ["${REGISTRY}/insight:${TAG}"]
+  cache-from  = cache_from("insight")
+  cache-to    = cache_to("insight")
 }
 
 target "dlditool" {
-  cache-from = cache_from("dlditool")
-  cache-to   = cache_to("dlditool")
-  context  = "components/dlditool-docker"
-  contexts = BASE_IMAGE
-  tags     = ["${REGISTRY}/dlditool:${TAG}"]
+  description = "aleixmt/dlditool: dlditool, to patch a DLDI driver into NDS programs (bmde patch)"
+  context     = "components/dlditool-docker"
+  contexts    = BASE_IMAGE
+  tags        = ["${REGISTRY}/dlditool:${TAG}"]
+  cache-from  = cache_from("dlditool")
+  cache-to    = cache_to("dlditool")
 }
 
 target "grit" {
-  cache-from = cache_from("grit")
-  cache-to   = cache_to("grit")
-  context  = "components/grit-docker"
-  contexts = BASE_IMAGE
-  tags     = ["${REGISTRY}/grit:${TAG}"]
+  description = "aleixmt/grit: grit, to convert images into graphics data for NDS programs"
+  context     = "components/grit-docker"
+  contexts    = BASE_IMAGE
+  tags        = ["${REGISTRY}/grit:${TAG}"]
+  cache-from  = cache_from("grit")
+  cache-to    = cache_to("grit")
 }
 
 target "git" {
-  cache-from = cache_from("git")
-  cache-to   = cache_to("git")
-  context    = "components/git-urv-vpn-docker"
-  dockerfile = "git.Dockerfile"
-  contexts   = BASE_IMAGE
-  tags       = ["${REGISTRY}/git-sshpass:${TAG}"]
+  description = "aleixmt/git-sshpass: git and sshpass, for the git server of the course (bmde git)"
+  context     = "components/git-urv-vpn-docker"
+  dockerfile  = "git.Dockerfile"
+  contexts    = BASE_IMAGE
+  tags        = ["${REGISTRY}/git-sshpass:${TAG}"]
+  cache-from  = cache_from("git")
+  cache-to    = cache_to("git")
 }
 
 target "vpn" {
-  cache-from = cache_from("vpn")
-  cache-to   = cache_to("vpn")
-  context    = "components/git-urv-vpn-docker"
-  dockerfile = "vpn.Dockerfile"
-  contexts   = BASE_IMAGE
-  tags       = ["${REGISTRY}/forticlient:${TAG}"]
+  description = "aleixmt/forticlient: the FortiClient VPN, to reach the network of URV (bmde git)"
+  context     = "components/git-urv-vpn-docker"
+  dockerfile  = "vpn.Dockerfile"
+  contexts    = BASE_IMAGE
+  tags        = ["${REGISTRY}/forticlient:${TAG}"]
+  cache-from  = cache_from("vpn")
+  cache-to    = cache_to("vpn")
 }
 
 target "vscode" {
-  cache-from = cache_from("vscode")
-  cache-to   = cache_to("vscode")
-  context = "components/vscode-arm-syntax-docker"
+  description = "aleixmt/vscode: Visual Studio Code with the ARM assembly syntax extension of the course"
+  context     = "components/vscode-arm-syntax-docker"
   # The install script of the extension and its release (src/ and assets/), from its checkout
   contexts = merge(BASE_IMAGE, {
     extension = "components/arm-syntax-vscode-extension"
   })
-  tags = ["${REGISTRY}/vscode:${TAG}"]
+  tags       = ["${REGISTRY}/vscode:${TAG}"]
+  cache-from = cache_from("vscode")
+  cache-to   = cache_to("vscode")
 }
 
 target "full" {
-  cache-from = cache_from("full")
-  cache-to   = cache_to("full")
-  context = "shell"
+  description = "aleixmt/bmde-full: the full development environment, with the tools of every component"
+  context     = "shell"
   contexts = merge(BASE_IMAGE, {
     components = "components"
     devkitarm  = "target:devkitarm"
@@ -159,15 +174,18 @@ target "full" {
     grit       = "target:grit"
     vscode     = "target:vscode"
   })
-  tags = tags("bmde-full")
+  tags       = tags("bmde-full")
+  cache-from = cache_from("full")
+  cache-to   = cache_to("full")
 }
 
 target "dev" {
-  cache-from = cache_from("dev")
-  cache-to   = cache_to("dev")
-  context = ".devcontainer/bmde-dev"
+  description = "aleixmt/bmde-dev: the full development environment plus what developing the bmde CLI needs"
+  context     = ".devcontainer/bmde-dev"
   contexts = {
     bmde-full = "target:full"
   }
-  tags = tags("bmde-dev")
+  tags       = tags("bmde-dev")
+  cache-from = cache_from("dev")
+  cache-to   = cache_to("dev")
 }
