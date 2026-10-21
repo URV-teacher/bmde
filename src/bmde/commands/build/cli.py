@@ -1,4 +1,3 @@
-
 import typer
 
 from bmde.commands.build.command import build_command
@@ -16,28 +15,30 @@ from bmde.core.shared_options import (
 
 log = logging.get_logger(__name__)
 
+
 def build_controller(
-        ctx: typer.Context,
-        directory: DirectoryOpt = None,
-        arguments: ArgumentsOpt = None,
-        backend: BackendOpt = None,
-        background: BackgroundOpt = False,
-        interactive: InteractiveOpt = True,
-        entrypoint: EntrypointOpt = None,
-        dry_run: DryRunOpt = False
+    ctx: typer.Context,
+    directory: DirectoryOpt = None,
+    arguments: ArgumentsOpt = None,
+    backend: BackendOpt = None,
+    background: BackgroundOpt = False,
+    interactive: InteractiveOpt = True,
+    entrypoint: EntrypointOpt = None,
+    dry_run: DryRunOpt = False,
 ) -> None:
     """devkitARM make wrapper. Builds NDS ROM from source code."""
     settings: Settings = ctx.obj["settings"]
 
-    log.debug("CLI options provided:\n"
-              f"- Arguments: {str(arguments)}\n"
-              f"- Directory: {str(directory)}\n"
-              f"- Backend: {str(backend)}\n"
-              f"- Background: {str(background)}\n"
-              f"- Interactive: {str(interactive)}\n"
-              f"- Entrypoint: {str(entrypoint)}\n"
-              f"- Dry run: {str(dry_run)}\n"
-              )
+    log.debug(
+        "CLI options provided:\n"
+        f"- Arguments: {str(arguments)}\n"
+        f"- Directory: {str(directory)}\n"
+        f"- Backend: {str(backend)}\n"
+        f"- Background: {str(background)}\n"
+        f"- Interactive: {str(interactive)}\n"
+        f"- Entrypoint: {str(entrypoint)}\n"
+        f"- Dry run: {str(dry_run)}\n"
+    )
 
     ret = build_command(
         d=directory,
@@ -47,7 +48,7 @@ def build_controller(
         interactive=interactive,
         entrypoint=entrypoint,
         dry_run=dry_run,
-        settings=settings.build
+        settings=settings.build,
     )
 
     if isinstance(ret, int):

@@ -64,9 +64,7 @@ def test_run_filesystem(tmp_path: Path):
 
     # 4. Prepare FAT image
     print("Downloading FAT image...")
-    fat_zip_url = (
-        "https://raw.githubusercontent.com/URV-teacher/desmume-docker/master/fs/fat.zip"
-    )
+    fat_zip_url = "https://raw.githubusercontent.com/URV-teacher/desmume-docker/master/fs/fat.zip"
     fat_zip_path = tmp_path / "fat.zip"
     try:
         urllib.request.urlretrieve(fat_zip_url, fat_zip_path)
@@ -113,9 +111,7 @@ def test_run_filesystem(tmp_path: Path):
 
     # 6. Verify content
     print("Verifying output...")
-    expected_text = (
-        "Hola, este es un test en DeSmuME.\nProbando escritura en archivo.\n"
-    )
+    expected_text = "Hola, este es un test en DeSmuME.\nProbando escritura en archivo.\n"
 
     # Method A: mtools (preferred if available)
     if shutil.which("mtype"):

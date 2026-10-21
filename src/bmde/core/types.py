@@ -10,15 +10,15 @@ import os
 import pathlib
 from enum import Enum
 
-log = logging.getLogger(
-    __name__
-)  # Types cannot use logging module to avoid circular imports
+log = logging.getLogger(__name__)  # Types cannot use logging module to avoid circular imports
 
 PROJECT_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 NOW = datetime.datetime.now().strftime(DATE_FORMAT)
 # Only used by run and debug modules in Docker mode
 DOCKER_DESMUME_DEBUG_NETWORK = "bmde-debug"
+# Name of the emulator container in debug mode, so the debugger can reach it through the Docker network
+DOCKER_DESMUME_DEBUG_HOST = "desmume"
 
 
 class BackendOptions(Enum):
@@ -68,6 +68,15 @@ class DockerOutputOptions(Enum):
         except ValueError as exc:
             valid = ", ".join(v.value for v in cls)
             raise ValueError(f"Unknown environment '{value}'. Valid: {valid}") from exc
+
+
+class DebuggerOptions(Enum):
+    """
+    Debuggers that can be used by the debug command to connect to the emulator.
+    """
+
+    INSIGHT = "insight"
+    GDB_MULTIARCH = "gdb-multiarch"
 
 
 class LogLevel(Enum):

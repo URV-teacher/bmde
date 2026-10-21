@@ -49,28 +49,18 @@ def create_build_spec(
             d=d,
         ),
         SpecExecOpts=SpecExecOpts(
-            backend=backend if backend is not None else (settings.execution_settings.backend
-                                                         if settings.execution_settings.backend is not None else
-                                                         BackendOptions.DOCKER),
-            entrypoint=(
-                entrypoint
-                if entrypoint is not None
-                else settings.execution_settings.entrypoint
+            backend=backend
+            if backend is not None
+            else (
+                settings.execution_settings.backend
+                if settings.execution_settings.backend is not None
+                else BackendOptions.DOCKER
             ),
+            entrypoint=(entrypoint if entrypoint is not None else settings.execution_settings.entrypoint),
             arguments=passed_args,
-            dry_run=(
-                dry_run if dry_run is not None else settings.execution_settings.dry_run
-            ),
-            background=(
-                background
-                if background is not None
-                else settings.execution_settings.background
-            ),
-            interactive=(
-                interactive
-                if interactive is not None
-                else settings.execution_settings.interactive
-            ),
+            dry_run=(dry_run if dry_run is not None else settings.execution_settings.dry_run),
+            background=(background if background is not None else settings.execution_settings.background),
+            interactive=(interactive if interactive is not None else settings.execution_settings.interactive),
         ),
     )
 
@@ -87,7 +77,7 @@ def execute_build(spec: BuildSpec) -> int | Popen[bytes]:
             background=spec.SpecExecOpts.background,
             interactive=spec.SpecExecOpts.interactive,
             backend=spec.SpecExecOpts.backend,
-            entrypoint=spec.SpecExecOpts.entrypoint
+            entrypoint=spec.SpecExecOpts.entrypoint,
         ),
     )
 
@@ -107,9 +97,7 @@ def build_command(
     """
     if settings is None:
         full_settings = load_settings()
-        configure_logging_from_settings(
-            settings=full_settings
-        )
+        configure_logging_from_settings(settings=full_settings)
         settings = full_settings.build
 
     spec = create_build_spec(

@@ -2,9 +2,8 @@
 import re
 from pathlib import Path
 
-INCLUDE_RE = re.compile(
-    r'^\s*--8<--\s+"([^":]+)(?::(\d+)?:(\d+)?)?"\s*$'
-)
+INCLUDE_RE = re.compile(r'^\s*--8<--\s+"([^":]+)(?::(\d+)?:(\d+)?)?"\s*$')
+
 
 def expand_include(line: str, base_dir: Path) -> list[str]:
     """
@@ -16,7 +15,7 @@ def expand_include(line: str, base_dir: Path) -> list[str]:
         return [line]
 
     path, start, end = match.groups()
-    #print(f"start {str(start)} end {str(end)} path {str(path)}")
+    # print(f"start {str(start)} end {str(end)} path {str(path)}")
     file_path = (base_dir / path).resolve()
 
     if not file_path.exists():
