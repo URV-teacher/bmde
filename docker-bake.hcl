@@ -25,6 +25,25 @@ variable "VERSION" {
   default = ""
 }
 
+# Layer cache: empty (no cache besides the one of the local builder) or "gha", which CI sets so each run only rebuilds
+# what changed instead of everything (devkitARM, DeSmuME and Insight are compiled from their sources). Every target
+# has its own scope, because targets writing to the same scope would overwrite the cache of each other. mode=max also
+# exports the layers of the build stages (e.g. the one compiling Insight), which are not in the final image
+variable "CACHE" {
+  default = ""
+}
+
+function "cache_from" {
+  params = [name]
+  result = CACHE == "" ? [] : ["type=${CACHE},scope=${name}"]
+}
+
+# A failed export (e.g. the cache service is down or full) must not fail a build that succeeded
+function "cache_to" {
+  params = [name]
+  result = CACHE == "" ? [] : ["type=${CACHE},scope=${name},mode=max,ignore-error=true"]
+}
+
 function "tags" {
   params = [image]
   result = concat(
@@ -46,6 +65,8 @@ group "components" {
 }
 
 target "base" {
+  cache-from = cache_from("base")
+  cache-to   = cache_to("base")
   context = "base"
   tags    = tags("bmde-base")
 }
@@ -57,36 +78,48 @@ BASE_IMAGE = {
 }
 
 target "devkitarm" {
+  cache-from = cache_from("devkitarm")
+  cache-to   = cache_to("devkitarm")
   context  = "components/devkitarm-nds-docker"
   contexts = BASE_IMAGE
   tags     = ["${REGISTRY}/bmde-linux:${TAG}"]
 }
 
 target "desmume" {
+  cache-from = cache_from("desmume")
+  cache-to   = cache_to("desmume")
   context  = "components/desmume-docker"
   contexts = BASE_IMAGE
   tags     = ["${REGISTRY}/desmume:${TAG}"]
 }
 
 target "insight" {
+  cache-from = cache_from("insight")
+  cache-to   = cache_to("insight")
   context  = "components/insight-docker"
   contexts = BASE_IMAGE
   tags     = ["${REGISTRY}/insight:${TAG}"]
 }
 
 target "dlditool" {
+  cache-from = cache_from("dlditool")
+  cache-to   = cache_to("dlditool")
   context  = "components/dlditool-docker"
   contexts = BASE_IMAGE
   tags     = ["${REGISTRY}/dlditool:${TAG}"]
 }
 
 target "grit" {
+  cache-from = cache_from("grit")
+  cache-to   = cache_to("grit")
   context  = "components/grit-docker"
   contexts = BASE_IMAGE
   tags     = ["${REGISTRY}/grit:${TAG}"]
 }
 
 target "git" {
+  cache-from = cache_from("git")
+  cache-to   = cache_to("git")
   context    = "components/git-urv-vpn-docker"
   dockerfile = "git.Dockerfile"
   contexts   = BASE_IMAGE
@@ -94,6 +127,8 @@ target "git" {
 }
 
 target "vpn" {
+  cache-from = cache_from("vpn")
+  cache-to   = cache_to("vpn")
   context    = "components/git-urv-vpn-docker"
   dockerfile = "vpn.Dockerfile"
   contexts   = BASE_IMAGE
@@ -101,6 +136,8 @@ target "vpn" {
 }
 
 target "vscode" {
+  cache-from = cache_from("vscode")
+  cache-to   = cache_to("vscode")
   context = "components/vscode-arm-syntax-docker"
   # The install script of the extension and its release (src/ and assets/), from its checkout
   contexts = merge(BASE_IMAGE, {
@@ -110,6 +147,8 @@ target "vscode" {
 }
 
 target "full" {
+  cache-from = cache_from("full")
+  cache-to   = cache_to("full")
   context = "shell"
   contexts = merge(BASE_IMAGE, {
     components = "components"
@@ -124,6 +163,8 @@ target "full" {
 }
 
 target "dev" {
+  cache-from = cache_from("dev")
+  cache-to   = cache_to("dev")
   context = ".devcontainer/bmde-dev"
   contexts = {
     bmde-full = "target:full"
