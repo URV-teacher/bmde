@@ -13,6 +13,7 @@ from bmde.core.shared_options import (
     ShowConfigOpt,
     ShowDefaultConfigOpt,
     VerboseOpt,
+    VersionOpt,
     VeryQuietOpt,
     VeryVerboseOpt,
 )
@@ -30,6 +31,7 @@ def cli_global_callback(
     log_file: LogFileOpt = None,
     show_config: ShowConfigOpt = False,
     show_default_config: ShowDefaultConfigOpt = False,
+    version: VersionOpt = False,
 ) -> None:
     """
     Global option callback. Executed if no command is provided.
