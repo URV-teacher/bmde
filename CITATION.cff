@@ -5,6 +5,6 @@ authors:
   given-names: "Aleix"
   email: "aleix.marine@urv.cat"
 title: "Bare Metal Development Environment (BMDE) CLI"
-version: 1.0.0
+version: latest
 date-released: 2024-01-01
 url: "https://github.com/URV-teacher/bmde"
