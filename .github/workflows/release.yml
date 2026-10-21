@@ -1,3 +1,9 @@
+# On every push to master: semantic-release decides from the commits whether there is a new version and, if so, tags
+# it and creates its GitHub release. Then, in parallel:
+#   - the package is published to PyPI, only if there is a new version;
+#   - the Docker images are built, tested and published as latest and, if there is a new version, also as X.Y.Z, X.Y
+#     and X (images.yml).
+# A failure of the images (e.g. a server of the assets is down) does not stop the package from being published.
 name: release
 
 on:
@@ -5,17 +11,27 @@ on:
     branches:
       - master
 
+# Releases run one at a time, in order, so two pushes can't compute the same version
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      version: ${{ steps.release.outputs.version }}
+      tag: ${{ steps.release.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Python Semantic Release
+        id: release
         uses: python-semantic-release/python-semantic-release@v10.7.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -28,6 +44,9 @@ jobs:
     name: Upload release to PyPI
     runs-on: ubuntu-latest
     needs: release
+    # Without a new version the package would get a development version (e.g. 1.13.1.dev7+gffa0227a0), which PyPI
+    # rejects
+    if: needs.release.outputs.released == 'true'
     environment:
       name: pypi
       url: https://pypi.org/p/bmde
@@ -36,6 +55,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          # The tag of the release, so hatch-vcs gives the package exactly its version
+          ref: ${{ needs.release.outputs.tag }}
           fetch-depth: 0
 
       - uses: actions/setup-python@v7
@@ -47,3 +68,14 @@ jobs:
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  images:
+    name: Docker images
+    needs: release
+    permissions:
+      contents: read
+    uses: ./.github/workflows/images.yml
+    with:
+      push: true
+      version: ${{ needs.release.outputs.released == 'true' && needs.release.outputs.version || '' }}
+    secrets: inherit
