@@ -31,6 +31,8 @@ GIT        := git
 
 PKG_NAME   := bmde
 
+LOCK_DIR   := requirements
+
 # ---- build ------------------------------------------------------------------
 
 dist: $(VENV_BIN)/pyproject-build  ## Build source and wheel distribution
@@ -48,11 +50,14 @@ $(VENV_BIN)/bmde: $(VENV_BIN)/python pyproject.toml
 	@$(PIP) install -e .
 	@$(GIT) submodule update --init --recursive
 
-# Install dev dependencies. PKG-INFO is used as the target because pip updates it when dependencies change,
-# avoiding a rebuild loop when tool binaries (e.g. ruff) don't get their timestamp bumped by pip.
-src/bmde.egg-info/PKG-INFO: $(VENV_BIN)/python pyproject.toml
-	@$(PIP) install -e ".[dev]"
-	@$(PRE_COMMIT) install
+# Install the package in editable mode plus one dependency group of pyproject.toml (test, lint, docs or dev, which has
+# them all), at the versions pinned in requirements/<group>.txt (see `make lock`), so CI does not break when something
+# upstream changes. A stamp file is the target because the editable install of hatchling leaves no file in the tree
+# whose timestamp pip bumps, and tool binaries (e.g. ruff) keep theirs when they are already up to date.
+$(VENV_DIR)/.group-%: $(VENV_BIN)/python pyproject.toml $(LOCK_DIR)/%.txt
+	@$(PIP) install -r "$(LOCK_DIR)/$*.txt"
+	@$(PIP) install --no-deps -e .
+	@touch "$@"
 
 $(VENV_BIN)/pyproject-build: $(VENV_BIN)/python
 	@$(PIP) install build
@@ -63,7 +68,36 @@ venv: $(VENV_BIN)/python  ## Create virtualenv
 
 install: $(VENV_BIN)/bmde  ## Install the package in editable mode
 
-dev: src/bmde.egg-info/PKG-INFO  ## Install the package, dev dependencies and pre-commit hooks
+install-test: $(VENV_DIR)/.group-test  ## Install the package and the test dependencies (what CI tests with)
+
+install-lint: $(VENV_DIR)/.group-lint  ## Install the package and the lint dependencies (what CI lints with)
+
+install-docs: $(VENV_DIR)/.group-docs  ## Install the package and the documentation dependencies
+
+dev: $(VENV_DIR)/.group-dev  ## Install the package, every dependency group and the pre-commit hooks
+	@$(PRE_COMMIT) install
+
+# ---- dependencies -----------------------------------------------------------
+#
+# pyproject.toml declares the dependencies and requirements/<group>.txt pins them, with every transitive dependency.
+# Dependabot updates the pins weekly (.github/dependabot.yml); run `make lock` after editing the dependencies.
+
+# pip-compile pins for the Python that runs it, so it runs in the Python of CI (also in .python-version, which is the
+# one Dependabot uses when it re-runs pip-compile)
+LOCK_IMAGE        := python:3.11-slim
+PIP_TOOLS_VERSION := 7.6.2
+
+lock:  ## Pin the dependencies into requirements/<group>.txt, keeping the current pins that still fit (needs Docker)
+	@$(PYTHON_BIN) scripts/export-requirements.py
+	@docker run --rm -v "$(CURDIR):/src" -w /src -u "$$(id -u):$$(id -g)" -e HOME=/tmp \
+		-e PIP_DISABLE_PIP_VERSION_CHECK=1 $(LOCK_IMAGE) sh -c ' \
+		pip install --quiet --user --no-warn-script-location pip-tools==$(PIP_TOOLS_VERSION) \
+		&& for f in $(LOCK_DIR)/*.in; do \
+			python -m piptools compile --quiet --strip-extras $(LOCK_ARGS) --output-file "$${f%.in}.txt" "$$f"; \
+		done'
+
+lock-upgrade: LOCK_ARGS := --upgrade
+lock-upgrade: lock  ## Pin every dependency to its latest version (needs Docker)
 
 # ---- quality ----------------------------------------------------------------
 #
@@ -151,7 +185,10 @@ lint-ai-ignore:  ## Check the AI ignore files are up to date with .aiexclude (fi
 	done
 	exit $$status
 
-lint: lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
+lint-requirements:  ## Check requirements/ is up to date with the dependencies of pyproject.toml (fix with make lock)
+	@$(PYTHON) scripts/export-requirements.py --check
+
+lint: lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-requirements lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
 
 test:  ## Run tests with coverage (fails under the fail_under of pyproject.toml)
 	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s --cov --cov-report=term --cov-report=xml
@@ -169,13 +206,13 @@ run: install  ## Run the bmde CLI (python -m bmde)
 readme:  ## Render the README guide
 	./scripts/render-guide.py
 
-docs-serve: dev  ## Serve the documentation site locally with hot reload
+docs-serve: install-docs  ## Serve the documentation site locally with hot reload
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs serve
 
-docs-build: dev  ## Build the static documentation site into site/
+docs-build: install-docs  ## Build the static documentation site into site/
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs build
 
-docs-deploy: dev  ## Deploy the documentation site to GitHub Pages
+docs-deploy: install-docs  ## Deploy the documentation site to GitHub Pages
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs gh-deploy --force
 
 # ---- maintenance ------------------------------------------------------------
@@ -186,7 +223,8 @@ clean:  ## Remove build/test artifacts
 
 # ---- meta -------------------------------------------------------------------
 
-.PHONY: venv install dev run clean help dist readme docs-serve docs-build docs-deploy \
+.PHONY: venv install install-test install-lint install-docs dev lock lock-upgrade run clean help dist readme docs-serve \
+        docs-build docs-deploy lint-requirements \
         fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene \
         lint lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
         lint-shellcheck lint-secrets test

@@ -4,7 +4,7 @@
 #
 # This means every tool used by a "make ..." hook must already be installed in the project's own venv
 # (`make dev`) - pre-commit does not manage separate per-hook environments or version pins for them; those
-# versions live solely in pyproject.toml's dev dependencies.
+# versions live solely in the dependency groups of pyproject.toml.
 repos:
   - repo: local
     hooks:
@@ -71,6 +71,12 @@ repos:
       - id: lint-ai-ignore
         name: lint-ai-ignore (make lint-ai-ignore)
         entry: make lint-ai-ignore
+        language: system
+        pass_filenames: false
+
+      - id: lint-requirements
+        name: lint-requirements (make lint-requirements)
+        entry: make lint-requirements
         language: system
         pass_filenames: false
 

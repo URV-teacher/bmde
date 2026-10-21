@@ -22,11 +22,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version-file: .python-version
           cache: 'pip'
+          cache-dependency-path: requirements/*.txt
 
       - name: Install Dependencies
-        run: make dev
+        run: make install-test
 
       # The integration tests create (desmume-docker/scripts/create_fat_image.sh) and read FAT images
       - name: Install FAT tools

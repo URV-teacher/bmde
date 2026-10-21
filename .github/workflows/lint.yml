@@ -18,11 +18,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version-file: .python-version
           cache: 'pip'
+          cache-dependency-path: requirements/*.txt
 
       - name: Install Dependencies
-        run: make dev
+        run: make install-lint
 
       - name: Run linters
         run: make lint
