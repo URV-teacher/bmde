@@ -293,3 +293,6 @@ docs/getting-started/host_components_installation_substituted.md
 
 # The `build/` rule above would otherwise ignore the build command
 !src/bmde/commands/build
+
+# Test folders
+shell/hello-world-nds/
