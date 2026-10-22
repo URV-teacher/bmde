@@ -1,11 +1,38 @@
 import os
+import re
 import subprocess
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
+from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.types import DockerOutputOptions
 
 log = logging.get_logger(__name__)
+
+DOCKER_REGISTRY = "aleixmt"
+# Set from the settings by configure_docker_from_settings; None means the default of default_image_tag
+_image_tag: str | None = None
+
+
+def default_image_tag() -> str:
+    """Tag of the images published with the installed version of bmde (e.g. 1.15.0)."""
+    try:
+        installed = version("bmde")
+    except PackageNotFoundError:
+        return "latest"
+    # Only releases have images of their own: a development version (e.g. 1.14.1.dev3+g1234567) uses the latest ones
+    return installed if re.fullmatch(r"\d+\.\d+\.\d+", installed) else "latest"
+
+
+def configure_docker_from_settings(settings: Settings) -> None:
+    global _image_tag
+    _image_tag = settings.docker.image_tag
+
+
+def docker_image(name: str) -> str:
+    """Reference of the image NAME of the BMDE (e.g. desmume) with the configured tag."""
+    return f"{DOCKER_REGISTRY}/{name}:{_image_tag or default_image_tag()}"
 
 
 def can_run_docker() -> bool:

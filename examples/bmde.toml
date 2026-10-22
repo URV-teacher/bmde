@@ -12,6 +12,12 @@ level = "info"
 # Hide sensitive values (e.g. passwords) in the logs
 hide_sensibles = true
 
+# Docker images of the "docker" backend of every command.
+[docker]
+# Tag of the Docker images of the tools, to pin a known-good environment (e.g. 1.15.0 or sha-<commit>). If unset, the
+# images published with the installed version of bmde, or latest for a development version
+# image_tag = "<version of bmde>"
+
 # Settings of the emulator.
 [run]
 # Method to show the emulator screen with the "docker" backend: a desktop window (host), VNC on port 5900 of localhost

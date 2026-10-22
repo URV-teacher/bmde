@@ -8,6 +8,7 @@ from bmde.core import logging
 from bmde.core.exec import ExecOptions
 
 from ...config.loader import load_settings
+from ...core.docker import configure_docker_from_settings
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import BackendOptions
@@ -124,6 +125,7 @@ def git_command(
     if settings is None:
         full_settings = load_settings()
         configure_logging_from_settings(settings=full_settings)
+        configure_docker_from_settings(settings=full_settings)
         settings = full_settings.git
 
     spec = create_git_spec(

@@ -3,6 +3,7 @@ import subprocess
 from bmde.core import logging
 from bmde.core.docker import (
     can_run_docker,
+    docker_image,
     docker_remove_network,
     docker_screen_args,
     ensure_network_is_present,
@@ -22,7 +23,7 @@ class DockerRunner(RunBackend):
         return can_run_docker()
 
     def run(self, spec: RunSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
-        docker_img = "aleixmt/desmume:latest"
+        docker_img = docker_image("desmume")
         mounts = [
             "-v",
             f"{spec.nds_rom.parent}:/roms:ro",

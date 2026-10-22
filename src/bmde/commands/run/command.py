@@ -12,6 +12,7 @@ from bmde.core import logging
 from bmde.core.exec import ExecOptions
 
 from ...config.loader import load_settings
+from ...core.docker import configure_docker_from_settings
 from ...core.file_utils import resolve_nds
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
@@ -155,6 +156,7 @@ def run_command(
     if settings is None:
         full_settings = load_settings()
         configure_logging_from_settings(settings=full_settings)
+        configure_docker_from_settings(settings=full_settings)
         settings = full_settings.run
 
     spec = create_run_spec(

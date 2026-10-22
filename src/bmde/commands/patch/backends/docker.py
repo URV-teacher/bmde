@@ -2,7 +2,7 @@ import os
 import subprocess
 
 from bmde.core import logging
-from bmde.core.docker import can_run_docker
+from bmde.core.docker import can_run_docker, docker_image
 from bmde.core.exec import ExecOptions, run_cmd
 
 from ..spec import PatchSpecOpts
@@ -20,7 +20,7 @@ class DockerRunner(PatchBackend):
         if exec_opts.entrypoint:
             entry = ["--entrypoint", str(exec_opts.entrypoint)]
 
-        docker_img = "aleixmt/dlditool:latest"
+        docker_img = docker_image("dlditool")
 
         mounts = [
             "-v",
