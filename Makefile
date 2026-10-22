@@ -78,20 +78,14 @@ dev: $(VENV_DIR)/.group-dev  ## Install the package, every dependency group and 
 # ---- quality ----------------------------------------------------------------
 #
 # The checks are defined in .pre-commit-config.yaml: `git commit` runs them on the staged files, and `make lint` (also
-# run by CI) on every tracked file. The targets below are the ones its local hooks call, because they need the venv.
+# run by CI) on every tracked file. lint-pre-commit runs its hooks; the other lint-* targets are the ones its local
+# hooks call, because they need the venv.
 
 # ---- formatting (mutating: fixes what it can) ----
 
-fmt-ruff:  ## Auto-fix lint issues with ruff
-	@$(VENV_BIN)/ruff check --fix .
-
-fmt-ruff-format:  ## Auto-format with ruff format
-	@$(VENV_BIN)/ruff format .
-
-fmt-hygiene:  ## Fix trailing whitespace and missing final newlines on every tracked text file
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/trailing-whitespace-fixer $(TEXT_FILES)
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/end-of-file-fixer $(TEXT_FILES)
-
+# The hooks of .pre-commit-config.yaml that fix files. pre-commit fails when a hook changes a file, so their result is
+# ignored here: `make lint` reports what could not be fixed
+FIX_HOOKS := ruff-check ruff-format trailing-whitespace end-of-file-fixer
 
 EXAMPLE_CONFIG := examples/bmde.toml
 
@@ -116,8 +110,13 @@ fmt: fmt-example-config fmt-ai-ignore  ## Auto-format and fix everything that ca
 
 # ---- linting (fails on violation) ----
 
-lint:  ## Run every check of .pre-commit-config.yaml on every tracked file (what CI runs)
-	@$(PRE_COMMIT) run --all-files --show-diff-on-failure
+lint: lint-pre-commit lint-mypy lint-example-config lint-ai-ignore  ## Run every check on every tracked file (what CI runs)
+
+# The local hooks of .pre-commit-config.yaml that have a target of their own, which `make lint` already runs
+OWN_TARGET_HOOKS := mypy,example-config,ai-ignore
+
+lint-pre-commit:  ## Run the hooks of .pre-commit-config.yaml (ruff, shellcheck, detect-secrets, ...) on every file
+	@SKIP=$(OWN_TARGET_HOOKS) $(PRE_COMMIT) run --all-files --show-diff-on-failure
 
 lint-mypy:  ## Check types with mypy --strict
 	@$(VENV_BIN)/mypy src
@@ -168,7 +167,7 @@ clean:  ## Remove build/test artifacts
 # ---- meta -------------------------------------------------------------------
 
 .PHONY: venv install install-test install-lint install-docs dev run clean help dist readme docs-serve docs-build docs-deploy \
-        fmt fmt-example-config fmt-ai-ignore lint lint-mypy lint-example-config lint-ai-ignore test
+        fmt fmt-example-config fmt-ai-ignore lint lint-pre-commit lint-mypy lint-example-config lint-ai-ignore test
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \
