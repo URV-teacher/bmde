@@ -18,9 +18,11 @@ from bmde.core.types import BackendOptions, DockerOutputOptions, LogLevel
 
 
 @pytest.mark.parametrize("enum", [BackendOptions, DockerOutputOptions, LogLevel])
-def test_options_parse_case_insensitively(enum: Any) -> None:
+def test_options_parse_case_insensitively(enum: Any, capsys: pytest.CaptureFixture[str]) -> None:
     member = next(iter(enum))
     assert enum.parse(f"  {member.value.upper()} ") is member
+    # Parsing prints nothing, which would mess the output of the CLI
+    assert capsys.readouterr().out == ""
     assert enum.parse("") is None
     assert enum.parse(None) is None
     with pytest.raises(ValueError, match="Valid: "):
@@ -216,6 +218,25 @@ def test_networks(monkeypatch: pytest.MonkeyPatch) -> None:
     docker.docker_remove_network("net")
     assert ["docker", "network", "create", "net"] in calls
     assert ["docker", "network", "rm", "net"] not in calls
+
+
+def test_docker_secrets(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path))
+
+    with docker.docker_secrets({"vpn_password": "hunter2", "vpn_port": None}) as mounts:  # pragma: allowlist secret
+        (volume,) = mounts[1::2]
+        source, target = volume.removesuffix(":ro").split(":")
+        assert mounts[0] == "-v"
+        assert target == "/run/secrets/vpn_password"
+        assert Path(source).read_text() == "hunter2"
+        assert Path(source).stat().st_mode & 0o777 == 0o600
+        assert Path(source).parent.stat().st_mode & 0o777 == 0o700
+        assert Path(source).parent.parent == tmp_path
+    assert not Path(source).parent.exists()
+
+    with docker.docker_secrets({"ssh_password": "secret"}, keep=True) as mounts:  # pragma: allowlist secret
+        kept = Path(mounts[1].split(":")[0])
+    assert kept.read_text() == "secret"
 
 
 def test_project_is_mounted_by_its_name() -> None:

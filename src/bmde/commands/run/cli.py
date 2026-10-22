@@ -33,7 +33,7 @@ def run_controller(
     backend: BackendOpt = None,
     background: BackgroundOpt = False,
     interactive: InteractiveOpt = True,
-    debug: DebugOpt = False,
+    debug: DebugOpt = None,
     docker_network: DockerNetworkOpt = None,
     dry_run: DryRunOpt = False,
     entrypoint: EntrypointOpt = None,

@@ -21,6 +21,8 @@ class GitSpecOpts(BaseSpec):
     vpn_cert: str | None
     vpn_test_dns: str | None
     vpn_test_ip: str | None
+    # Run git through the VPN of the URV (not needed inside its network)
+    vpn_enabled: bool = True
 
 
 @dataclass

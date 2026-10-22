@@ -10,9 +10,12 @@
 # git. Linux (X11, or Wayland with Xwayland) and Windows 11 with WSLg show the windows on the host; elsewhere (e.g.
 # macOS), use the VNC block of `environment` and remove the mounts of the X server and of the sound.
 #
-# Credentials of the VPN and of the git server: put them in shell/.env (ignored by git, never commit it), as
-# VPN_USERNAME, VPN_PASSWORD, VPN_HOST, VPN_PORT, VPN_REALM, VPN_CERT, VPN_TEST_DNS, VPN_TEST_IP, SSH_USERNAME,
-# SSH_PASSWORD, SSH_HOST, GIT_NAME and GIT_EMAIL. The scripts of the components read them from the environment.
+# Credentials of the VPN and of the git server: one file each in shell/secrets/ (ignored by git, never commit them),
+# named vpn_username, vpn_password, vpn_host, vpn_port, vpn_realm, vpn_cert, vpn_test_dns, vpn_test_ip,
+# ssh_username, ssh_password, ssh_host, git_name and git_email, e.g. printf '%s' 'my password' > shell/secrets/vpn_password.
+# The folder is mounted as /run/secrets, where Docker puts its secrets and the scripts of the components read them
+# first. Unlike environment variables, other users cannot see them with ps or docker inspect. Compose secrets are
+# not used because every one would be mandatory, also for those who do not use git.
 name: bmde
 
 services:
@@ -35,11 +38,15 @@ services:
       # VNC_PASSWORD: secret
       # Sound of DeSmuME through the PulseAudio / PipeWire server of the host
       PULSE_SERVER: unix:/run/pulse/native
-    env_file:
-      - path: .env
-        required: false
 
     volumes:
+      # Credentials of the VPN and of the git server (see above)
+      - type: bind
+        source: ./secrets
+        target: /run/secrets
+        read_only: true
+        bind:
+          create_host_path: false
       # The NDS project, where make, desmume and insight are run (the current directory by default)
       - type: bind
         source: ${PROJECT_DIR:-${PWD}}

@@ -36,7 +36,7 @@ def create_run_spec(
     backend: BackendOptions | None = None,
     background: bool | None = False,
     interactive: bool = True,
-    debug: bool | None = False,
+    debug: bool | None = None,
     dry_run: bool = False,
     entrypoint: Path | None = None,
     docker_network: str | None = None,
@@ -70,7 +70,12 @@ def create_run_spec(
         RunSpecOpts=RunSpecOpts(
             nds_rom=nds_resolved,
             arm9_debug_port=(arm9_debug_port if arm9_debug_port is not None else settings.arm9_debug_port),
-            debug=(debug if debug is not None else (settings.debug if settings.debug is not None else False)),
+            # A debug port only makes sense in debug mode, so giving one enables it
+            debug=(
+                True
+                if arm9_debug_port is not None
+                else (debug if debug is not None else (settings.debug if settings.debug is not None else False))
+            ),
             docker_network=(
                 docker_network
                 if docker_network is not None
@@ -139,7 +144,7 @@ def run_command(
     backend: BackendOptions | None = None,
     background: bool | None = False,
     interactive: bool = True,
-    debug: bool = False,
+    debug: bool | None = None,
     docker_network: str | None = None,
     dry_run: bool = False,
     entrypoint: Path | None = None,

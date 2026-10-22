@@ -10,6 +10,7 @@ from bmde.core.docker import (
     docker_container_exists,
     docker_image,
     docker_inspect_health,
+    docker_secrets,
 )
 from bmde.core.exec import ExecOptions, run_cmd
 from bmde.core.os_utils import host_uid_gid
@@ -20,37 +21,33 @@ from .backend import GitBackend
 log = logging.get_logger(__name__)
 
 
+def vpn_secrets(spec: GitSpecOpts) -> dict[str, str | None]:
+    """Credentials of the VPN, by the name connect_vpn.sh reads them with."""
+    return {
+        "vpn_username": spec.vpn_username,
+        "vpn_password": spec.vpn_password,
+        "vpn_host": spec.vpn_host,
+        "vpn_port": str(spec.vpn_port) if spec.vpn_port is not None else None,
+        "vpn_realm": spec.vpn_realm,
+        "vpn_cert": spec.vpn_cert,
+        "vpn_test_dns": spec.vpn_test_dns,
+        "vpn_test_ip": spec.vpn_test_ip,
+    }
+
+
+def git_secrets(spec: GitSpecOpts) -> dict[str, str | None]:
+    """Credentials of the git server, by the name git-entrypoint.sh and git.exp read them with."""
+    return {
+        "ssh_username": spec.ssh_username,
+        "ssh_password": spec.ssh_password,
+        "ssh_host": spec.ssh_host,
+        "git_name": spec.git_name,
+        "git_email": spec.git_email,
+    }
+
+
 def _run_vpn(spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str) -> int | None | subprocess.Popen[bytes]:
     docker_img = docker_image("forticlient")
-
-    envs: list[str] = [
-        "-e",
-        f"SSH_USERNAME={spec.ssh_username}",
-        "-e",
-        f"SSH_PASSWORD={spec.ssh_password}",
-        "-e",
-        f"SSH_HOST={spec.ssh_host}",
-        "-e",
-        f"GIT_NAME={spec.git_name}",
-        "-e",
-        f"GIT_EMAIL={spec.git_email}",
-        "-e",
-        f"VPN_USERNAME={spec.vpn_username}",
-        "-e",
-        f"VPN_PASSWORD={spec.vpn_password}",
-        "-e",
-        f"VPN_HOST={spec.vpn_host}",
-        "-e",
-        f"VPN_PORT={spec.vpn_port}",
-        "-e",
-        f"VPN_REALM={spec.vpn_realm}",
-        "-e",
-        f"VPN_CERT={spec.vpn_cert}",
-        "-e",
-        f"VPN_TEST_DNS={spec.vpn_test_dns}",
-        "-e",
-        f"VPN_TEST_IP={spec.vpn_test_ip}",
-    ]
 
     run_args = [
         "docker",
@@ -63,23 +60,25 @@ def _run_vpn(spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str) -> 
     if exec_opts.interactive:
         run_args += ["-it"]
 
-    run_args += [
-        "--name",
-        container_name,
-        "--cap-add",
-        "NET_ADMIN",
-        "--device",
-        "/dev/ppp",
-        "--health-cmd=[ -f /READY ] || exit 1",
-        "--health-interval=5s",
-        "--health-timeout=2s",
-        "--health-retries=12",
-        "--health-start-period=120s",
-        *envs,
-        docker_img,
-    ]
-
-    return run_cmd(run_args, exec_opts)
+    # Started detached (-d): when docker run returns, the container exists with the secrets mounted, so their files can
+    # be removed
+    with docker_secrets(vpn_secrets(spec)) as secrets:
+        run_args += [
+            "--name",
+            container_name,
+            "--cap-add",
+            "NET_ADMIN",
+            "--device",
+            "/dev/ppp",
+            "--health-cmd=[ -f /READY ] || exit 1",
+            "--health-interval=5s",
+            "--health-timeout=2s",
+            "--health-retries=12",
+            "--health-start-period=120s",
+            *secrets,
+            docker_img,
+        ]
+        return run_cmd(run_args, exec_opts)
 
 
 def _ensure_vpn_healthy(spec: GitSpecOpts, exec_opts: ExecOptions, timeout_s: int = 20000) -> None:
@@ -148,8 +147,9 @@ class DockerRunner(GitBackend):
 
         docker_img = docker_image("git-sshpass")
 
-        # 2) Ensure VPN is healthy (starts `docker compose up -d forti-vpn` if needed)
-        _ensure_vpn_healthy(spec, exec_opts, timeout_s=getattr(spec, "vpn_timeout_s", 300))
+        # 2) Ensure VPN is healthy (starts it if needed), unless it is disabled (e.g. inside the network of the URV)
+        if spec.vpn_enabled:
+            _ensure_vpn_healthy(spec, exec_opts, timeout_s=getattr(spec, "vpn_timeout_s", 300))
 
         # 3) Build docker run args for the git container
         entry = []
@@ -165,22 +165,9 @@ class DockerRunner(GitBackend):
         workdir_opt = ["-w", f"/repos/{dirname}"]
 
         # share network namespace with the running VPN container
-        net = ["--network", "container:forti-vpn"]
+        net = ["--network", "container:forti-vpn"] if spec.vpn_enabled else []
         uid, gid = host_uid_gid()
         user_opt = ["--user", f"{uid}:{gid}"]
-
-        envs: list[str] = [
-            "-e",
-            f"SSH_USERNAME={spec.ssh_username}",
-            "-e",
-            f"SSH_PASSWORD={spec.ssh_password}",
-            "-e",
-            f"SSH_HOST={spec.ssh_host}",
-            "-e",
-            f"GIT_NAME={spec.git_name}",
-            "-e",
-            f"GIT_EMAIL={spec.git_email}",
-        ]
 
         args: list[str] = []
         if exec_opts.arguments:
@@ -196,16 +183,18 @@ class DockerRunner(GitBackend):
         if exec_opts.interactive:
             run_args += ["-it"]
 
-        run_args += [
-            *user_opt,
-            *net,
-            *mounts,
-            *envs,
-            *entry,
-            *workdir_opt,
-            docker_img,
-            *args,
-        ]
+        # A container started in the background may not have mounted the secrets when docker run returns
+        with docker_secrets(git_secrets(spec), keep=bool(exec_opts.background)) as secrets:
+            run_args += [
+                *user_opt,
+                *net,
+                *mounts,
+                *secrets,
+                *entry,
+                *workdir_opt,
+                docker_img,
+                *args,
+            ]
 
-        log.debug("Run args for Docker" + str(run_args))
-        return run_cmd(run_args, exec_opts)
+            log.debug("Run args for Docker" + str(run_args))
+            return run_cmd(run_args, exec_opts)

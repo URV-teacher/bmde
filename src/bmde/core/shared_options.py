@@ -149,7 +149,8 @@ ConfigOpt = Annotated[
 
 # --- Run options ---
 # To specify debug in run options
-DebugOpt = Annotated[bool, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)]
+# None when not given, so the debug option of the settings applies
+DebugOpt = Annotated[bool | None, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)]
 
 # To specify the debug port in options
 PortOpt = Annotated[int | None, typer.Option("-p", "--port", help="Debug port (implies --debug)")]
@@ -314,6 +315,12 @@ VpnTestIpOpt = Annotated[
     ),
 ]
 
+# None when not given, so the git.vpn.enabled option of the settings applies
+VpnOpt = Annotated[
+    bool | None,
+    typer.Option("--vpn/--no-vpn", help="Run git through the VPN of the URV (not needed inside its network)"),
+]
+
 
 # TODO Add all opts to this variable so they are marked as publicly exposed
 __all__ = [
@@ -349,6 +356,7 @@ __all__ = [
     "VpnCertOpt",
     "VpnTestDnsOpt",
     "VpnTestIpOpt",
+    "VpnOpt",
     "ConfigOpt",
     "ElfRomOpt",
     "DockerNetworkOpt",

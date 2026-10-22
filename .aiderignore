@@ -2,6 +2,7 @@
 # Local configuration with credentials (VPN, SSH) - never send it to an AI tool
 bmde.toml
 .env
+shell/secrets
 # Generated or vendored
 workspace
 logs

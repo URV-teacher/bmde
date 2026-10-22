@@ -70,12 +70,24 @@ class Machine:
     # Processes started in the background
     processes: list[FakeProcess] = field(default_factory=list)
 
+    # Content of the secrets mounted in each container (by name), read when the command is executed
+    secrets: list[dict[str, str]] = field(default_factory=list)
+
     @property
     def commands(self) -> list[list[str]]:
         return [cmd for cmd, _ in self.executed]
 
-    def call(self, cmd: list[str], **kwargs: Any) -> int:
+    def record(self, cmd: list[str], kwargs: dict[str, Any]) -> None:
         self.executed.append((cmd, kwargs))
+        mounted = {}
+        for volume in option(cmd, "-v"):
+            source, _, target = volume.partition(":")
+            if target.startswith("/run/secrets/"):
+                mounted[target.removeprefix("/run/secrets/").removesuffix(":ro")] = Path(source).read_text()
+        self.secrets.append(mounted)
+
+    def call(self, cmd: list[str], **kwargs: Any) -> int:
+        self.record(cmd, kwargs)
         return self.exit_code
 
     def popen_class(self) -> type[FakeProcess]:
@@ -85,7 +97,7 @@ class Machine:
         class RecordedProcess(FakeProcess):
             def __init__(self, args: list[str], **kwargs: Any) -> None:
                 super().__init__(args)
-                machine.executed.append((args, kwargs))
+                machine.record(args, kwargs)
                 machine.processes.append(self)
 
         return RecordedProcess
@@ -252,6 +264,19 @@ def test_run_in_docker_with_a_fat_image_custom_controls_and_debug(machine: Machi
     assert ["docker", "network", "rm", "bmde-debug"] in machine.docker_calls
 
 
+def test_a_debug_port_enables_debug_mode(machine: Machine) -> None:
+    assert bmde("run", "-p", "2000").exit_code == 0
+    assert "--arm9gdb=2000" in machine.commands[0]
+
+
+def test_debug_mode_of_the_settings(machine: Machine, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The CLI does not override it when --debug is not given."""
+    monkeypatch.setenv("BMDE_RUN__DEBUG", "true")
+
+    assert bmde("run").exit_code == 0
+    assert "--arm9gdb=1024" in machine.commands[0]
+
+
 def test_run_in_docker_with_sound(machine: Machine, tmp_path: Path) -> None:
     import socket
 
@@ -302,9 +327,7 @@ def test_run_in_the_host(machine: Machine, tmp_path: Path, caplog: pytest.LogCap
             rom,
             "--cflash-image",
             fat,
-            "--arm9gdb-port",
-            "1024",
-            "--gdb-stub",
+            "--arm9gdb=1024",
             "--disable-sound",
             "--3d-engine=0",
         ]
@@ -354,11 +377,84 @@ def test_patch_in_docker_with_another_driver(machine: Machine) -> None:
     assert cmd[-2:] == ["r4.dldi", "game.nds"]
 
 
-def test_patch_in_the_host(machine: Machine) -> None:
+def test_patch_in_the_host_with_the_driver_of_the_bmde(machine: Machine, tmp_path: Path) -> None:
+    """The BMDE installs the driver in the dldi/ directory of dlditool, where it finds the drivers given by name."""
     machine.installed = {"dlditool"}
+    dlditool = tmp_path / "bmde" / "dlditool" / "dlditool"
+    (dlditool.parent / "dldi").mkdir(parents=True)
+    (dlditool.parent / "dldi" / "mpcf.dldi").touch()
+
+    assert bmde("patch", "-b", "host", "--entrypoint", str(dlditool)).exit_code == 0
+    assert machine.commands == [[str(dlditool), "mpcf.dldi", str(Path.cwd() / "Hello.nds")]]
+
+
+class FakeDownload:
+    """The response of urlopen, counting the downloads."""
+
+    downloads = 0
+
+    def __init__(self, data: bytes) -> None:
+        self.data = data
+
+    def __call__(self, url: str, timeout: float) -> "FakeDownload":
+        assert url == "https://www.chishm.com/DLDI/downloads/mpcf.dldi"
+        FakeDownload.downloads += 1
+        return self
+
+    def __enter__(self) -> "FakeDownload":
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        pass
+
+    def read(self) -> bytes:
+        return self.data
+
+
+@pytest.fixture
+def driver_download(monkeypatch: pytest.MonkeyPatch) -> FakeDownload:
+    import hashlib
+    import urllib.request
+
+    from bmde.commands.patch.backends import host
+
+    download = FakeDownload(b"DLDI driver")
+    FakeDownload.downloads = 0
+    monkeypatch.setattr(urllib.request, "urlopen", download)
+    monkeypatch.setattr(host, "DLDI_DRIVER_SHA256", hashlib.sha256(download.data).hexdigest())
+    return download
+
+
+def test_patch_in_the_host_downloads_the_driver_once(
+    machine: Machine, tmp_path: Path, driver_download: FakeDownload
+) -> None:
+    machine.installed = {"dlditool"}
+    cached = tmp_path / "home" / ".cache" / "bmde" / "dldi" / "mpcf.dldi"
 
     assert bmde("patch", "-b", "host").exit_code == 0
-    assert machine.commands == [["/usr/bin/dlditool", str(Path.cwd() / "Hello.nds")]]
+    assert bmde("patch", "-b", "host").exit_code == 0
+
+    assert machine.commands[0] == ["/usr/bin/dlditool", str(cached), str(Path.cwd() / "Hello.nds")]
+    assert cached.read_bytes() == b"DLDI driver"
+    assert FakeDownload.downloads == 1
+
+
+def test_patch_in_the_host_refuses_a_wrong_driver(machine: Machine, driver_download: FakeDownload) -> None:
+    machine.installed = {"dlditool"}
+    driver_download.data = b"something else"
+
+    result = bmde("patch", "-b", "host")
+
+    assert isinstance(result.exception, RuntimeError)
+    assert "does not have the expected SHA-256" in str(result.exception)
+    assert machine.commands == []
+
+
+def test_dry_run_of_patch_does_not_download_the_driver(machine: Machine, driver_download: FakeDownload) -> None:
+    machine.installed = {"dlditool"}
+
+    assert bmde("patch", "-b", "host", "--dry-run").exit_code == 0
+    assert FakeDownload.downloads == 0
 
 
 # ---- debug
@@ -483,9 +579,47 @@ def test_git_through_the_running_vpn(machine: Machine) -> None:
     assert result.exit_code == 0, result.output
     (cmd,) = machine.commands
     assert option(cmd, "--network") == ["container:forti-vpn"]
-    assert option(cmd, "-v") == [f"{Path.cwd()}:/repos/Hello:rw"]
-    assert {"SSH_USERNAME=student-dni", "SSH_PASSWORD=ssh-secret", "GIT_NAME=Student"} <= set(option(cmd, "-e"))
+    assert option(cmd, "-v")[0] == f"{Path.cwd()}:/repos/Hello:rw"
     assert cmd[-3:] == ["aleixmt/git-sshpass:1.15.0", "clone", "repo"]
+    # The credentials are files in /run/secrets, never in the command or the environment of the container
+    assert machine.secrets[0] == {
+        "ssh_username": "student-dni",
+        "ssh_password": "ssh-secret",  # pragma: allowlist secret
+        "ssh_host": "git.example.org",
+        "git_name": "Student",
+        "git_email": "student@example.org",
+    }
+    assert option(cmd, "-e") == []
+    assert "ssh-secret" not in " ".join(cmd)
+
+
+def test_secret_files_are_only_readable_by_the_user_and_removed(machine: Machine) -> None:
+    # In memory (tmpfs) and only accessible by the user, when there is one
+    Path(os.environ["XDG_RUNTIME_DIR"]).mkdir(mode=0o700)
+    assert bmde("git", *VPN).exit_code == 0
+    sources = [Path(volume.partition(":")[0]) for volume in option(machine.commands[0], "-v")[1:]]
+    assert sources
+    assert all(not source.exists() for source in sources)
+    assert sources[0].parent.parent == Path(os.environ["XDG_RUNTIME_DIR"])
+
+
+def test_git_without_the_vpn(machine: Machine, monkeypatch: pytest.MonkeyPatch) -> None:
+    machine.vpn_health = ["absent"]
+
+    assert bmde("git", *VPN, "--no-vpn").exit_code == 0
+    monkeypatch.setenv("BMDE_GIT__VPN__ENABLED", "false")
+    assert bmde("git", *VPN).exit_code == 0
+
+    # Only git, in the default network of Docker
+    first, second = machine.commands
+    assert option(first, "--network") == option(second, "--network") == []
+    assert not [call for call in machine.docker_calls if call[1] == "inspect"]
+    assert "vpn_password" not in machine.secrets[0]
+
+    # --vpn wins over the settings
+    machine.vpn_health = ["healthy"]
+    assert bmde("git", *VPN, "--vpn").exit_code == 0
+    assert option(machine.commands[-1], "--network") == ["container:forti-vpn"]
 
 
 def test_git_starts_the_vpn_and_waits_for_it(machine: Machine, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -499,7 +633,14 @@ def test_git_starts_the_vpn_and_waits_for_it(machine: Machine, monkeypatch: pyte
     assert ["docker", "rm", "-f", "forti-vpn"] in machine.docker_calls
     assert option(vpn, "--name") == ["forti-vpn"]
     assert option(vpn, "--cap-add") == ["NET_ADMIN"]
-    assert {"VPN_USERNAME=student", "VPN_PASSWORD=vpn-secret", "VPN_PORT=443"} <= set(option(vpn, "-e"))
+    # Only the credentials of the VPN, and only the ones that are set
+    assert machine.secrets[0] == {
+        "vpn_username": "student",
+        "vpn_password": "vpn-secret",  # pragma: allowlist secret
+        "vpn_host": "vpn.example.org",
+        "vpn_port": "443",
+    }
+    assert option(vpn, "-e") == []
     assert vpn[-1] == "aleixmt/forticlient:1.15.0"
     assert option(git, "--entrypoint") == ["/bin/sh"]
 
@@ -640,7 +781,9 @@ def test_secrets_are_hidden_in_the_logs(machine: Machine, tmp_path: Path, monkey
 
     assert bmde("--trace", "-l", str(log_file), "git", "--dry-run").exit_code == 0
     text = log_file.read_text()
-    assert "VPN_PASSWORD=*****" in text
+    # The command only has where the secrets are mounted, and the settings logged in trace mode are masked
+    assert ":/run/secrets/vpn_password:ro" in text
+    assert "password='*****'" in text
     assert "vpn-secret" not in text
     assert "student-dni" not in text
 
@@ -696,11 +839,12 @@ def test_host_build_with_devkitpro_environment(machine: Machine, monkeypatch: py
 def test_host_tools_with_another_entrypoint(machine: Machine) -> None:
     machine.installed = {"dlditool", "desmume", "insight"}
 
-    assert bmde("patch", "-b", "host", "--entrypoint", "/opt/dlditool", "--", "r4.dldi").exit_code == 0
+    # The arguments replace the default driver and ROM, as with the docker backend
+    assert bmde("patch", "-b", "host", "--entrypoint", "/opt/dlditool", "--", "r4.dldi", "game.nds").exit_code == 0
     assert bmde("run", "-b", "host", "--entrypoint", "/opt/desmume").exit_code == 0
     assert bmde("debug", "-b", "host", "--entrypoint", "/opt/insight").exit_code == 0
     patch, run, _, debugger = machine.commands
-    assert patch == ["/opt/dlditool", str(Path.cwd() / "Hello.nds"), "r4.dldi"]
+    assert patch == ["/opt/dlditool", "r4.dldi", "game.nds"]
     assert run[0] == "/opt/desmume"
     assert debugger[0] == "/opt/insight"
 
@@ -750,6 +894,9 @@ def test_backends_called_by_the_api_without_arguments(machine: Machine) -> None:
     RunHost().run(run, no_arguments)
     DebugDocker().run(debug, no_arguments)
     DebugHost().run(debug, no_arguments)
+    # dlditool is not in the PATH, so it is looked for (with its dldi/ directory) in the current directory
+    (project / "dldi").mkdir()
+    (project / "dldi" / "mpcf.dldi").touch()
     PatchHost().run(PatchSpecOpts(nds_rom=project / "Hello.nds"), no_arguments)
     GitHost().run(git, no_arguments)
     GitDocker().run(git, no_arguments)
@@ -765,7 +912,7 @@ def test_backends_called_by_the_api_without_arguments(machine: Machine) -> None:
     assert run_host == ["desmume", str(project / "Hello.nds")]
     assert debug_docker[-1] == "Hello.elf"
     assert debug_host[0] == "arm-eabi-insight"
-    assert patch_host == ["dlditool", str(project / "Hello.nds")]
+    assert patch_host == ["dlditool", "mpcf.dldi", str(project / "Hello.nds")]
     assert git_host == ["/usr/bin/git"]
     assert git_docker[-1] == "aleixmt/git-sshpass:1.15.0"
     # The default check of a backend passes

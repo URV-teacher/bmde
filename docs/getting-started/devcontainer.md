@@ -58,9 +58,11 @@ docker compose -f /path/to/bmde/shell/compose.yml run --rm bmde        # a shell
 docker compose -f /path/to/bmde/shell/compose.yml run --rm bmde make   # or a single command
 ```
 
-For the VPN and the git server, write your credentials in `shell/.env` (`VPN_USERNAME`, `VPN_PASSWORD`, `SSH_USERNAME`,
-... listed at the top of the file); git ignores it, never commit it. On a computer without an X server (e.g. macOS),
-switch to VNC as explained in the comments of the file. `BMDE_TAG=1.14.0` pins a version of the image.
+For the VPN and the git server, write each credential in its own file of `shell/secrets/` (`vpn_username`,
+`vpn_password`, `ssh_username`, ... listed at the top of the file), e.g. `printf '%s' 'my password' >
+shell/secrets/vpn_password`; git ignores them, never commit them. They are mounted as Docker secrets, so other users
+of the computer cannot see them. On a computer without an X server (e.g. macOS), switch to VNC as explained in the
+comments of the file. `BMDE_TAG=1.14.0` pins a version of the image.
 
 ## Version
 
