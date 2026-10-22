@@ -17,7 +17,7 @@ You need Python 3.11+, git, make and Docker (for the Docker backends and the int
 ```shell
 git clone --recurse-submodules https://github.com/URV-teacher/bmde
 cd bmde
-make dev    # creates venv/, installs bmde with the dev extras and the pre-commit hooks
+make dev    # creates venv/, installs bmde with every dependency group and the pre-commit hooks
 ```
 
 Run `make help` to list every target. The ones you will use most:
@@ -30,8 +30,9 @@ make run CMD="build --help"
 make docs-serve
 ```
 
-The pre-commit hooks run the same checks on every commit (and the tests before every push), so CI should not
-surprise you.
+The checks are defined in `.pre-commit-config.yaml`. The pre-commit hooks run them on the files you commit (not on your
+unstaged edits or untracked files) and the tests before every push; `make lint` and CI run them on every file, so CI
+should not surprise you. Add a check there, not in the Makefile; Dependabot updates the versions of the hooks.
 
 ## Workflow
 

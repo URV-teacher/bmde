@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 
 from bmde.core import logging
-from bmde.core.docker import can_run_docker, docker_project_dir
+from bmde.core.docker import can_run_docker, docker_image, docker_project_dir
 from bmde.core.exec import ExecOptions, run_cmd
 from bmde.core.os_utils import host_uid_gid
 
@@ -37,7 +37,7 @@ class DockerRunner(BuildBackend):
         args += ["-v", f"{spec.d}:{project_dir}:rw"]
         args += ["-w", project_dir]  # Start with working directory in project mounted
 
-        args += ["aleixmt/bmde-linux:latest"]  # Base image
+        args += [docker_image("bmde-linux")]  # Base image
 
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)

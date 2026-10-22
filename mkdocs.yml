@@ -4,6 +4,7 @@ site_author: URV Teachers
 repo_url: https://github.com/URV-teacher/bmde
 repo_name: URV-teacher/bmde
 edit_uri: edit/master/docs/
+site_url: https://urv-teacher.github.io/bmde/
 
 # Watch the source code directory for changes to trigger hot reload
 watch:

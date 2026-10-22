@@ -17,14 +17,11 @@ from bmde.core.types import BackendOptions
 log = logging.get_logger(__name__)
 
 
-def check_command(settings: Settings) -> None:
+def check_command(settings: Settings | None = None) -> None:
 
     if settings is None:
-        full_settings = load_settings()
-        configure_logging_from_settings(
-            settings=full_settings,
-            obfuscate_sensibles=full_settings.logging.hide_sensibles,
-        )
+        settings = load_settings()
+        configure_logging_from_settings(settings=settings)
 
     services: list[tuple[str, Service[Any, Any], BackendOptions | None]] = [
         ("Git", GitService(), settings.git.execution_settings.backend),
@@ -57,10 +54,8 @@ def check_command(settings: Settings) -> None:
             if selected_backend and backend_opt == selected_backend:
                 continue
 
-            backend_impl = service.mapping.get(backend_opt)
-            if backend_impl:
-                available = backend_impl.is_available()
-                icon = "✅" if available else "🚫"
-                msg += f"      - {backend_opt.value}: {icon}\n"
+            # Every backend of the order has an implementation (as Service.choose_backend expects)
+            icon = "✅" if service.mapping[backend_opt].is_available() else "🚫"
+            msg += f"      - {backend_opt.value}: {icon}\n"
 
     typer.echo(msg)

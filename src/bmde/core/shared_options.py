@@ -61,8 +61,9 @@ DryRunOpt = Annotated[
 
 InteractiveOpt = Annotated[
     bool,
+    # Without --no-interactive the flag could not be turned off, which scripts and CI (without a TTY) need
     typer.Option(
-        "--interactive",
+        "--interactive/--no-interactive",
         help="Run in interactive mode (allocates TTY)",
     ),
 ]
@@ -139,12 +140,17 @@ VeryQuietOpt = Annotated[
 
 ConfigOpt = Annotated[
     Path | None,
-    typer.Option("-c", "--config", help="Execution-specific config file (highest file priority)"),
+    typer.Option(
+        "-c",
+        "--config",
+        help="Execution-specific config file (beats the other files and the BMDE_* environment variables)",
+    ),
 ]
 
 # --- Run options ---
 # To specify debug in run options
-DebugOpt = Annotated[bool, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)]
+# None when not given, so the debug option of the settings applies
+DebugOpt = Annotated[bool | None, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)]
 
 # To specify the debug port in options
 PortOpt = Annotated[int | None, typer.Option("-p", "--port", help="Debug port (implies --debug)")]
@@ -263,7 +269,8 @@ SshHostOpt = Annotated[str | None, typer.Option("--ssh-server", help="Hostname o
 
 GitNameOpt = Annotated[
     str | None,
-    typer.Option("--git-password", help="User name for git commit signature"),
+    # --git-password is the name previous versions gave to this option by mistake
+    typer.Option("--git-name", "--git-password", help="User name for git commit signature"),
 ]
 
 GitEmailOpt = Annotated[
@@ -308,6 +315,12 @@ VpnTestIpOpt = Annotated[
     ),
 ]
 
+# None when not given, so the git.vpn.enabled option of the settings applies
+VpnOpt = Annotated[
+    bool | None,
+    typer.Option("--vpn/--no-vpn", help="Run git through the VPN of the URV (not needed inside its network)"),
+]
+
 
 # TODO Add all opts to this variable so they are marked as publicly exposed
 __all__ = [
@@ -343,6 +356,7 @@ __all__ = [
     "VpnCertOpt",
     "VpnTestDnsOpt",
     "VpnTestIpOpt",
+    "VpnOpt",
     "ConfigOpt",
     "ElfRomOpt",
     "DockerNetworkOpt",

@@ -1,11 +1,42 @@
 import os
+import re
+import shutil
 import subprocess
+import tempfile
+from collections.abc import Iterator
+from contextlib import contextmanager
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
+from bmde.config.schema import Settings
 from bmde.core import logging
 from bmde.core.types import DockerOutputOptions
 
 log = logging.get_logger(__name__)
+
+DOCKER_REGISTRY = "aleixmt"
+# Set from the settings by configure_docker_from_settings; None means the default of default_image_tag
+_image_tag: str | None = None
+
+
+def default_image_tag() -> str:
+    """Tag of the images published with the installed version of bmde (e.g. 1.15.0)."""
+    try:
+        installed = version("bmde")
+    except PackageNotFoundError:
+        return "latest"
+    # Only releases have images of their own: a development version (e.g. 1.14.1.dev3+g1234567) uses the latest ones
+    return installed if re.fullmatch(r"\d+\.\d+\.\d+", installed) else "latest"
+
+
+def configure_docker_from_settings(settings: Settings) -> None:
+    global _image_tag
+    _image_tag = settings.docker.image_tag
+
+
+def docker_image(name: str) -> str:
+    """Reference of the image NAME of the BMDE (e.g. desmume) with the configured tag."""
+    return f"{DOCKER_REGISTRY}/{name}:{_image_tag or default_image_tag()}"
 
 
 def can_run_docker() -> bool:
@@ -89,6 +120,46 @@ def docker_remove_network(network_name: str) -> None:
 def ensure_network_is_present(network_name: str) -> None:
     if not docker_network_exists(network_name):
         docker_create_network(network_name)
+
+
+# Where docker compose mounts its secrets, and where the scripts of the components read them first (read_secret)
+CONTAINER_SECRETS_DIR = "/run/secrets"
+
+
+@contextmanager
+def docker_secrets(secrets: dict[str, str | None], keep: bool = False) -> Iterator[list[str]]:
+    """
+    Mounts each value in CONTAINER_SECRETS_DIR/<name> of a container, instead of passing it in its environment (-e),
+    which any user of the machine can see with ps or docker inspect.
+
+    Args:
+        secrets: Value of each secret, by name (e.g. vpn_password). The ones that are None are not mounted.
+        keep: Do not remove the files on exit, for a container started in the background, that may not have mounted
+            them yet. They are in the runtime directory of the user, removed when the session ends.
+
+    Yields:
+        The docker run arguments that mount them. The files are only readable by the user, in a temporary directory
+        removed on exit (the containers already started keep their mounted copy).
+    """
+    runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
+    directory = Path(
+        tempfile.mkdtemp(
+            prefix="bmde-secrets-", dir=runtime_dir if runtime_dir and Path(runtime_dir).is_dir() else None
+        )
+    )
+    try:
+        mounts: list[str] = []
+        for name, value in secrets.items():
+            if value is None:
+                continue
+            path = directory / name
+            path.touch(mode=0o600)
+            path.write_text(value)
+            mounts += ["-v", f"{path}:{CONTAINER_SECRETS_DIR}/{name}:ro"]
+        yield mounts
+    finally:
+        if not keep:
+            shutil.rmtree(directory, ignore_errors=True)
 
 
 def docker_project_dir(project: Path) -> str:

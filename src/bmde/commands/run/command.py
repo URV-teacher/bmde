@@ -12,6 +12,7 @@ from bmde.core import logging
 from bmde.core.exec import ExecOptions
 
 from ...config.loader import load_settings
+from ...core.docker import configure_docker_from_settings
 from ...core.file_utils import resolve_nds
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
@@ -35,7 +36,7 @@ def create_run_spec(
     backend: BackendOptions | None = None,
     background: bool | None = False,
     interactive: bool = True,
-    debug: bool | None = False,
+    debug: bool | None = None,
     dry_run: bool = False,
     entrypoint: Path | None = None,
     docker_network: str | None = None,
@@ -69,7 +70,12 @@ def create_run_spec(
         RunSpecOpts=RunSpecOpts(
             nds_rom=nds_resolved,
             arm9_debug_port=(arm9_debug_port if arm9_debug_port is not None else settings.arm9_debug_port),
-            debug=(debug if debug is not None else (settings.debug if settings.debug is not None else False)),
+            # A debug port only makes sense in debug mode, so giving one enables it
+            debug=(
+                True
+                if arm9_debug_port is not None
+                else (debug if debug is not None else (settings.debug if settings.debug is not None else False))
+            ),
             docker_network=(
                 docker_network
                 if docker_network is not None
@@ -138,7 +144,7 @@ def run_command(
     backend: BackendOptions | None = None,
     background: bool | None = False,
     interactive: bool = True,
-    debug: bool = False,
+    debug: bool | None = None,
     docker_network: str | None = None,
     dry_run: bool = False,
     entrypoint: Path | None = None,
@@ -155,6 +161,7 @@ def run_command(
     if settings is None:
         full_settings = load_settings()
         configure_logging_from_settings(settings=full_settings)
+        configure_docker_from_settings(settings=full_settings)
         settings = full_settings.run
 
     spec = create_run_spec(

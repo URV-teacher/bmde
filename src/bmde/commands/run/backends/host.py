@@ -37,7 +37,9 @@ class HostRunner(RunBackend):
         if spec.fat_image:
             args += ["--cflash-image", str(spec.fat_image)]
         if spec.debug:
-            args += ["--arm9gdb-port", str(spec.arm9_debug_port), "--gdb-stub"]
+            # The option of DeSmuME 0.9.11, the version of the BMDE (newer versions have --arm9gdb-port and --gdb-stub)
+            port = spec.arm9_debug_port if spec.arm9_debug_port is not None else 1024
+            args += [f"--arm9gdb={port}"]
         if not spec.sound:
             args += ["--disable-sound"]
         if spec.controls:

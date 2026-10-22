@@ -30,7 +30,8 @@ dependencies = [
     "pydantic>=2.0.0",
     "rich>=13.0.0",
     "rtoml",
-    "pydantic-settings"
+    "pydantic-settings",
+    "platformdirs>=4.0"
 ]
 
 [project.urls]
@@ -42,26 +43,34 @@ Issues = "https://github.com/URV-teacher/bmde/issues"
 [project.scripts]
 bmde = "bmde.__main__:main"
 
-[project.optional-dependencies]
-dev = [
+# PEP 735 groups (not extras, so they are not published to PyPI). Each CI job installs only its own group with
+# `make install-<group>`; `make dev` installs all of them.
+[dependency-groups]
+test = [
   "pytest",
   "pytest-cov",
-  "mypy",
-  "ruff",
+]
+# Only the tools that need the project: ruff, shellcheck, detect-secrets and the other checks are pinned in
+# .pre-commit-config.yaml, which installs them in environments of its own
+lint = [
   "pre-commit",
-  "pre-commit-hooks",
-  "shellcheck-py",
-  "detect-secrets",
-  "build",
+  "mypy",
+]
+docs = [
   "mkdocs-material>=9.0.0",
   "mkdocs>=1.5.0",
   "pymdown-extensions>=10.0",
   "mkdocstrings[python]",
   "mkdocs-autorefs",
-  "mkdocs-typer",
   "mkdocs-awesome-pages-plugin",
   "mkdocs-typer2",
-  "mkdocs-include-markdown-plugin"
+  "mkdocs-include-markdown-plugin",
+]
+dev = [
+  "build",
+  { include-group = "test" },
+  { include-group = "lint" },
+  { include-group = "docs" },
 ]
 
 [tool.hatch.version]
@@ -91,8 +100,8 @@ omit = ["*/bmde/__main__.py"]
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
-# Slightly below the measured coverage (68%), so it only catches real drops; raise it as tests are added
-fail_under = 65
+# Every line and branch is covered (by tests/unit alone, without Docker): new code needs its tests
+fail_under = 100
 exclude_also = [
     "if __name__ == .__main__.:",
     "raise NotImplementedError",

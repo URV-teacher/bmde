@@ -5,8 +5,8 @@ default, and writes the answers to a bmde.toml file.
 
 from __future__ import annotations
 
-import os
 import shlex
+from collections.abc import Collection, Sequence
 from pathlib import Path
 from typing import Any, get_origin
 
@@ -17,21 +17,30 @@ from rich.console import Console
 from rich.markup import escape
 
 from bmde.config.fields import ConfigField, get_value, has_value, iter_sections, set_value
-from bmde.config.loader import read_toml
+from bmde.config.loader import CONFIG_FILE_NAME, ENV_PREFIX, ConfigSource, read_toml, user_config_file
 from bmde.config.schema import Settings
 from bmde.core import logging
-from bmde.core.paths import find_upwards
+from bmde.core.paths import find_git_root, find_upwards
 
 log = logging.get_logger(__name__)
 console = Console()
 
 # Answer that removes an option from the configuration file
 UNSET = "unset"
-USER_CONFIG = Path(os.path.expanduser("~/.config/bmde/bmde.toml"))
 
 
 def section_names() -> list[str]:
     return [".".join(path) for path, _, _ in iter_sections(Settings) if path]
+
+
+def section_prefix(section: str | None) -> tuple[str, ...]:
+    """Path of the section in the settings tree, or () for every section. Fails if the section does not exist."""
+    if not section:
+        return ()
+    if section not in section_names():
+        valid = ", ".join(name for name in section_names() if "." not in name)
+        raise typer.BadParameter(f"Unknown section '{section}'. Valid: {valid}", param_hint="SECTION")
+    return tuple(section.split("."))
 
 
 def prompt_choice(label: str, options: list[str], default: str) -> str:
@@ -47,12 +56,15 @@ def resolve_target(file: Path | None) -> Path:
     """Returns the file to write: the given one or the one chosen by the user between the repo and user config."""
     if file:
         return file
-    repo = find_upwards("bmde.toml", start=Path.cwd()) or Path.cwd() / "bmde.toml"
+    cwd = Path.cwd()
+    # A new file goes to the root of the repository, the last directory where the project config is looked for
+    repo = find_upwards(CONFIG_FILE_NAME, start=cwd) or (find_git_root(cwd) or cwd) / CONFIG_FILE_NAME
+    user = user_config_file()
     console.print("Where do you want to save the configuration?")
     console.print(f"  [bold]repo[/]: {escape(str(repo))} (only applies to this repository)")
-    console.print(f"  [bold]user[/]: {escape(str(USER_CONFIG))} (applies to every repository of your user)")
+    console.print(f"  [bold]user[/]: {escape(str(user))} (applies to every repository of your user)")
     choice = prompt_choice("Target", ["repo", "user"], default="repo")
-    return repo if choice == "repo" else USER_CONFIG
+    return repo if choice == "repo" else user
 
 
 def _show(value: Any) -> str:
@@ -125,12 +137,7 @@ def config_command(settings: Settings, section: str | None, file: Path | None, a
         file: File where the configuration is written. If None, the user chooses between the repo and user config.
         advanced: Also ask for the advanced options.
     """
-    prefix: tuple[str, ...] = ()
-    if section:
-        if section not in section_names():
-            valid = ", ".join(name for name in section_names() if "." not in name)
-            raise typer.BadParameter(f"Unknown section '{section}'. Valid: {valid}", param_hint="SECTION")
-        prefix = tuple(section.split("."))
+    prefix = section_prefix(section)
 
     target = resolve_target(file)
     stored: dict[str, Any] = dict(read_toml(target))
@@ -198,3 +205,51 @@ def config_command(settings: Settings, section: str | None, file: Path | None, a
     target.write_text(rtoml.dumps(stored))
     log.debug(f"Configuration written to {target}")
     console.print(f"Configuration saved to {escape(str(target))}")
+
+
+def value_origin(
+    path: tuple[str, ...], sources: Sequence[ConfigSource], cli_overrides: Collection[tuple[str, ...]]
+) -> str:
+    """Describes the source that supplied the value of an option: the one with the highest priority that sets it."""
+    if path in cli_overrides:
+        return "command line"
+    for source in reversed(sources):
+        if has_value(source.data, path):
+            if source.name == "environment":
+                return f"environment: {ENV_PREFIX}{'__'.join(path).upper()}"
+            return f"{source.name}: {source.location}"
+    return "default"
+
+
+def show_sources_command(
+    settings: Settings,
+    sources: Sequence[ConfigSource],
+    cli_overrides: Collection[tuple[str, ...]],
+    section: str | None,
+) -> None:
+    """
+    Prints the sources of configuration, from lowest to highest priority, and the value of each option with the source
+    that supplied it.
+
+    Args:
+        settings: Current settings.
+        sources: Sources the settings were loaded from, from lowest to highest priority.
+        cli_overrides: Options set by command line flags.
+        section: Only show the options of this section (e.g. run or git.vpn). If None, show every option.
+    """
+    prefix = section_prefix(section)
+    console.print("Configuration sources, from lowest to highest priority:")
+    for source in sources:
+        state = "[green]found[/]" if source.found else "[dim]not found[/]"
+        console.print(f"  [bold]{escape(source.name)}[/] {escape(source.location)} ({state})")
+    console.print("  [bold]command line[/] flags")
+
+    current = settings.model_dump(mode="json")
+    console.print("\nValues:")
+    for path, _, leaves in iter_sections(Settings):
+        if path[: len(prefix)] != prefix:
+            continue
+        for field in leaves:
+            value = _describe(field, get_value(current, field.path))
+            origin = value_origin(field.path, sources, cli_overrides)
+            console.print(f"  {escape(field.dotted)} = {escape(value)} [dim]({escape(origin)})[/]")

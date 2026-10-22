@@ -8,6 +8,7 @@ from bmde.core import logging
 from bmde.core.exec import ExecOptions
 
 from ...config.loader import load_settings
+from ...core.docker import configure_docker_from_settings
 from ...core.logging import configure_logging_from_settings
 from ...core.spec_opts import SpecExecOpts
 from ...core.types import BackendOptions
@@ -38,6 +39,7 @@ def create_git_spec(
     vpn_cert: str | None = None,
     vpn_test_dns: str | None = None,
     vpn_test_ip: str | None = None,
+    vpn_enabled: bool | None = None,
     settings: GitSettings | None = None,
 ) -> GitSpec:
     if d is None:
@@ -62,6 +64,7 @@ def create_git_spec(
             vpn_cert=vpn_cert if vpn_cert is not None else settings.vpn.cert,
             vpn_test_dns=(vpn_test_dns if vpn_test_dns is not None else settings.vpn.test_dns),
             vpn_test_ip=(vpn_test_ip if vpn_test_ip is not None else settings.vpn.test_ip),
+            vpn_enabled=(vpn_enabled if vpn_enabled is not None else settings.vpn.enabled),
         ),
         SpecExecOpts=SpecExecOpts(
             backend=(
@@ -118,12 +121,14 @@ def git_command(
     vpn_cert: str | None = None,
     vpn_test_dns: str | None = None,
     vpn_test_ip: str | None = None,
+    vpn_enabled: bool | None = None,
     settings: GitSettings | None = None,
 ) -> int | Popen[bytes]:
 
     if settings is None:
         full_settings = load_settings()
         configure_logging_from_settings(settings=full_settings)
+        configure_docker_from_settings(settings=full_settings)
         settings = full_settings.git
 
     spec = create_git_spec(
@@ -146,6 +151,7 @@ def git_command(
         vpn_cert=vpn_cert,
         vpn_test_dns=vpn_test_dns,
         vpn_test_ip=vpn_test_ip,
+        vpn_enabled=vpn_enabled,
         settings=settings,
     )
 

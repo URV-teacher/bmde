@@ -3,13 +3,14 @@ import subprocess
 from bmde.core import logging
 from bmde.core.docker import (
     can_run_docker,
+    docker_image,
     docker_remove_network,
     docker_screen_args,
     ensure_network_is_present,
     host_pulse_docker_args,
 )
 from bmde.core.exec import ExecOptions, run_cmd
-from bmde.core.types import DOCKER_DESMUME_DEBUG_HOST, DOCKER_DESMUME_DEBUG_NETWORK
+from bmde.core.types import DOCKER_DESMUME_DEBUG_HOST
 
 from ..spec import RunSpecOpts
 from .backend import RunBackend
@@ -22,7 +23,7 @@ class DockerRunner(RunBackend):
         return can_run_docker()
 
     def run(self, spec: RunSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
-        docker_img = "aleixmt/desmume:latest"
+        docker_img = docker_image("desmume")
         mounts = [
             "-v",
             f"{spec.nds_rom.parent}:/roms:ro",
@@ -62,8 +63,7 @@ class DockerRunner(RunBackend):
         if exec_opts.arguments is not None:
             arguments = list(exec_opts.arguments)
 
-        if spec.nds_rom is not None:
-            arguments += [f"/roms/{spec.nds_rom.name}"]
+        arguments += [f"/roms/{spec.nds_rom.name}"]
 
         network_opt: list[str] = []
         if spec.debug:
@@ -97,18 +97,14 @@ class DockerRunner(RunBackend):
             *arguments,
         ]
 
-        docker_net = None
-        if spec.debug:
-            docker_net = DOCKER_DESMUME_DEBUG_NETWORK
-            if spec.docker_network is not None:
-                docker_net = spec.docker_network
+        docker_net = spec.docker_network if spec.debug else None
 
         if docker_net is not None and not exec_opts.dry_run:
             ensure_network_is_present(docker_net)
 
         handle = run_cmd(run_args, exec_opts)
 
-        if docker_net is not None and not exec_opts.background:
+        if docker_net is not None and not exec_opts.background and not exec_opts.dry_run:
             docker_remove_network(docker_net)
 
         return handle

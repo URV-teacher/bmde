@@ -2,10 +2,10 @@
 # image, the image of each component from the submodules, the full development environment and the development
 # environment of the bmde CLI) and runs the tests of every component inside the full development environment.
 #
-# On pull requests it only builds and tests. On master, release.yml calls it with candidate: true, which pushes the
-# tested base image, full development environment and development environment of the CLI to Docker Hub with the tag
-# sha-<commit> only; release.yml gives them their public tags (latest and the version) once the release has been made.
-# The image of each component is published by the CI of its own repository.
+# On pull requests it only builds and tests. On master, release.yml calls it with candidate: true, which pushes every
+# tested image to Docker Hub with the tag sha-<commit> only; release.yml gives them their public tags (latest and the
+# version) once the release has been made. The images of the components are published here too (besides by the CI of
+# their own repositories), because the CLI of each release runs the images tagged with its version.
 name: Images
 
 on:
@@ -33,6 +33,27 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      # The cache of GitHub Actions needs the runtime token and URLs of the job, which are only given to actions, not
+      # to the run steps that call docker buildx bake
+      - name: Expose the GitHub Actions runtime to buildx
+        uses: crazy-max/ghaction-github-runtime@v3
+
+      # The slowest assets to download: the sources of Insight, reconstructed from ~900 MB of the CVS repository of
+      # sourceware.org, and devkitARM, from a personal mirror. download_assets.sh skips the ones already there after
+      # checking their pinned SHA-256, so a stale cache only means downloading them again. The assets that are the
+      # latest version of their source (no pinned SHA-256) are left out, so they are still downloaded on every run
+      - name: Cache the pinned assets of the components
+        uses: actions/cache@v4
+        with:
+          path: |
+            components/insight-docker/assets/insight-7.3.50.20110803-cvs.tar.xz
+            components/devkitarm-nds-docker/assets/devkitARM_r46-x86_64-linux.tar.bz2
+            components/grit-docker/assets/devkitARM_r46-x86_64-linux.tar.bz2
+          key: >-
+            component-assets-${{ hashFiles('components/insight-docker/scripts/*.sh',
+            'components/devkitarm-nds-docker/scripts/download_assets.sh',
+            'components/grit-docker/scripts/download_assets.sh') }}
+
       # The images are built only from the assets in the assets/ of each component (the sources of Insight are
       # reconstructed from the CVS repository of sourceware.org, with cvs and rsync)
       - name: Download the assets of the components
@@ -49,8 +70,13 @@ jobs:
             echo "::endgroup::"
           done
 
+      # With the layer cache of GitHub Actions (see CACHE in docker-bake.hcl), each image only rebuilds what changed.
+      # Pull requests read the cache of master and write their own. Every image, also the ones only the CLI uses (git
+      # and vpn), since all of them are published
       - name: Build images
-        run: docker buildx bake full dev --load
+        env:
+          CACHE: gha
+        run: docker buildx bake --load
 
       # The test ROM of dlditool is built from the examples of devkitPro, so with the devkitARM just built (in the full
       # development environment) instead of the published one
@@ -80,4 +106,4 @@ jobs:
         if: inputs.candidate
         env:
           TAG: sha-${{ github.sha }}
-        run: docker buildx bake --push base full dev
+        run: docker buildx bake --push

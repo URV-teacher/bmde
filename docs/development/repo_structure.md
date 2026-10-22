@@ -11,7 +11,7 @@ These files define the project's identity, build process, and developer experien
 *   **`pyproject.toml`**
     *   **Purpose**: The central configuration file for the Python project (PEP 621).
     *   **Usage**:
-        *   **Dependencies**: Defines runtime requirements (`typer`, `pydantic`, `rich`, etc.) and the `dev` extra (tests, linters, docs).
+        *   **Dependencies**: Defines runtime requirements (`typer`, `pydantic`, `rich`, etc.) and the `test`, `lint`, `docs` and `dev` dependency groups (PEP 735).
         *   **Build System**: Configures `hatchling` as the build backend, `hatch-vcs` for dynamic versioning from Git tags, and the files of the source distribution (`[tool.hatch.build.targets.sdist]`).
         *   **Tool Config**: Centralizes settings for `ruff` (linting/formatting), `pytest`, `coverage`, `mypy`, and `python-semantic-release`.
     *   **Operations**:
@@ -24,14 +24,14 @@ These files define the project's identity, build process, and developer experien
     *   **Usage**: Simplifies complex commands into short targets (`install`, `lint`, `test`, `docs-serve`). It manages the virtual environment creation (`venv`) and ensures tools are run from the correct path.
     *   **Operations**:
         *   `make install`: Creates venv and installs package in editable mode.
-        *   `make lint`: Runs every non-mutating check (`ruff`, `mypy`, YAML/TOML, `shellcheck`, `detect-secrets`, ...).
+        *   `make lint`: Runs every check of `.pre-commit-config.yaml` on every tracked file (`ruff`, `mypy`, YAML/TOML, `shellcheck`, `detect-secrets`, ...).
         *   `make test`: Runs `pytest` with coverage.
         *   `make docs-serve`: Serves MkDocs locally.
 
 ### Developer Experience & Quality
 *   **`.pre-commit-config.yaml`**
-    *   **Purpose**: Configuration for `pre-commit` hooks.
-    *   **Usage**: Runs the `make fmt-*` and `make lint-*` targets before every `git commit`, and `make test` before every `git push`.
+    *   **Purpose**: Defines every check of the repository (the source of truth: `make lint` and CI run it with `pre-commit run --all-files`).
+    *   **Usage**: Before every `git commit`, runs the checks on the staged files only; before every `git push`, `make test`. The public hooks (ruff, pre-commit-hooks, shellcheck, detect-secrets) are pinned by `rev` and installed by pre-commit in environments of its own; the local ones (mypy, and the checks that generated files are up to date) call `make lint-*` targets, which use the venv.
     *   **Operations**: `git commit`, `git push` (blocked if a check fails).
 
 *   **`.editorconfig`**
@@ -184,7 +184,7 @@ The source for the project's website.
 
 *   **`mkdocs.yml`** (Root): Configuration for MkDocs. Defines the theme, plugins (`mkdocstrings`, `typer`), and navigation structure.
 *   **`*.md` files**: The actual content.
-    *   **`components/*.md`**: Documentation for specific commands. These often use `::: mkdocs-typer` to auto-generate CLI references from the Python code.
+    *   **`components/*.md`**: Documentation for specific commands. These often use `::: mkdocs-typer2` to auto-generate CLI references from the Python code.
     *   **`getting-started/host_components_installation.md`**: A special file that embeds scripts from `components/` using the `pymdownx.snippets` extension to ensure documentation stays in sync with actual installation scripts.
 *   **Usage**: Processed by `mkdocs build` to generate a static HTML site in `site/`.
 

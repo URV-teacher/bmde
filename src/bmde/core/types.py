@@ -6,15 +6,20 @@ from __future__ import annotations
 
 import datetime
 import logging
-import os
 import pathlib
 from enum import Enum
+
+import platformdirs
 
 log = logging.getLogger(__name__)  # Types cannot use logging module to avoid circular imports
 
 PROJECT_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-NOW = datetime.datetime.now().strftime(DATE_FORMAT)
+# Taken once, so every default log path of an execution points to the same file
+NOW = datetime.datetime.now()
+# The colons of DATE_FORMAT are not valid in Windows file names
+LOG_FILE_DATE_FORMAT = "%Y-%m-%d_%H-%M-%S"
+APP_NAME = "bmde"
 # Only used by run and debug modules in Docker mode
 DOCKER_DESMUME_DEBUG_NETWORK = "bmde-debug"
 # Name of the emulator container in debug mode, so the debugger can reach it through the Docker network
@@ -97,7 +102,7 @@ class LogLevel(Enum):
     @classmethod
     def parse(cls, value: str | None) -> LogLevel | None:
         """Parse case-insensitively; returns None if value is falsy."""
-        print("Executing function parse from LogLevel")
+        log.debug("Executing function parse from LogLevel")
         if not value:
             return None
         norm = value.strip().lower()
@@ -112,21 +117,19 @@ class LogLevel(Enum):
         return LogLevel.INFO
 
     def to_logging_level(self) -> int:
-        if self is LogLevel.TRACE:
-            return 0
-        if self is LogLevel.DEBUG:
-            return logging.DEBUG
-        if self is LogLevel.INFO:
-            return logging.INFO
-        if self is LogLevel.WARNING:
-            return logging.WARNING
-        if self is LogLevel.ERROR:
-            return logging.ERROR
-        if self is LogLevel.QUIET:
-            return logging.CRITICAL + 10
-        # Fallback
-        return logging.INFO
+        return _LOGGING_LEVELS[self]
+
+
+# TRACE is below DEBUG, and QUIET above every level, so nothing is shown
+_LOGGING_LEVELS = {
+    LogLevel.TRACE: 0,
+    LogLevel.DEBUG: logging.DEBUG,
+    LogLevel.INFO: logging.INFO,
+    LogLevel.WARNING: logging.WARNING,
+    LogLevel.ERROR: logging.ERROR,
+    LogLevel.QUIET: logging.CRITICAL + 10,
+}
 
 
 def get_default_log_path() -> pathlib.Path:
-    return pathlib.Path(str(os.path.join(".", "logs", "bmde", NOW + ".log")))
+    return platformdirs.user_log_path(APP_NAME, appauthor=False) / f"{NOW.strftime(LOG_FILE_DATE_FORMAT)}.log"

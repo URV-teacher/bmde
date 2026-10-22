@@ -48,11 +48,14 @@ $(VENV_BIN)/bmde: $(VENV_BIN)/python pyproject.toml
 	@$(PIP) install -e .
 	@$(GIT) submodule update --init --recursive
 
-# Install dev dependencies. PKG-INFO is used as the target because pip updates it when dependencies change,
-# avoiding a rebuild loop when tool binaries (e.g. ruff) don't get their timestamp bumped by pip.
-src/bmde.egg-info/PKG-INFO: $(VENV_BIN)/python pyproject.toml
-	@$(PIP) install -e ".[dev]"
-	@$(PRE_COMMIT) install
+# Install the package in editable mode plus one dependency group of pyproject.toml (test, lint, docs or dev, which has
+# them all). A stamp file is the target because the editable install of hatchling leaves no file in the tree whose
+# timestamp pip bumps, and tool binaries (e.g. ruff) keep theirs when they are already up to date.
+# --group needs pip 25.1, which may be newer than the pip of an existing venv.
+$(VENV_DIR)/.group-%: $(VENV_BIN)/python pyproject.toml
+	@$(PIP) install --quiet --upgrade "pip>=25.1"
+	@$(PIP) install -e . --group $*
+	@touch "$@"
 
 $(VENV_BIN)/pyproject-build: $(VENV_BIN)/python
 	@$(PIP) install build
@@ -63,32 +66,26 @@ venv: $(VENV_BIN)/python  ## Create virtualenv
 
 install: $(VENV_BIN)/bmde  ## Install the package in editable mode
 
-dev: src/bmde.egg-info/PKG-INFO  ## Install the package, dev dependencies and pre-commit hooks
+install-test: $(VENV_DIR)/.group-test  ## Install the package and the test dependencies (what CI tests with)
+
+install-lint: $(VENV_DIR)/.group-lint  ## Install the package and the lint dependencies (what CI lints with)
+
+install-docs: $(VENV_DIR)/.group-docs  ## Install the package and the documentation dependencies
+
+dev: $(VENV_DIR)/.group-dev  ## Install the package, every dependency group and the pre-commit hooks
+	@$(PRE_COMMIT) install
 
 # ---- quality ----------------------------------------------------------------
 #
-# Every check lives here: .pre-commit-config.yaml and CI just call these targets, so there is a single place that
-# defines what "linted", "formatted" and "tested" mean for this repo, using the tool versions of pyproject.toml.
-
-# -c core.quotepath=false so filenames with non-ASCII characters aren't octal-escaped in the output.
-GIT_NQ      := git -c core.quotepath=false
-TEXT_FILES  := $(shell $(GIT_NQ) grep -Il '' -- . 2>/dev/null)
-YAML_FILES  := $(shell $(GIT_NQ) ls-files '*.yml' '*.yaml')
-TOML_FILES  := $(shell $(GIT_NQ) ls-files '*.toml')
-SH_FILES    := $(shell $(GIT_NQ) ls-files '*.sh' '*.bash')
-ALL_FILES   := $(shell $(GIT_NQ) ls-files)
+# The checks are defined in .pre-commit-config.yaml: `git commit` runs them on the staged files, and `make lint` (also
+# run by CI) on every tracked file. lint-pre-commit runs its hooks; the other lint-* targets are the ones its local
+# hooks call, because they need the venv.
 
 # ---- formatting (mutating: fixes what it can) ----
 
-fmt-ruff:  ## Auto-fix lint issues with ruff
-	@$(VENV_BIN)/ruff check --fix .
-
-fmt-ruff-format:  ## Auto-format with ruff format
-	@$(VENV_BIN)/ruff format .
-
-fmt-hygiene:  ## Fix trailing whitespace and missing final newlines on every tracked text file
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/trailing-whitespace-fixer $(TEXT_FILES) || true
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/end-of-file-fixer $(TEXT_FILES) || true
+# The hooks of .pre-commit-config.yaml that fix files. pre-commit fails when a hook changes a file, so their result is
+# ignored here: `make lint` reports what could not be fixed
+FIX_HOOKS := ruff-check ruff-format trailing-whitespace end-of-file-fixer
 
 EXAMPLE_CONFIG := examples/bmde.toml
 
@@ -106,38 +103,23 @@ fmt-ai-ignore:  ## Regenerate the ignore files of the other AI tools from .aiexc
 		{ echo '$(AI_IGNORE_HEADER)'; cat "$(AI_IGNORE_SOURCE)"; } > "$$f"
 	done
 
-fmt: fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene  ## Auto-format and fix everything that can be fixed
+fmt: fmt-example-config fmt-ai-ignore  ## Auto-format and fix everything that can be fixed, in every tracked file
+	@for hook in $(FIX_HOOKS); do
+		$(PRE_COMMIT) run --all-files "$$hook" || true
+	done
 
-# ---- linting (non-mutating: fails on violation, used by CI and pre-commit) ----
+# ---- linting (fails on violation) ----
 
-lint-ruff:  ## Check lint rules with ruff
-	@$(VENV_BIN)/ruff check .
+lint: lint-pre-commit lint-mypy lint-example-config lint-ai-ignore  ## Run every check on every tracked file (what CI runs)
+
+# The local hooks of .pre-commit-config.yaml that have a target of their own, which `make lint` already runs
+OWN_TARGET_HOOKS := mypy,example-config,ai-ignore
+
+lint-pre-commit:  ## Run the hooks of .pre-commit-config.yaml (ruff, shellcheck, detect-secrets, ...) on every file
+	@SKIP=$(OWN_TARGET_HOOKS) $(PRE_COMMIT) run --all-files --show-diff-on-failure
 
 lint-mypy:  ## Check types with mypy --strict
 	@$(VENV_BIN)/mypy src
-
-lint-yaml:  ## Check YAML files parse
-	@test -z "$(YAML_FILES)" || $(VENV_BIN)/check-yaml $(YAML_FILES)
-
-lint-toml:  ## Check TOML files parse
-	@test -z "$(TOML_FILES)" || $(VENV_BIN)/check-toml $(TOML_FILES)
-
-lint-large-files:  ## Check no accidentally large file was added
-	@$(VENV_BIN)/check-added-large-files --enforce-all $(ALL_FILES)
-
-lint-merge-conflict:  ## Check for leftover merge conflict markers
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/check-merge-conflict --assume-in-merge $(TEXT_FILES)
-
-lint-case-conflict:  ## Check for filenames that only differ by case
-	@$(VENV_BIN)/check-case-conflict
-
-lint-shellcheck:  ## Lint shell scripts with shellcheck
-	@test -z "$(SH_FILES)" || $(VENV_BIN)/shellcheck --external-sources $(SH_FILES)
-
-# Mark a false positive with a `pragma: allowlist secret` comment on its line rather than with a baseline file, which
-# detect-secrets would rewrite every time the line numbers of a known finding shift.
-lint-secrets:  ## Check no credential or private key is committed
-	@test -z "$(TEXT_FILES)" || $(VENV_BIN)/detect-secrets-hook $(TEXT_FILES)
 
 lint-example-config:  ## Check examples/bmde.toml is up to date with the settings schema (fix with make fmt)
 	@$(PYTHON) -m $(PKG_NAME) --show-default-config | diff -u "$(EXAMPLE_CONFIG)" - \
@@ -150,8 +132,6 @@ lint-ai-ignore:  ## Check the AI ignore files are up to date with .aiexclude (fi
 			|| { echo "$$f is outdated, run 'make fmt'"; status=1; }
 	done
 	exit $$status
-
-lint: lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict lint-shellcheck lint-secrets  ## Run every non-mutating check
 
 test:  ## Run tests with coverage (fails under the fail_under of pyproject.toml)
 	@PYTHONPATH=src PYTHONUNBUFFERED=1 $(VENV_BIN)/pytest -s --cov --cov-report=term --cov-report=xml
@@ -169,13 +149,13 @@ run: install  ## Run the bmde CLI (python -m bmde)
 readme:  ## Render the README guide
 	./scripts/render-guide.py
 
-docs-serve: dev  ## Serve the documentation site locally with hot reload
+docs-serve: install-docs  ## Serve the documentation site locally with hot reload
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs serve
 
-docs-build: dev  ## Build the static documentation site into site/
+docs-build: install-docs  ## Build the static documentation site into site/
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs build
 
-docs-deploy: dev  ## Deploy the documentation site to GitHub Pages
+docs-deploy: install-docs  ## Deploy the documentation site to GitHub Pages
 	@PATH="$(abspath $(VENV_BIN)):$$PATH" PYTHONPATH=src $(PYTHON) -m mkdocs gh-deploy --force
 
 # ---- maintenance ------------------------------------------------------------
@@ -186,10 +166,9 @@ clean:  ## Remove build/test artifacts
 
 # ---- meta -------------------------------------------------------------------
 
-.PHONY: venv install dev run clean help dist readme docs-serve docs-build docs-deploy \
-        fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene \
-        lint lint-ruff lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
-        lint-shellcheck lint-secrets test
+
+.PHONY: venv install install-test install-lint install-docs dev run clean help dist readme docs-serve docs-build docs-deploy \
+        fmt fmt-example-config fmt-ai-ignore lint lint-pre-commit lint-mypy lint-example-config lint-ai-ignore test
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \
