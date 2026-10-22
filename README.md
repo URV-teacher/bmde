@@ -111,12 +111,24 @@ provides the FlatHub (`flathub`) backend.
 ### Config and arguments
 A native toml schema is included to provide default values to arguments to bmde. bmde also reads configuration from various
 sources with different priority, allowing for fine-grained control over each repository. The priority is the following,
-with later mentioned sources overriding previous:
-* Environment variables.
-* `/etc/bmde/bmde.toml`
-* `~/.config/bmde/bmde.toml`
-* Closest `bmde.toml` upward in the tree
-* Explicit configuration via arguments pointing to a valid .toml file.
+with later mentioned sources overriding previous ones key by key:
+* `/etc/bmde/bmde.toml` (on Windows, `C:\ProgramData\bmde\bmde.toml`): system-wide.
+* `bmde.toml` in the configuration directory of your user: `~/.config/bmde/bmde.toml` on Linux (or
+  `$XDG_CONFIG_HOME/bmde/bmde.toml`), `~/Library/Application Support/bmde/bmde.toml` on macOS and
+  `%APPDATA%\bmde\bmde.toml` on Windows.
+* The closest `bmde.toml` upward in the tree, up to the root of the git repository. It is never looked for in your
+  home directory or above it.
+* Environment variables `BMDE_<SECTION>__<KEY>`, with two underscores between every level, e.g. `BMDE_RUN__DEBUG=true`
+  or `BMDE_RUN__EXECUTION_SETTINGS__BACKEND=docker`. Lists are given as JSON, e.g.
+  `BMDE_RUN__EXECUTION_SETTINGS__ARGUMENTS='["--foo"]'`.
+* The file given with `-c`/`--config`.
+* The arguments of the command line.
+
+Run `bmde config --show-sources` to see which of these files were found and which source supplied each value.
+
+The log of each execution is written to the log directory of your user (`~/.local/state/bmde/log` on Linux,
+`~/Library/Logs/bmde` on macOS and `%LOCALAPPDATA%\bmde\Logs` on Windows), unless `[logging] file` or `--log-file`
+says otherwise.
 
 The configuration files allows an easy usage to bmde: Provided arguments via config files can be omitted from the
 arguments of the CLI call to bmde, allowing shorter commands and skipping the need to provide things like credentials
@@ -125,11 +137,6 @@ for authentication in each call to bmde.
 Run `bmde config` (or `bmde config <command>`, e.g. `bmde config git`) to create or update a configuration file
 interactively, and `bmde --show-default-config` to print a documented template with every option and its default value
 (see [`examples/bmde.toml`](examples/bmde.toml)).
-
-Default arguments can be customized via (from less to more priority)
-system variables, global configuration file, specific configuration file of the
-repo, specific
-configuration args for the execution.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

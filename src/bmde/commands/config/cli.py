@@ -3,7 +3,7 @@ from typing import Annotated
 
 import typer
 
-from bmde.commands.config.command import config_command
+from bmde.commands.config.command import config_command, show_sources_command
 from bmde.config.schema import Settings
 
 
@@ -26,7 +26,20 @@ def config_controller(
         bool,
         typer.Option("-a", "--advanced", help="Also ask for the advanced options (entrypoint, arguments...)"),
     ] = False,
+    show_sources: Annotated[
+        bool,
+        typer.Option(
+            "--show-sources",
+            help="Instead of configuring, list the configuration files and variables that were read and which of them "
+            "supplied each value",
+        ),
+    ] = False,
 ) -> None:
     """Interactively configure bmde or one of its commands, showing the current values as defaults."""
     settings: Settings = ctx.obj["settings"]
+    if show_sources:
+        show_sources_command(
+            settings=settings, sources=ctx.obj["sources"], cli_overrides=ctx.obj["cli_overrides"], section=section
+        )
+        return
     config_command(settings=settings, section=section, file=file, advanced=advanced)

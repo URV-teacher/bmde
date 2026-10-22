@@ -134,6 +134,4 @@ class LogLevel(Enum):
 
 
 def get_default_log_path() -> pathlib.Path:
-    # The per-user log dir of the platform (~/.local/state/bmde/log on Linux) instead of the current directory, which
-    # is usually the repository of a student and would end up with a logs/ folder in its commits
     return platformdirs.user_log_path(APP_NAME, appauthor=False) / f"{NOW.strftime(LOG_FILE_DATE_FORMAT)}.log"
