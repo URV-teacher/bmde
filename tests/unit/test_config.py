@@ -159,3 +159,167 @@ def test_config_shows_current_values_and_unsets(repo: Path):
 def test_config_rejects_unknown_section(tmp_path: Path):
     result = runner.invoke(app, ["config", "nope", "-f", str(tmp_path / "bmde.toml")])
     assert result.exit_code != 0
+
+
+def test_config_asks_where_to_save(tmp_path: Path, repo: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(command.console, "width", 1000)
+    # target (wrong answer, then user), image_tag, save
+    result = runner.invoke(app, ["config", "docker"], input="nowhere\nuser\nsha-0123abc\ny\n")
+    assert result.exit_code == 0, result.output
+    assert "nowhere is not one of repo, user" in result.output
+    # The tag computed at runtime is offered as unset, not frozen into the file
+    assert "(default: <version of bmde>)" in result.output
+    user_file = tmp_path / "home" / ".config" / "bmde" / "bmde.toml"
+    assert tomllib.loads(user_file.read_text()) == {"docker": {"image_tag": "sha-0123abc"}}
+    assert not (repo / "bmde.toml").exists()
+
+
+def test_config_secrets_numbers_and_discarding(tmp_path: Path):
+    target = tmp_path / "bmde.toml"
+    # enabled, username, password, host, port (wrong, then right), cert, realm, test_dns, test_ip, save
+    answers = "\nstudent\nhunter2\n\nabc\n443\n\n\n\n\nn\n"  # pragma: allowlist secret
+    result = runner.invoke(app, ["config", "git.vpn", "-f", str(target)], input=answers)
+    assert result.exit_code == 0, result.output
+    assert "currently unset, leave empty to keep it" in result.output
+    assert "abc is not an integer" in result.output
+    assert "vpn.password: unset -> ***" in result.output
+    assert "hunter2" not in result.output
+    assert "Discarded." in result.output
+    assert not target.exists()
+
+
+def test_config_advanced_list_options(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    target = tmp_path / "bmde.toml"
+    # entrypoint, arguments, background, dry_run, interactive, backend, save
+    result = runner.invoke(app, ["config", "build", "-a", "-f", str(target)], input="\n-j 4\n\n\n\n\ny\n")
+    assert result.exit_code == 0, result.output
+    assert tomllib.loads(target.read_text()) == {"build": {"execution_settings": {"arguments": ["-j", "4"]}}}
+
+    # The current list is offered as default answer, so keeping it changes nothing
+    monkeypatch.setenv("BMDE_BUILD__EXECUTION_SETTINGS__ARGUMENTS", '["-j", "4"]')
+    result = runner.invoke(app, ["config", "build", "-a", "-f", str(tmp_path / "other.toml")], input="\n" * 6)
+    assert "[-j 4]" in result.output
+    assert "Nothing changed." in result.output
+
+
+def test_config_lets_skip_whole_commands(tmp_path: Path):
+    sections = [path for path, _, _ in iter_sections(Settings) if len(path) == 1]
+    result = runner.invoke(app, ["config", "-f", str(tmp_path / "bmde.toml")], input="n\n" * len(sections))
+    assert result.exit_code == 0, result.output
+    assert "Nothing changed." in result.output
+
+
+def test_config_refuses_to_save_an_invalid_file(tmp_path: Path):
+    target = tmp_path / "bmde.toml"
+    target.write_text('[run]\narm9_debug_port = "not a port"\n')
+    result = runner.invoke(app, ["config", "docker", "-f", str(target)], input="sha-0123abc\n")
+    assert result.exit_code == 1
+    assert "The resulting configuration is not valid" in result.output
+    assert "image_tag" not in target.read_text()
+
+
+def test_config_warns_that_comments_are_lost(tmp_path: Path):
+    target = tmp_path / "bmde.toml"
+    target.write_text('# my notes\n[docker]\nimage_tag = "1.14.0"\n')
+    result = runner.invoke(app, ["config", "docker", "-f", str(target)], input="1.15.0\ny\n")
+    assert result.exit_code == 0, result.output
+    assert "The comments of the file will be lost" in result.output
+    assert tomllib.loads(target.read_text()) == {"docker": {"image_tag": "1.15.0"}}
+
+
+def test_show_sources_of_a_section(repo: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(command.console, "width", 1000)
+    result = runner.invoke(app, ["config", "--show-sources", "patch"])
+    assert result.exit_code == 0, result.output
+    assert "patch.execution_settings.backend = unset (default)" in result.output
+    assert "run.debug" not in result.output
+
+
+def test_show_config_flags(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("BMDE_RUN__ARM9_DEBUG_PORT", "4242")
+    current = runner.invoke(app, ["--show-config"])
+    assert current.exit_code == 0
+    assert "arm9_debug_port = 4242" in current.output
+    default = runner.invoke(app, ["--show-default-config"])
+    assert default.output == get_default_config()
+
+
+def test_unset_options_are_shown_with_a_placeholder():
+    from bmde.config.show_config import render_config
+
+    settings = Settings()
+    settings.logging.hide_sensibles = None
+    assert "# hide_sensibles = <true|false>" in render_config(settings, template=True)
+
+
+def test_nested_value_helpers():
+    from bmde.config.fields import get_value, has_value, set_value, unwrap_optional
+
+    data: dict = {"git": {"vpn": {"port": 443}}, "run": 1}
+    assert get_value(data, ("git", "vpn", "port")) == 443
+    assert get_value(data, ("run", "debug")) is None
+    assert not has_value(data, ("git", "ssh", "host"))
+    # Removing the last option of a table removes the empty tables too, and missing paths are ignored
+    set_value(data, ("run", "debug", "port"), None)
+    set_value(data, ("git", "vpn", "port"), None)
+    assert data == {"run": 1}
+
+    annotation, nullable = unwrap_optional(int | str | None)
+    assert nullable
+    assert set(annotation.__args__) == {int, str}
+
+
+def test_system_config_outside_posix(monkeypatch: pytest.MonkeyPatch):
+    import types
+
+    monkeypatch.undo()  # the autouse fixture replaces system_config_file
+    monkeypatch.setattr(loader, "os", types.SimpleNamespace(name="nt", environ={}))
+    path = loader.system_config_file()
+    assert path.name == "bmde.toml"
+    assert path.parent.name == "bmde"
+    assert not str(path).startswith("/etc/bmde")
+
+
+def test_config_asks_again_for_an_option_that_cannot_be_unset(monkeypatch: pytest.MonkeyPatch):
+    from pydantic.fields import FieldInfo
+
+    from bmde.config.fields import ConfigField
+
+    answers = iter(["", "unset", "value"])
+    monkeypatch.setattr(command.typer, "prompt", lambda *args, **kwargs: next(answers))
+    field = ConfigField(path=("section", "name"), info=FieldInfo(description="A name"), annotation=str, nullable=False)
+
+    assert command.ask_field(field, None) == "value"
+
+
+def test_config_of_everything_asks_section_by_section(tmp_path: Path):
+    sections = [path for path, _, _ in iter_sections(Settings) if len(path) == 1]
+    # Configure [logging] keeping its 3 options, skip the rest
+    answers = "y\n" + "\n" * 3 + "n\n" * (len(sections) - 1)
+    result = runner.invoke(app, ["config", "-f", str(tmp_path / "bmde.toml")], input=answers)
+    assert result.exit_code == 0, result.output
+    assert "[logging]" in result.output
+    assert "Nothing changed." in result.output
+
+
+def test_render_config_without_documentation(monkeypatch: pytest.MonkeyPatch):
+    from pydantic import BaseModel
+
+    from bmde.config import show_config
+
+    class Undocumented(BaseModel):
+        value: int = 1
+
+    monkeypatch.setattr(show_config, "iter_sections", lambda model: iter_sections(Undocumented, ("section",)))
+    # No comment line for the missing docstring nor for the missing description
+    assert show_config.render_config(Settings(), template=False) == "[section]\n# value = <int>\n"
+
+
+def test_user_config_falls_back_to_the_legacy_location(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "xdg"))
+    legacy = tmp_path / "home" / ".config" / "bmde" / "bmde.toml"
+    write_port(legacy, 7)
+    assert loader.user_config_file() == legacy
+    assert "where previous versions kept it" in caplog.text

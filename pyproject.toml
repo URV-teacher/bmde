@@ -100,8 +100,8 @@ omit = ["*/bmde/__main__.py"]
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
-# Slightly below the measured coverage (68%), so it only catches real drops; raise it as tests are added
-fail_under = 65
+# Every line and branch is covered (by tests/unit alone, without Docker): new code needs its tests
+fail_under = 100
 exclude_also = [
     "if __name__ == .__main__.:",
     "raise NotImplementedError",

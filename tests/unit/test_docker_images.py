@@ -33,7 +33,7 @@ def test_images_follow_the_installed_release(monkeypatch: pytest.MonkeyPatch, in
 
 def test_image_tag_setting_pins_every_image(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(docker, "version", lambda _: "1.15.0")
-    monkeypatch.setenv("BMDE_DOCKER_IMAGE_TAG", "sha-0123abc")
+    monkeypatch.setenv("BMDE_DOCKER__IMAGE_TAG", "sha-0123abc")
 
     configure_docker_from_settings(load_settings())
 
