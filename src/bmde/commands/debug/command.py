@@ -1,6 +1,7 @@
-"""
+"""Translates the options of the debug command into its spec.
+
 The responsibility of this file and the similar ones under each command, is to translate the logic of the bmde interface
-into the specification of the pure logic of the command, for example, translating shell into a corresponding entrypoint
+into the specification of the pure logic of the command, for example, translating shell into a corresponding entrypoint.
 """
 
 from __future__ import annotations
@@ -106,9 +107,7 @@ def create_debug_spec(
 
 
 def stop_emulator(spec: DebugSpec, emulator: int | Popen[bytes]) -> None:
-    """
-    Stops the emulator started by execute_debug and removes the resources created for it.
-    """
+    """Stops the emulator started by execute_debug and removes the resources created for it."""
     if isinstance(emulator, Popen) and emulator.poll() is None:
         log.info("Stopping the emulator")
         emulator.terminate()
@@ -127,8 +126,9 @@ def stop_emulator(spec: DebugSpec, emulator: int | Popen[bytes]) -> None:
 
 
 def execute_debug(spec: DebugSpec) -> int | Popen[bytes]:
-    """
-    Runs the emulator in debug mode and a debugger connected to it. The emulator is stopped when the debugger exits.
+    """Runs the emulator in debug mode and a debugger connected to it.
+
+    The emulator is stopped when the debugger exits.
     """
     log.info(f"Emulator output is written to {EMULATOR_LOG_FILE}")
     emulator = execute_run(spec.DebugSpecOpts.RunSpec)
@@ -177,7 +177,7 @@ def debug_command(
         configure_docker_from_settings(settings=full_settings)
         settings = full_settings.debug
 
-    log.debug(f"Settings for debug command:\n- {str(settings)}\n")
+    log.debug(f"Settings for debug command:\n- {settings!s}\n")
 
     spec = create_debug_spec(
         nds=nds,
@@ -193,6 +193,6 @@ def debug_command(
         settings=settings,
     )
 
-    log.debug(f"Spec for debug command:\n- {str(spec)}\n")
+    log.debug(f"Spec for debug command:\n- {spec!s}\n")
 
     return execute_debug(spec)

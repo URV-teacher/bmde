@@ -1,7 +1,7 @@
-"""
-Introspection of the settings schema. Walks the pydantic models of the settings to obtain each configurable option with
-its metadata, so the documented TOML template and the interactive ``bmde config`` command are always in sync with the
-schema.
+"""Introspection of the settings schema.
+
+Walks the pydantic models of the settings to obtain each configurable option with its metadata, so the documented TOML
+template and the interactive ``bmde config`` command are always in sync with the schema.
 """
 
 from __future__ import annotations
@@ -81,8 +81,7 @@ def is_model(annotation: Any) -> bool:
 def iter_sections(
     model: type[BaseModel], path: tuple[str, ...] = ()
 ) -> Iterator[tuple[tuple[str, ...], type[BaseModel], list[ConfigField]]]:
-    """
-    Yields every model of the settings tree in TOML order: first the leaf options of a model and then its sub-models.
+    """Yields every model of the settings tree in TOML order: first the leaf options of a model and then its sub-models.
 
     Args:
         model: Model to walk.
@@ -90,6 +89,7 @@ def iter_sections(
 
     Yields:
         The path of the model, the model and its leaf options.
+
     """
     leaves: list[ConfigField] = []
     children: list[tuple[str, type[BaseModel]]] = []

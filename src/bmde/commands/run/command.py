@@ -1,6 +1,7 @@
-"""
+"""Translates the options of the run command into its spec.
+
 The responsibility of this file and the similar ones under each command, is to translate the logic of the bmde interface
-into the specification of the pure logic of the command, for example, translating shell into a corresponding entrypoint
+into the specification of the pure logic of the command, for example, translating shell into a corresponding entrypoint.
 """
 
 from __future__ import annotations
@@ -46,11 +47,10 @@ def create_run_spec(
     controls: Path | None = None,
     settings: RunSettings | None = None,
 ) -> RunSpec:
-    """
-    Creates the RunSpec from the provided arguments.
+    """Creates the RunSpec from the provided arguments.
+
     Useful for the API to generate a spec without executing it immediately.
     """
-
     if directory is None:
         directory = Path.cwd()
 
@@ -116,8 +116,8 @@ def create_run_spec(
 def execute_run(
     spec: RunSpec,
 ) -> int | Popen[bytes]:
-    """
-    Executes the RunSpec.
+    """Executes the RunSpec.
+
     The API can call this directly with a pre-constructed spec.
     """
     handle = RunService().run(
@@ -154,10 +154,7 @@ def run_command(
     controls: Path | None = None,
     settings: RunSettings | None = None,
 ) -> int | Popen[bytes]:
-    """
-    CLI Entrypoint. Orchestrates spec creation and execution.
-    """
-
+    """CLI Entrypoint. Orchestrates spec creation and execution."""
     if settings is None:
         full_settings = load_settings()
         configure_logging_from_settings(settings=full_settings)

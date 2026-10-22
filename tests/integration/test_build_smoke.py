@@ -10,8 +10,7 @@ from bmde.core.logging import setup_logging
 
 
 def test_build_smoke(tmp_path: Path):
-    """
-    Smoke test for the build command.
+    """Smoke test for the build command.
     Clones a hello-world repo and attempts to build it.
     This is an integration test.
     """

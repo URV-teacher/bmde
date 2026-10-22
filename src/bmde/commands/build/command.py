@@ -29,9 +29,7 @@ def create_build_spec(
     entrypoint: Path | None = None,
     settings: BuildSettings | None = None,
 ) -> BuildSpec:
-    """
-    Creates the BuildSpec from the provided arguments.
-    """
+    """Creates the BuildSpec from the provided arguments."""
     if d is None:
         d = Path(os.getcwd())
 
@@ -67,9 +65,7 @@ def create_build_spec(
 
 
 def execute_build(spec: BuildSpec) -> int | Popen[bytes]:
-    """
-    Executes the BuildSpec.
-    """
+    """Executes the BuildSpec."""
     return BuildService().run(
         spec.BuildSpecOpts,
         ExecOptions(
@@ -93,9 +89,7 @@ def build_command(
     entrypoint: Path | None = None,
     settings: BuildSettings | None = None,
 ) -> int | Popen[bytes]:
-    """
-    CLI Entrypoint. Orchestrates spec creation and execution.
-    """
+    """CLI Entrypoint. Orchestrates spec creation and execution."""
     if settings is None:
         full_settings = load_settings()
         configure_logging_from_settings(settings=full_settings)

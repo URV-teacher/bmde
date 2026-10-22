@@ -6,8 +6,8 @@ INCLUDE_RE = re.compile(r'^\s*--8<--\s+"([^":]+)(?::(\d+)?:(\d+)?)?"\s*$')
 
 
 def expand_include(line: str, base_dir: Path) -> list[str]:
-    """
-    Expands a MkDocs-style include directive into file contents.
+    """Expands a MkDocs-style include directive into file contents.
+
     Supports optional :start:end line ranges.
     """
     match = INCLUDE_RE.match(line)
@@ -47,11 +47,8 @@ def render_file(src: Path, dst: Path):
 
 
 def main():
-    SRC = "docs/getting-started/host_components_installation.md"
-    DST = "docs/getting-started/host_components_installation_substituted.md"
-
-    src = Path(SRC)
-    dst = Path(DST)
+    src = Path("docs/getting-started/host_components_installation.md")
+    dst = Path("docs/getting-started/host_components_installation_substituted.md")
 
     render_file(src, dst)
     print(f"Generated {dst} from {src}")

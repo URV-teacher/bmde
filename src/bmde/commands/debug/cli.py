@@ -34,20 +34,19 @@ def debug_controller(
     dry_run: DryRunOpt = False,
 ) -> None:
     """Debugs an NDS ROM: runs it in desmume in debug mode, and a debugger (Insight by default) connected to it."""
-
     settings: Settings = ctx.obj["settings"]
 
     log.debug(
         "CLI options provided:\n"
-        f"- Arguments: {str(arguments)}\n"
-        f"- Backend: {str(backend)}\n"
-        f"- Background: {str(background)}\n"
-        f"- Debugger: {str(debugger)}\n"
-        f"- Entrypoint: {str(entrypoint)}\n"
-        f"- Docker screen: {str(docker_screen)}\n"
-        f"- NDS ROM: {str(nds)}\n"
-        f"- ELF: {str(elf)}\n"
-        f"- Port: {str(port)}\n"
+        f"- Arguments: {arguments!s}\n"
+        f"- Backend: {backend!s}\n"
+        f"- Background: {background!s}\n"
+        f"- Debugger: {debugger!s}\n"
+        f"- Entrypoint: {entrypoint!s}\n"
+        f"- Docker screen: {docker_screen!s}\n"
+        f"- NDS ROM: {nds!s}\n"
+        f"- ELF: {elf!s}\n"
+        f"- Port: {port!s}\n"
     )
 
     ret = debug_command(

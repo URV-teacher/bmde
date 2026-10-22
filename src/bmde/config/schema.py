@@ -1,6 +1,4 @@
-"""
-Defines the schema of settings of the application
-"""
+"""Defines the schema of settings of the application."""
 
 from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
 

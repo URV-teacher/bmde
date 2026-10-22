@@ -29,18 +29,14 @@ def discover_files_in_dir(search_dir: Path, suffix: str) -> tuple[Path, bool]:
 
 
 def resolve_nds(maybe_nds: Path | None, cwd: Path) -> tuple[Path, bool]:
-    """
-    Return (nds_path, assumed_flag). If maybe_nds is None, discover in cwd.
-    """
+    """Return (nds_path, assumed_flag). If maybe_nds is None, discover in cwd."""
     if maybe_nds is not None:
         return validate_file(maybe_nds), False
     return discover_files_in_dir(cwd, ".nds")
 
 
 def resolve_elf(maybe_elf: Path | None, cwd: Path) -> tuple[Path, bool]:
-    """
-    Return (elf_path, assumed_flag). If maybe_elf is None, discover in cwd.
-    """
+    """Return (elf_path, assumed_flag). If maybe_elf is None, discover in cwd."""
     if maybe_elf is not None:
         return validate_file(maybe_elf, ".elf"), False
     return discover_files_in_dir(cwd, ".elf")

@@ -1,6 +1,4 @@
-"""
-Helpers to parse strings & map log levels.
-"""
+"""Helpers to parse strings & map log levels."""
 
 from __future__ import annotations
 
@@ -16,7 +14,7 @@ log = logging.getLogger(__name__)  # Types cannot use logging module to avoid ci
 PROJECT_DIR = pathlib.Path(__file__).resolve().parent.parent.parent.parent
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 # Taken once, so every default log path of an execution points to the same file
-NOW = datetime.datetime.now()
+NOW = datetime.datetime.now().astimezone()
 # The colons of DATE_FORMAT are not valid in Windows file names
 LOG_FILE_DATE_FORMAT = "%Y-%m-%d_%H-%M-%S"
 APP_NAME = "bmde"
@@ -27,11 +25,11 @@ DOCKER_DESMUME_DEBUG_HOST = "desmume"
 
 
 class BackendOptions(Enum):
-    """
-    Common environment backends.
+    """Common environment backends.
 
     Note:
     - "bmde" is included for future/host-like flows (your Bare Metal Dev Env).
+
     """
 
     HOST = "host"
@@ -53,9 +51,7 @@ class BackendOptions(Enum):
 
 
 class DockerOutputOptions(Enum):
-    """
-    Execution environment backends. Obtained by composition with Backend class
-    """
+    """Execution environment backends. Obtained by composition with Backend class."""
 
     VNC = "vnc"
     HOST = "host"
@@ -76,17 +72,14 @@ class DockerOutputOptions(Enum):
 
 
 class DebuggerOptions(Enum):
-    """
-    Debuggers that can be used by the debug command to connect to the emulator.
-    """
+    """Debuggers that can be used by the debug command to connect to the emulator."""
 
     INSIGHT = "insight"
     GDB_MULTIARCH = "gdb-multiarch"
 
 
 class LogLevel(Enum):
-    """
-    Logical log levels for the CLI.
+    """Logical log levels for the CLI.
 
     Includes a custom TRACE (more verbose than DEBUG) and QUIET
     (suppresses all output beyond CRITICAL).

@@ -3,9 +3,9 @@ from pathlib import Path
 
 
 def find_git_root(start: Path) -> Path | None:
-    """
-    Returns the root of the git repository that contains start (the directory with the .git folder, or the .git file of
-    a submodule or worktree), or None if start is not inside a git repository.
+    """Returns the root of the git repository that contains start, or None if start is not inside a git repository.
+
+    The root is the directory with the .git folder, or the .git file of a submodule or worktree.
     """
     cur = start.resolve()
     for directory in (cur, *cur.parents):
@@ -15,9 +15,7 @@ def find_git_root(start: Path) -> Path | None:
 
 
 def find_upwards(name: str, start: Path) -> Path | None:
-    """
-    Finds a file with the given name in the start path and in its predecessors and returns its path. If not, returns
-    None.
+    """Finds a file with the given name in the start path and in its predecessors and returns its path, or None.
 
     The search stops at the root of the git repository that contains start, and never looks in the home directory of
     the user or above it, so a stray ~/bmde.toml is not taken as the file of every project below it.
@@ -28,6 +26,7 @@ def find_upwards(name: str, start: Path) -> Path | None:
 
     Returns:
         The path file or None if no such file exists.
+
     """
     home = Path.home().resolve()
     cur = start.resolve()

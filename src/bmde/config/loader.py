@@ -1,6 +1,6 @@
-"""
-Loads the configuration of BMDE. The sources are, from lowest to highest priority, each one merged key by key over the
-previous ones:
+"""Loads the configuration of BMDE.
+
+The sources are, from lowest to highest priority, each one merged key by key over the previous ones:
 
 1. System: /etc/bmde/bmde.toml (on Windows, the bmde folder of ProgramData).
 2. User: bmde.toml in the configuration directory of the user (~/.config/bmde on Linux, honouring $XDG_CONFIG_HOME).
@@ -67,8 +67,7 @@ def user_config_file() -> Path:
 
 
 def read_toml(path: Path) -> dict[str, Any]:
-    """
-    Reads .toml file with its paths and returns a dictionary with its values.
+    """Reads .toml file with its paths and returns a dictionary with its values.
 
     Args:
         path: Path of the TOML file.
@@ -87,17 +86,18 @@ def read_toml(path: Path) -> dict[str, Any]:
 
 
 def env_config() -> dict[str, Any]:
-    """
-    Reads the configuration from the environment variables BMDE_<SECTION>__<KEY> (e.g. BMDE_RUN__ENVIRONMENT=docker ->
-    env["run"]["environment"] = "docker"), with __ between every level of nesting. Lists are given as JSON (e.g.
-    BMDE_RUN__EXECUTION_SETTINGS__ARGUMENTS='["--foo"]').
+    """Reads the configuration from the environment variables BMDE_<SECTION>__<KEY>.
+
+    For example, BMDE_RUN__ENVIRONMENT=docker -> env["run"]["environment"] = "docker", with __ between every level of
+    nesting. Lists are given as JSON (e.g. BMDE_RUN__EXECUTION_SETTINGS__ARGUMENTS='["--foo"]').
 
     Returns:
         Nested dictionary with the values of the variables, still as strings except for the JSON ones.
+
     """
     warn_legacy_env_vars(os.environ)
     result = EnvSettingsSource(Settings)()
-    log.debug(f"Parsed environment variables: {str(result)}")
+    log.debug(f"Parsed environment variables: {result!s}")
     return result
 
 
@@ -117,9 +117,9 @@ def warn_legacy_env_vars(names: Iterable[str]) -> None:
 
 
 def merge(a: dict[Any, Any], b: dict[Any, Any]) -> dict[Any, Any]:
-    """
-    Merges two dictionaries by setting the values of the first dictionary a with the values of the second dictionary b
-    for all the coinciding keys.
+    """Merges the second dictionary b into the first dictionary a.
+
+    Sets the values of the first dictionary a with the values of the second dictionary b for all the coinciding keys.
     If the values for the same key in the two dictionaries are also dictionaries, perform recursive call to merge those
     in the same way.
 
@@ -129,6 +129,7 @@ def merge(a: dict[Any, Any], b: dict[Any, Any]) -> dict[Any, Any]:
 
     Returns:
         The merged dictionary.
+
     """
     out = dict(a)
     for k, v in b.items():
@@ -145,14 +146,14 @@ def file_source(name: str, path: Path) -> ConfigSource:
 
 
 def config_sources(explicit_config: Path | None = None) -> list[ConfigSource]:
-    """
-    Reads every source of configuration (see the docstring of the module).
+    """Reads every source of configuration (see the docstring of the module).
 
     Args:
         explicit_config: Path to a run-specific BMDE's TOML configuration file.
 
     Returns:
         The sources from lowest to highest priority, including the ones that were not found.
+
     """
     sources = [file_source("system", system_config_file()), file_source("user", user_config_file())]
 
@@ -182,9 +183,9 @@ def merge_sources(sources: Iterable[ConfigSource]) -> dict[str, Any]:
 
 
 def load_settings(explicit_config: Path | None = None) -> Settings:
-    """
-    Loads the settings from every source (see the docstring of the module). The command line flags are NOT applied by
-    this function: the commands apply them over the result.
+    """Loads the settings from every source (see the docstring of the module).
+
+    The command line flags are NOT applied by this function: the commands apply them over the result.
 
     Args:
         explicit_config: Path to a run-specific BMDE's TOML configuration file.

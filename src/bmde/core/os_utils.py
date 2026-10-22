@@ -4,14 +4,14 @@ import subprocess
 
 
 def is_command_available(cmd: str) -> bool:
-    """
-    Return True if the given command is available in the system PATH.
+    """Return True if the given command is available in the system PATH.
 
     Args:
         cmd (str): The command to check, e.g. 'docker', 'make', 'git'.
 
     Returns:
         bool: True if the command is found, False otherwise.
+
     """
     return shutil.which(cmd) is not None
 

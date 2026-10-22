@@ -1,6 +1,7 @@
-"""
-Interactive configuration of BMDE. Asks for the value of each option of the settings, showing the current value as
-default, and writes the answers to a bmde.toml file.
+"""Interactive configuration of BMDE.
+
+Asks for the value of each option of the settings, showing the current value as default, and writes the answers to a
+bmde.toml file.
 """
 
 from __future__ import annotations
@@ -80,8 +81,7 @@ def _describe(field: ConfigField, value: Any) -> str:
 
 
 def ask_field(field: ConfigField, current: Any) -> Any:
-    """
-    Asks for the value of an option.
+    """Asks for the value of an option.
 
     Args:
         field: Option to ask for.
@@ -89,6 +89,7 @@ def ask_field(field: ConfigField, current: Any) -> Any:
 
     Returns:
         The answer in its JSON form, or None if the option is unset.
+
     """
     label = f"  {field.key}"
     if field.annotation is bool:
@@ -127,15 +128,16 @@ def ask_field(field: ConfigField, current: Any) -> Any:
 
 
 def config_command(settings: Settings, section: str | None, file: Path | None, advanced: bool) -> None:
-    """
-    Asks interactively for the options of the configuration and writes the answers to a bmde.toml file. Only the
-    options that change are written, so the rest keep being inherited from the other configuration sources.
+    """Asks interactively for the options of the configuration and writes the answers to a bmde.toml file.
+
+    Only the options that change are written, so the rest keep being inherited from the other configuration sources.
 
     Args:
         settings: Current settings, which values are shown as default answers.
         section: Only ask for the options of this section (e.g. run or git.vpn). If None, ask for every section.
         file: File where the configuration is written. If None, the user chooses between the repo and user config.
         advanced: Also ask for the advanced options.
+
     """
     prefix = section_prefix(section)
 
@@ -185,7 +187,11 @@ def config_command(settings: Settings, section: str | None, file: Path | None, a
     if not changes:
         console.print("\nNothing changed.")
         return
+    _save_changes(target, stored, changes)
 
+
+def _save_changes(target: Path, stored: dict[str, Any], changes: list[tuple[ConfigField, Any, Any]]) -> None:
+    """Validates the configuration, shows the changes and writes them to target if the user confirms."""
     try:
         Settings.model_validate(stored)
     except ValidationError as exc:
@@ -227,15 +233,16 @@ def show_sources_command(
     cli_overrides: Collection[tuple[str, ...]],
     section: str | None,
 ) -> None:
-    """
-    Prints the sources of configuration, from lowest to highest priority, and the value of each option with the source
-    that supplied it.
+    """Prints the sources of configuration and the value of each option with the source that supplied it.
+
+    The sources are listed from lowest to highest priority.
 
     Args:
         settings: Current settings.
         sources: Sources the settings were loaded from, from lowest to highest priority.
         cli_overrides: Options set by command line flags.
         section: Only show the options of this section (e.g. run or git.vpn). If None, show every option.
+
     """
     prefix = section_prefix(section)
     console.print("Configuration sources, from lowest to highest priority:")

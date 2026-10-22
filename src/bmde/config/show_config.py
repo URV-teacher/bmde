@@ -36,9 +36,10 @@ def format_value(key: str, value: Any) -> str:
 
 
 def render_config(settings: Settings, template: bool) -> str:
-    """
-    Renders the settings as a documented TOML file. Each option is preceded by its description and allowed values, and
-    unset options are commented out with a placeholder.
+    """Renders the settings as a documented TOML file.
+
+    Each option is preceded by its description and allowed values, and unset options are commented out with a
+    placeholder.
 
     Args:
         settings: Settings to render.
@@ -47,6 +48,7 @@ def render_config(settings: Settings, template: bool) -> str:
 
     Returns:
         The TOML text.
+
     """
     data = settings.model_dump(mode="json", by_alias=True)
     blocks: list[str] = []

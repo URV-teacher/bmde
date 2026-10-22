@@ -1,5 +1,4 @@
-"""
-The commands, run through the CLI as a user would: each test checks the command that bmde executes (docker run, make,
+"""The commands, run through the CLI as a user would: each test checks the command that bmde executes (docker run, make,
 desmume...), with subprocess replaced by a recorder so nothing is executed.
 """
 
@@ -519,7 +518,7 @@ def test_debug_stops_the_emulator_if_the_debugger_fails(machine: Machine) -> Non
     result = bmde("debug", "-b", "host")
 
     assert isinstance(result.exception, RuntimeError)
-    (emulator,) = machine.commands
+    (_emulator,) = machine.commands
     assert ["docker", "network", "rm", "bmde-debug"] in machine.docker_calls
 
 

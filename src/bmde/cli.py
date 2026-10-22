@@ -1,6 +1,6 @@
-"""
-The responsibility of this file is to implement the functions that will be called when calling each subcommand in the
-CLI. Each function is responsible for attending a single subcommand with their arguments specified through the function
+"""Functions called for each subcommand of the CLI.
+
+Each function is responsible for attending a single subcommand with their arguments specified through the function
 typehint arguments using Typer. Each function will build a Settings object with the CLI overrides, arguments and default
 settings, which will be passed to the function and run a command.
 Each function will also be responsible for aborting execution with CLI arguments that are impossible. This only applies

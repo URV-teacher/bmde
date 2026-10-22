@@ -11,17 +11,17 @@ SpecType = TypeVar("SpecType", bound=BaseSpec)  # will be GitSpec, BuildSpec, et
 
 
 class Backend(ABC, Generic[SpecType]):
-    """
-    Generic interface for backends. Each runner backend must implement a function to use it and to determine if it
-    is available.
+    """Generic interface for backends.
+
+    Each runner backend must implement a function to use it and to determine if it is available.
     """
 
     @abstractmethod
     def is_available(self) -> bool: ...
 
     def check(self) -> bool:
-        """
-        Performs detailed checks to verify if the backend is correctly configured.
+        """Performs detailed checks to verify if the backend is correctly configured.
+
         Returns True if all checks pass, False otherwise.
         Default implementation returns True.
         """

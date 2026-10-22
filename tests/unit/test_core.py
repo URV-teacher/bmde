@@ -78,7 +78,7 @@ def test_validate_file(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         file_utils.validate_file(tmp_path / "missing.nds")
     (tmp_path / "game.elf").touch()
-    with pytest.raises(ValueError, match="Expected a .nds file"):
+    with pytest.raises(ValueError, match=r"Expected a \.nds file"):
         file_utils.validate_file(tmp_path / "game.elf")
     (tmp_path / "game.NDS").touch()
     assert file_utils.validate_file(tmp_path / "game.NDS") == tmp_path / "game.NDS"
@@ -96,13 +96,13 @@ def test_resolve_nds_discovers_the_first_rom(tmp_path: Path, caplog: pytest.LogC
 
 
 def test_resolve_elf(tmp_path: Path) -> None:
-    with pytest.raises(FileNotFoundError, match="No .elf file"):
+    with pytest.raises(FileNotFoundError, match=r"No \.elf file"):
         file_utils.resolve_elf(None, tmp_path)
     (tmp_path / "game.elf").touch()
     (tmp_path / "game.nds").touch()
     assert file_utils.resolve_elf(None, tmp_path) == (tmp_path / "game.elf", True)
     assert file_utils.resolve_elf(tmp_path / "game.elf", tmp_path) == (tmp_path / "game.elf", False)
-    with pytest.raises(ValueError, match="Expected a .elf file"):
+    with pytest.raises(ValueError, match=r"Expected a \.elf file"):
         file_utils.resolve_elf(tmp_path / "game.nds", tmp_path)
 
 

@@ -14,21 +14,21 @@ from .types import BackendOptions
 log = logging.get_logger(__name__)
 
 SpecType = TypeVar("SpecType", bound=BaseSpec)  # will be GitSpec, BuildSpec, etc.
-BackendType = TypeVar("BackendType", bound=Backend[Any], covariant=True)  # will be BuildBackend, RunBackend, etc.
+BackendType_co = TypeVar("BackendType_co", bound=Backend[Any], covariant=True)  # will be BuildBackend, RunBackend, etc.
 
 
-class Service(Generic[SpecType, BackendType], ABC):
+class Service(Generic[SpecType, BackendType_co], ABC):
     def __init__(
         self,
         order: list[BackendOptions | BackendOptions],
-        mapping: dict[BackendOptions | BackendOptions, BackendType],
+        mapping: dict[BackendOptions | BackendOptions, BackendType_co],
     ) -> None:
         # We should use Any for a good generic class, but I prefer to break inheritance and restrict certain types
         # because I can not use a parent, since Enums are final (RunBackendOptions and BackendOptions
         self.order = order
         self.mapping = mapping
 
-    def choose_backend(self, env: BackendOptions | BackendOptions | None) -> list[BackendType]:
+    def choose_backend(self, env: BackendOptions | BackendOptions | None) -> list[BackendType_co]:
         order = self.order
         if env:
             order = [env]  # force

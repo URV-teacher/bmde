@@ -35,10 +35,7 @@ def cli_global_callback(
     show_default_config: ShowDefaultConfigOpt = False,
     version: VersionOpt = False,
 ) -> None:
-    """
-    Global option callback. Executed if no command is provided.
-    """
-
+    """Global option callback. Executed if no command is provided."""
     cli_log_level, more_than_one_flag = process_log_flags(
         very_verbose=very_verbose, verbose=verbose, quiet=quiet, very_quiet=very_quiet
     )

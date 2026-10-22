@@ -26,18 +26,18 @@ def build_controller(
     entrypoint: EntrypointOpt = None,
     dry_run: DryRunOpt = False,
 ) -> None:
-    """devkitARM make wrapper. Builds NDS ROM from source code."""
+    """DevkitARM make wrapper. Builds NDS ROM from source code."""
     settings: Settings = ctx.obj["settings"]
 
     log.debug(
         "CLI options provided:\n"
-        f"- Arguments: {str(arguments)}\n"
-        f"- Directory: {str(directory)}\n"
-        f"- Backend: {str(backend)}\n"
-        f"- Background: {str(background)}\n"
-        f"- Interactive: {str(interactive)}\n"
-        f"- Entrypoint: {str(entrypoint)}\n"
-        f"- Dry run: {str(dry_run)}\n"
+        f"- Arguments: {arguments!s}\n"
+        f"- Directory: {directory!s}\n"
+        f"- Backend: {backend!s}\n"
+        f"- Background: {background!s}\n"
+        f"- Interactive: {interactive!s}\n"
+        f"- Entrypoint: {entrypoint!s}\n"
+        f"- Dry run: {dry_run!s}\n"
     )
 
     ret = build_command(

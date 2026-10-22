@@ -24,14 +24,16 @@ DLDI_DRIVER_SHA256 = "9ad482e6520f631644a808ef53d5a35f55223ebe3d6d2754c94329ba04
 
 
 def dldi_driver(dlditool: str, download: bool = True) -> str:
-    """
-    Driver to patch the ROMs with: its name, if dlditool has it in its dldi/ directory (where it looks for the drivers
-    given by name, and where the BMDE installs it), or else the copy in the cache of bmde, downloaded the first time.
-    The cache is outside of the repositories, so the driver can never be committed by mistake.
+    """Driver to patch the ROMs with.
+
+    Its name, if dlditool has it in its dldi/ directory (where it looks for the drivers given by name, and where the
+    BMDE installs it), or else the copy in the cache of bmde, downloaded the first time. The cache is outside of the
+    repositories, so the driver can never be committed by mistake.
 
     Args:
         dlditool: Path of the dlditool executable.
         download: Download the driver if it is not in the cache (not in a dry run).
+
     """
     if (Path(dlditool).resolve().parent / "dldi" / DLDI_DRIVER).is_file():
         return DLDI_DRIVER
