@@ -119,6 +119,9 @@ fmt: fmt-example-config fmt-ai-ignore  ## Auto-format and fix everything that ca
 lint:  ## Run every check of .pre-commit-config.yaml on every tracked file (what CI runs)
 	@$(PRE_COMMIT) run --all-files --show-diff-on-failure
 
+lint-ruff-format:  ## Check the code is formatted with ruff format (fix with make fmt)
+	@$(VENV_BIN)/ruff format --check .
+
 lint-mypy:  ## Check types with mypy --strict
 	@$(VENV_BIN)/mypy src
 
@@ -167,8 +170,10 @@ clean:  ## Remove build/test artifacts
 
 # ---- meta -------------------------------------------------------------------
 
-.PHONY: venv install install-test install-lint install-docs dev run clean help dist readme docs-serve docs-build docs-deploy \
-        fmt fmt-example-config fmt-ai-ignore lint lint-mypy lint-example-config lint-ai-ignore test
+.PHONY: venv install dev run clean help dist readme docs-serve docs-build docs-deploy \
+        fmt fmt-ruff fmt-ruff-format fmt-example-config fmt-ai-ignore fmt-hygiene \
+        lint lint-ruff lint-ruff-format lint-mypy lint-example-config lint-ai-ignore lint-yaml lint-toml lint-large-files lint-merge-conflict lint-case-conflict \
+        lint-shellcheck lint-secrets test
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \
