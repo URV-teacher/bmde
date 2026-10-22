@@ -66,7 +66,7 @@ def run_controller(
     settings: Settings = ctx.obj["settings"]
 
     log.debug(f"Loaded settings:\n{str(settings.run)}\n")
-    run_command(
+    ret = run_command(
         nds_rom=nds_rom,
         directory=directory,
         arguments=arguments,
@@ -84,3 +84,6 @@ def run_controller(
         controls=controls,
         settings=settings.run,
     )
+
+    if isinstance(ret, int):
+        raise typer.Exit(ret)

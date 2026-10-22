@@ -117,20 +117,18 @@ class LogLevel(Enum):
         return LogLevel.INFO
 
     def to_logging_level(self) -> int:
-        if self is LogLevel.TRACE:
-            return 0
-        if self is LogLevel.DEBUG:
-            return logging.DEBUG
-        if self is LogLevel.INFO:
-            return logging.INFO
-        if self is LogLevel.WARNING:
-            return logging.WARNING
-        if self is LogLevel.ERROR:
-            return logging.ERROR
-        if self is LogLevel.QUIET:
-            return logging.CRITICAL + 10
-        # Fallback
-        return logging.INFO
+        return _LOGGING_LEVELS[self]
+
+
+# TRACE is below DEBUG, and QUIET above every level, so nothing is shown
+_LOGGING_LEVELS = {
+    LogLevel.TRACE: 0,
+    LogLevel.DEBUG: logging.DEBUG,
+    LogLevel.INFO: logging.INFO,
+    LogLevel.WARNING: logging.WARNING,
+    LogLevel.ERROR: logging.ERROR,
+    LogLevel.QUIET: logging.CRITICAL + 10,
+}
 
 
 def get_default_log_path() -> pathlib.Path:

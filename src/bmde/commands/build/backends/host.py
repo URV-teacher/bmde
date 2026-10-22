@@ -1,3 +1,4 @@
+import dataclasses
 import os
 import shutil
 import subprocess
@@ -50,7 +51,8 @@ class HostRunner(BuildBackend):
         else:
             make_path = shutil.which("make")
             entry = "make" if make_path is None else make_path
-        args = [entry, str(spec.d)]
+        args = [entry]
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)
-        return run_cmd(args, exec_opts)
+        # make builds the Makefile of its working directory: a directory given as argument would be taken as a target
+        return run_cmd(args, dataclasses.replace(exec_opts, cwd=str(spec.d)))

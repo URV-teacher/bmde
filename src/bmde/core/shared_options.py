@@ -61,8 +61,9 @@ DryRunOpt = Annotated[
 
 InteractiveOpt = Annotated[
     bool,
+    # Without --no-interactive the flag could not be turned off, which scripts and CI (without a TTY) need
     typer.Option(
-        "--interactive",
+        "--interactive/--no-interactive",
         help="Run in interactive mode (allocates TTY)",
     ),
 ]
@@ -267,7 +268,8 @@ SshHostOpt = Annotated[str | None, typer.Option("--ssh-server", help="Hostname o
 
 GitNameOpt = Annotated[
     str | None,
-    typer.Option("--git-password", help="User name for git commit signature"),
+    # --git-password is the name previous versions gave to this option by mistake
+    typer.Option("--git-name", "--git-password", help="User name for git commit signature"),
 ]
 
 GitEmailOpt = Annotated[

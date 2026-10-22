@@ -32,26 +32,16 @@ class SecretsFilter(logging.Filter):
         if not self.secrets:
             return True
 
-        if isinstance(record.msg, str):
-            for secret in self.secrets:
-                if secret and secret in record.msg:
-                    record.msg = record.msg.replace(secret, "*****")
-
-        """
-        if record.args:
-            if isinstance(record.args, tuple):
-                new_args = []
-                modified = False
-                for arg in record.args:
-                    temp_arg = arg
-                    for secret in self.secrets:
-                        if secret and secret in temp_arg:
-                            temp_arg = temp_arg.replace(secret, "*****")
-                            modified = True
-                    new_args.append(temp_arg)
-                if modified:
-                    record.args = tuple(new_args)
-        """
+        # The secrets can be in the arguments of the message too (e.g. the command of run_cmd, logged with "%s"), so
+        # the message is masked once formatted
+        message = record.getMessage()
+        masked = message
+        for secret in self.secrets:
+            if secret:
+                masked = masked.replace(secret, "*****")
+        if masked != message:
+            record.msg = masked
+            record.args = None
         return True
 
 
@@ -148,7 +138,8 @@ def configure_logging_from_settings(settings: Settings) -> None:
             settings.git.ssh.host,
             settings.git.ssh.username,
             settings.git.vpn.host,
-            str(settings.git.vpn.port),
+            # An unset port would hide every "None" of the logs
+            str(settings.git.vpn.port) if settings.git.vpn.port is not None else None,
             settings.git.vpn.username,
             settings.git.vpn.cert,
             settings.git.vpn.realm,

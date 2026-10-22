@@ -13,5 +13,5 @@ class FlatpakRunner(RunBackend):
 
     def run(self, spec: RunSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
         # Adjust to your flatpak package and args
-        args = ["flatpak", "run", "org.desmume.DesmuME", str(spec.nds_rom)]
+        args = ["flatpak", "run", "org.desmume.DeSmuME", str(spec.nds_rom)]
         return run_cmd(args, exec_opts)

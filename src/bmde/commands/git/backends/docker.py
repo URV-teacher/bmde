@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -87,6 +88,10 @@ def _ensure_vpn_healthy(spec: GitSpecOpts, exec_opts: ExecOptions, timeout_s: in
     If absent or not healthy, start with `docker compose up -d forti-vpn` and wait.
     """
     container_name = "forti-vpn"
+    if exec_opts.dry_run:
+        # Only show the command that starts the VPN: there is no container to inspect, remove or wait for
+        _run_vpn(spec, exec_opts, container_name)
+        return
     status = docker_inspect_health(container_name)
 
     log.debug("VPN container status: " + str(status))
@@ -121,7 +126,7 @@ def _ensure_vpn_healthy(spec: GitSpecOpts, exec_opts: ExecOptions, timeout_s: in
                     f"'{container_name}' was starting and now it is not healthy, meaning the container could not "
                     f"start. Your configuration may be wrong. Aborting..."
                 )
-                exit(1)
+                sys.exit(1)
             previous_state = status
         time.sleep(10)
 

@@ -75,7 +75,7 @@ version: `X.Y.Z`, `X.Y` and `X` (e.g. `aleixmt/desmume:1.15.0`, `:1.15` and `:1`
 
 The CLI of a release runs the images tagged with its version (bmde 1.15.0 runs `aleixmt/desmume:1.15.0`), so it keeps
 working with the environment it was tested with; a development version of the CLI runs `latest`. To pin another
-environment, set the tag in `bmde.toml` (or `BMDE_DOCKER_IMAGE_TAG`), e.g. a known-good build:
+environment, set the tag in `bmde.toml` (or `BMDE_DOCKER__IMAGE_TAG`), e.g. a known-good build:
 
 ```toml
 [docker]

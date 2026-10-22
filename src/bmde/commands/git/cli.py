@@ -3,6 +3,7 @@ import typer
 from bmde.commands.git.command import git_command
 from bmde.config.schema import Settings
 from bmde.core import logging
+from bmde.core.logging import obfuscate_text
 from bmde.core.shared_options import (
     ArgumentsOpt,
     BackendOpt,
@@ -61,12 +62,12 @@ def git_controller(
         f"- Dry run: {str(dry_run)}\n"
         f"- Interactive: {str(interactive)}\n"
         f"- SSH username: {ssh_username}\n"
-        f"- SSH password: {ssh_password}\n"
+        f"- SSH password: {obfuscate_text(ssh_password)}\n"
         f"- SSH host: {ssh_host}\n"
         f"- git name: {git_name}\n"
         f"- git email: {git_email}\n"
         f"- VPN username: {vpn_username}\n"
-        f"- VPN password: {vpn_password}\n"
+        f"- VPN password: {obfuscate_text(vpn_password)}\n"
         f"- VPN host: {vpn_host}\n"
         f"- VPN port: {str(vpn_port)}\n"
         f"- VPN realm: {vpn_realm}\n"
@@ -79,7 +80,7 @@ def git_controller(
 
     log.trace(f"Final settings for git command:\n- {str(settings.git)}\n")
 
-    git_command(
+    ret = git_command(
         d=directory,
         arguments=arguments,
         backend=backend,
@@ -101,3 +102,6 @@ def git_controller(
         vpn_test_ip=vpn_test_ip,
         settings=settings.git,
     )
+
+    if isinstance(ret, int):
+        raise typer.Exit(ret)
