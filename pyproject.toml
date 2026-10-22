@@ -122,7 +122,7 @@ line-length = 120
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E", "F", "B", "I", "UP", "SIM"]
+select = ["E", "F", "B", "I", "UP", "SIM", "ARG"]
 
 [tool.ruff.format]
 line-ending = "lf"
