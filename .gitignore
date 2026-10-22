@@ -296,3 +296,6 @@ docs/getting-started/host_components_installation_substituted.md
 
 # Test folders
 shell/hello-world-nds/
+
+# rootfs of shell image
+!base/rootfs/usr/local/lib
