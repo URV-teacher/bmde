@@ -27,13 +27,14 @@ class Settings(BaseSettings):
     debug: DebugSettings = DebugSettings()
 
     @classmethod
+    # The signature is the one pydantic-settings calls, so the sources that are not used keep their parameters
     def settings_customise_sources(
         cls,
-        settings_cls: type[BaseSettings],
+        settings_cls: type[BaseSettings],  # noqa: ARG003
         init_settings: PydanticBaseSettingsSource,
-        env_settings: PydanticBaseSettingsSource,
-        dotenv_settings: PydanticBaseSettingsSource,
-        file_secret_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,  # noqa: ARG003
+        dotenv_settings: PydanticBaseSettingsSource,  # noqa: ARG003
+        file_secret_settings: PydanticBaseSettingsSource,  # noqa: ARG003
     ) -> tuple[PydanticBaseSettingsSource, ...]:
         # Settings() are the defaults. bmde.config.loader reads the files and the environment itself, so it can tell
         # which source supplied each value (bmde config --show-sources)

@@ -31,9 +31,10 @@ def cli_global_callback(
     quiet: QuietOpt = False,
     very_quiet: VeryQuietOpt = False,
     log_file: LogFileOpt = None,
-    show_config: ShowConfigOpt = False,
-    show_default_config: ShowDefaultConfigOpt = False,
-    version: VersionOpt = False,
+    # Eager options: their own Typer callbacks handle them and exit, but they must be parameters to be registered
+    show_config: ShowConfigOpt = False,  # noqa: ARG001
+    show_default_config: ShowDefaultConfigOpt = False,  # noqa: ARG001
+    version: VersionOpt = False,  # noqa: ARG001
 ) -> None:
     """Global option callback. Executed if no command is provided."""
     cli_log_level, more_than_one_flag = process_log_flags(

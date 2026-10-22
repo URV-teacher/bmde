@@ -256,7 +256,7 @@ def clean_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Path]
     yield home
 
 
-def test_x11_args_mount_the_cookie_when_there_is_one(clean_env: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_x11_args_mount_the_cookie_when_there_is_one(clean_env: Path) -> None:
     mounts, envs = docker.host_x11_docker_args()
     assert mounts == ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
     assert envs == ["-e", "DISPLAY=:1"]

@@ -124,7 +124,7 @@ target-version = "py311"
 extend-exclude = ["components"]
 
 [tool.ruff.lint]
-select = ["E", "F", "D", "B", "I", "UP", "SIM", "S", "TRY", "DTZ", "PL", "N", "RUF"]
+select = ["E", "F", "D", "B", "I", "UP", "SIM", "S", "TRY", "DTZ", "PL", "N", "RUF", "ARG"]
 ignore = [
     # Docstrings are checked for style where they exist, but not every module, class and function needs one
     "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107",
@@ -144,8 +144,9 @@ convention = "google"
 "src/bmde/**/cli.py" = ["PLR0913", "PLR0917"]
 "src/bmde/commands/*/command.py" = ["PLR0913", "PLR0917"]
 "src/bmde/core/cli_global.py" = ["PLR0913", "PLR0917"]
-# pytest uses plain asserts, and tests compare against literal values, use fake credentials and write to temporary paths
-"tests/**" = ["S101", "S105", "S108", "PLR2004", "D"]
+# pytest uses plain asserts, and tests compare against literal values, use fake credentials and write to temporary paths.
+# Their fakes keep the signature of what they replace and their fixtures are often requested only for their side effects
+"tests/**" = ["S101", "S105", "S108", "PLR2004", "D", "ARG"]
 
 [tool.ruff.format]
 line-ending = "lf"

@@ -298,7 +298,7 @@ def test_dry_run_of_the_emulator_in_debug_mode_does_not_touch_docker(machine: Ma
     assert not [call for call in machine.docker_calls if call[1] == "network"]
 
 
-def test_run_in_the_host(machine: Machine, tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+def test_run_in_the_host(machine: Machine, tmp_path: Path) -> None:
     machine.installed = {"desmume-cli"}
     (tmp_path / "fat.img").touch()
     (tmp_path / "desmume.ini").touch()
@@ -656,7 +656,7 @@ def test_git_aborts_when_the_vpn_does_not_start(machine: Machine, monkeypatch: p
     assert len(machine.commands) == 1  # only the VPN
 
 
-def test_git_times_out_waiting_for_the_vpn(machine: Machine, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_git_times_out_waiting_for_the_vpn(machine: Machine) -> None:
     from bmde.commands.git.backends import docker as git_docker
     from bmde.commands.git.spec import GitSpecOpts
     from bmde.core.exec import ExecOptions

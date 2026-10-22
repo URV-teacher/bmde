@@ -15,7 +15,8 @@ class HostRunner(GitBackend):
     def is_available(self) -> bool:
         return is_command_available("git")
 
-    def run(self, spec: GitSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
+    # The host git only takes the arguments of exec_opts, but the signature is the one of every Backend
+    def run(self, spec: GitSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:  # noqa: ARG002
         entry = str(exec_opts.entrypoint) if exec_opts.entrypoint else (shutil.which("git"))
         if not entry:
             return 127
