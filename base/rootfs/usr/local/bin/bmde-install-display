@@ -5,3 +5,6 @@ set -eu
 apt-get update
 apt-get install -y --no-install-recommends xvfb xauth x11vnc xfonts-base
 rm -rf /var/lib/apt/lists/*
+# The images run Xvfb as a non-root user, who cannot create the socket directory of the X server: created here (sticky
+# and world-writable, like in a host) so Xvfb does not print an error on every start
+install -d -m 1777 /tmp/.X11-unix

@@ -70,7 +70,7 @@ EntrypointOpt = Annotated[
 # Dry-run flag
 DryRunOpt = Annotated[
     bool,
-    typer.Option("--dry-run", help="Simulate actions without executing", is_flag=True),
+    typer.Option("--dry-run", help="Simulate actions without executing"),
 ]
 
 InteractiveOpt = Annotated[
@@ -93,7 +93,6 @@ ShowConfigOpt = Annotated[
         is_eager=True,
         help="Show current configuration options. Can be used to freeze BMDE arguments into a bmde.toml configuration "
         "file",
-        is_flag=True,
     ),
 ]
 
@@ -105,7 +104,6 @@ ShowDefaultConfigOpt = Annotated[
         callback=show_default_config_callback,
         is_eager=True,
         help="Show default configuration options. Can be used as template of a bmde.toml configuration file",
-        is_flag=True,
     ),
 ]
 
@@ -125,31 +123,30 @@ VersionOpt = Annotated[
         callback=version_callback,
         is_eager=True,
         help="Show the version of bmde and exit",
-        is_flag=True,
     ),
 ]
 
 VerboseOpt = Annotated[
     bool,
-    typer.Option("-v", "--verbose", "--debug", help="Verbose output (debug)", is_flag=True),
+    typer.Option("-v", "--verbose", "--debug", help="Verbose output (debug)"),
 ]
 
 # Very verbose flag
 VeryVerboseOpt = Annotated[
     bool,
-    typer.Option("--t", "--trace", help="Very verbose output (trace)", is_flag=True),
+    typer.Option("--t", "--trace", help="Very verbose output (trace)"),
 ]
 
 # Quiet flag
 QuietOpt = Annotated[
     bool,
-    typer.Option("-q", "--quiet", help="Quiet mode (minimal output)", is_flag=True),
+    typer.Option("-q", "--quiet", help="Quiet mode (minimal output)"),
 ]
 
 # Very quiet flag
 VeryQuietOpt = Annotated[
     bool,
-    typer.Option("-Q", "--Quiet", "--no-output", help="Quiet mode (no output)", is_flag=True),
+    typer.Option("-Q", "--Quiet", "--no-output", help="Quiet mode (no output)"),
 ]
 
 ConfigOpt = Annotated[
@@ -164,7 +161,7 @@ ConfigOpt = Annotated[
 # --- Run options ---
 # To specify debug in run options
 # None when not given, so the debug option of the settings applies
-DebugOpt = Annotated[bool | None, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)]
+DebugOpt = Annotated[bool | None, typer.Option("--debug", help="Enable GDB stub if supported")]
 
 # To specify the debug port in options
 PortOpt = Annotated[int | None, typer.Option("-p", "--port", help="Debug port (implies --debug)")]
@@ -181,7 +178,6 @@ DockerNetworkOpt = Annotated[
         "--docker-network",
         "--network",
         help='Name of the Docker network to use when using the "docker" environment',
-        is_flag=True,
     ),
 ]
 
@@ -192,14 +188,13 @@ DockerScreenOpt = Annotated[
         "-s",
         "--screen",
         help='Method to show the screen when using the "docker" environment',
-        is_flag=True,
     ),
 ]
 
 
 BackgroundOpt = Annotated[
     bool,
-    typer.Option("-B", "--background", help="Run background", is_flag=True),
+    typer.Option("-B", "--background", help="Run background"),
 ]
 
 NdsRomOpt = Annotated[
