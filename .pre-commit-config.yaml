@@ -9,6 +9,16 @@ default_install_hook_types: [pre-commit, commit-msg, pre-push]
 default_stages: [pre-commit]
 
 repos:
+  # First, so ruff and the whitespace hooks also see the inserted headers. The header is the text of LICENSE_HEADER: a
+  # change to it updates every Python file (on commit and with `make fmt`), replacing the previous header
+  - repo: local
+    hooks:
+      - id: license-header
+        name: license header (LICENSE_HEADER)
+        entry: python scripts/license-header.py
+        language: python
+        files: (\.py|^LICENSE_HEADER)$
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.1
     hooks:

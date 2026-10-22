@@ -85,7 +85,7 @@ dev: $(VENV_DIR)/.group-dev  ## Install the package, every dependency group and 
 
 # The hooks of .pre-commit-config.yaml that fix files. pre-commit fails when a hook changes a file, so their result is
 # ignored here: `make lint` reports what could not be fixed
-FIX_HOOKS := ruff-check ruff-format trailing-whitespace end-of-file-fixer
+FIX_HOOKS := license-header ruff-check ruff-format trailing-whitespace end-of-file-fixer
 
 EXAMPLE_CONFIG := examples/bmde.toml
 
