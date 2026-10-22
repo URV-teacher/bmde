@@ -36,14 +36,14 @@ jobs:
       # The cache of GitHub Actions needs the runtime token and URLs of the job, which are only given to actions, not
       # to the run steps that call docker buildx bake
       - name: Expose the GitHub Actions runtime to buildx
-        uses: crazy-max/ghaction-github-runtime@v3
+        uses: crazy-max/ghaction-github-runtime@v4
 
       # The slowest assets to download: the sources of Insight, reconstructed from ~900 MB of the CVS repository of
       # sourceware.org, and devkitARM, from a personal mirror. download_assets.sh skips the ones already there after
       # checking their pinned SHA-256, so a stale cache only means downloading them again. The assets that are the
       # latest version of their source (no pinned SHA-256) are left out, so they are still downloaded on every run
       - name: Cache the pinned assets of the components
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             components/insight-docker/assets/insight-7.3.50.20110803-cvs.tar.xz
