@@ -12,8 +12,11 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
+      # With the components, whose scripts/download_lib.sh make lint compares with the one of bmde
       - name: Checkout Code
         uses: actions/checkout@v7
+        with:
+          submodules: true
 
       - name: Set up Python
         uses: actions/setup-python@v7
