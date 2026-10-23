@@ -86,6 +86,13 @@ repos:
         pass_filenames: false
         files: ^\.(aiexclude|geminiignore|cursorignore|aiderignore|codeiumignore|aiignore)$
 
+      - id: download-lib
+        name: download_lib.sh of the components is up to date (make lint-download-lib)
+        entry: make lint-download-lib
+        language: system
+        pass_filenames: false
+        files: ^(scripts/download_lib\.sh|components/.*)$
+
       - id: test
         name: test (make test)
         entry: make test
