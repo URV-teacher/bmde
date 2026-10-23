@@ -120,9 +120,33 @@ strict = true
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+# The submodules have linters of their own
+extend-exclude = ["components"]
 
 [tool.ruff.lint]
-select = ["E", "F", "B", "I", "UP", "SIM"]
+select = ["E", "F", "D", "B", "I", "UP", "SIM", "S", "TRY", "DTZ", "PL", "N", "RUF", "ARG"]
+ignore = [
+    # Docstrings are checked for style where they exist, but not every module, class and function needs one
+    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107",
+    # Commands import their backends lazily so that `bmde --help` does not load every tool
+    "PLC0415",
+    # bmde runs docker, git and the other tools on purpose, found in the PATH, with arguments built from its options
+    "S603", "S607",
+    # The errors are raised with a message that explains the situation to the user, not with an exception class each
+    "TRY003",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Typer turns each argument into a CLI option, and the command layer receives them one by one to build the spec
+"src/bmde/**/cli.py" = ["PLR0913", "PLR0917"]
+"src/bmde/commands/*/command.py" = ["PLR0913", "PLR0917"]
+"src/bmde/core/cli_global.py" = ["PLR0913", "PLR0917"]
+# pytest uses plain asserts, and tests compare against literal values, use fake credentials and write to temporary paths.
+# Their fakes keep the signature of what they replace and their fixtures are often requested only for their side effects
+"tests/**" = ["S101", "S105", "S108", "PLR2004", "D", "ARG"]
 
 [tool.ruff.format]
 line-ending = "lf"

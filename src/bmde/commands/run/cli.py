@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import typer
 
 from bmde.commands.run.command import run_command
@@ -45,27 +61,27 @@ def run_controller(
     log.debug(
         "CLI options provided:\n"
         "- Arguments:\n"
-        f"- NDS ROM: {str(nds_rom)}\n"
-        f"- Rom directory: {str(directory)}\n"
+        f"- NDS ROM: {nds_rom!s}\n"
+        f"- Rom directory: {directory!s}\n"
         "- Behavioural parameters:\n"
-        f"- Arguments: {str(arguments)}\n"
-        f"- ARM 9 debug port: {str(arm9_debug_port)}\n"
-        f"- Backend: {str(backend)}\n"
-        f"- Background: {str(background)}\n"
-        f"- Interactive: {str(interactive)}\n"
-        f"- Debug: {str(debug)}\n"
-        f"- Docker Network: {str(docker_network)}\n"
-        f"- Dry run: {str(dry_run)}\n"
-        f"- Entrypoint: {str(entrypoint)}\n"
-        f"- FAT image: {str(fat_image)}\n"
-        f"- Graphical output: {str(graphical_output)}\n"
-        f"- Sound: {str(sound)}\n"
-        f"- Controls: {str(controls)}\n"
+        f"- Arguments: {arguments!s}\n"
+        f"- ARM 9 debug port: {arm9_debug_port!s}\n"
+        f"- Backend: {backend!s}\n"
+        f"- Background: {background!s}\n"
+        f"- Interactive: {interactive!s}\n"
+        f"- Debug: {debug!s}\n"
+        f"- Docker Network: {docker_network!s}\n"
+        f"- Dry run: {dry_run!s}\n"
+        f"- Entrypoint: {entrypoint!s}\n"
+        f"- FAT image: {fat_image!s}\n"
+        f"- Graphical output: {graphical_output!s}\n"
+        f"- Sound: {sound!s}\n"
+        f"- Controls: {controls!s}\n"
     )
 
     settings: Settings = ctx.obj["settings"]
 
-    log.debug(f"Loaded settings:\n{str(settings.run)}\n")
+    log.debug(f"Loaded settings:\n{settings.run!s}\n")
     ret = run_command(
         nds_rom=nds_rom,
         directory=directory,

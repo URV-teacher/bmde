@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import typer
 
 from bmde.commands.debug.command import debug_command
@@ -34,20 +50,19 @@ def debug_controller(
     dry_run: DryRunOpt = False,
 ) -> None:
     """Debugs an NDS ROM: runs it in desmume in debug mode, and a debugger (Insight by default) connected to it."""
-
     settings: Settings = ctx.obj["settings"]
 
     log.debug(
         "CLI options provided:\n"
-        f"- Arguments: {str(arguments)}\n"
-        f"- Backend: {str(backend)}\n"
-        f"- Background: {str(background)}\n"
-        f"- Debugger: {str(debugger)}\n"
-        f"- Entrypoint: {str(entrypoint)}\n"
-        f"- Docker screen: {str(docker_screen)}\n"
-        f"- NDS ROM: {str(nds)}\n"
-        f"- ELF: {str(elf)}\n"
-        f"- Port: {str(port)}\n"
+        f"- Arguments: {arguments!s}\n"
+        f"- Backend: {backend!s}\n"
+        f"- Background: {background!s}\n"
+        f"- Debugger: {debugger!s}\n"
+        f"- Entrypoint: {entrypoint!s}\n"
+        f"- Docker screen: {docker_screen!s}\n"
+        f"- NDS ROM: {nds!s}\n"
+        f"- ELF: {elf!s}\n"
+        f"- Port: {port!s}\n"
     )
 
     ret = debug_command(

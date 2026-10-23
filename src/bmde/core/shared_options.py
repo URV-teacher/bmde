@@ -1,6 +1,20 @@
-"""
-Reusable CLI argument definition.
-"""
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Reusable CLI argument definition."""
 
 from __future__ import annotations
 
@@ -56,7 +70,7 @@ EntrypointOpt = Annotated[
 # Dry-run flag
 DryRunOpt = Annotated[
     bool,
-    typer.Option("--dry-run", help="Simulate actions without executing", is_flag=True),
+    typer.Option("--dry-run", help="Simulate actions without executing"),
 ]
 
 InteractiveOpt = Annotated[
@@ -79,7 +93,6 @@ ShowConfigOpt = Annotated[
         is_eager=True,
         help="Show current configuration options. Can be used to freeze BMDE arguments into a bmde.toml configuration "
         "file",
-        is_flag=True,
     ),
 ]
 
@@ -91,7 +104,6 @@ ShowDefaultConfigOpt = Annotated[
         callback=show_default_config_callback,
         is_eager=True,
         help="Show default configuration options. Can be used as template of a bmde.toml configuration file",
-        is_flag=True,
     ),
 ]
 
@@ -111,31 +123,30 @@ VersionOpt = Annotated[
         callback=version_callback,
         is_eager=True,
         help="Show the version of bmde and exit",
-        is_flag=True,
     ),
 ]
 
 VerboseOpt = Annotated[
     bool,
-    typer.Option("-v", "--verbose", "--debug", help="Verbose output (debug)", is_flag=True),
+    typer.Option("-v", "--verbose", "--debug", help="Verbose output (debug)"),
 ]
 
 # Very verbose flag
 VeryVerboseOpt = Annotated[
     bool,
-    typer.Option("--t", "--trace", help="Very verbose output (trace)", is_flag=True),
+    typer.Option("--t", "--trace", help="Very verbose output (trace)"),
 ]
 
 # Quiet flag
 QuietOpt = Annotated[
     bool,
-    typer.Option("-q", "--quiet", help="Quiet mode (minimal output)", is_flag=True),
+    typer.Option("-q", "--quiet", help="Quiet mode (minimal output)"),
 ]
 
 # Very quiet flag
 VeryQuietOpt = Annotated[
     bool,
-    typer.Option("-Q", "--Quiet", "--no-output", help="Quiet mode (no output)", is_flag=True),
+    typer.Option("-Q", "--Quiet", "--no-output", help="Quiet mode (no output)"),
 ]
 
 ConfigOpt = Annotated[
@@ -150,7 +161,7 @@ ConfigOpt = Annotated[
 # --- Run options ---
 # To specify debug in run options
 # None when not given, so the debug option of the settings applies
-DebugOpt = Annotated[bool | None, typer.Option("--debug", help="Enable GDB stub if supported", is_flag=True)]
+DebugOpt = Annotated[bool | None, typer.Option("--debug", help="Enable GDB stub if supported")]
 
 # To specify the debug port in options
 PortOpt = Annotated[int | None, typer.Option("-p", "--port", help="Debug port (implies --debug)")]
@@ -167,7 +178,6 @@ DockerNetworkOpt = Annotated[
         "--docker-network",
         "--network",
         help='Name of the Docker network to use when using the "docker" environment',
-        is_flag=True,
     ),
 ]
 
@@ -178,14 +188,13 @@ DockerScreenOpt = Annotated[
         "-s",
         "--screen",
         help='Method to show the screen when using the "docker" environment',
-        is_flag=True,
     ),
 ]
 
 
 BackgroundOpt = Annotated[
     bool,
-    typer.Option("-B", "--background", help="Run background", is_flag=True),
+    typer.Option("-B", "--background", help="Run background"),
 ]
 
 NdsRomOpt = Annotated[
@@ -324,44 +333,43 @@ VpnOpt = Annotated[
 
 # TODO Add all opts to this variable so they are marked as publicly exposed
 __all__ = [
-    "EntrypointOpt",
-    "DebugOpt",
-    "PortOpt",
-    "DryRunOpt",
-    "VerboseOpt",
-    "QuietOpt",
-    "DockerScreenOpt",
-    "ConfigOpt",
-    "BackendOpt",
     "ArgumentsOpt",
+    "BackendOpt",
+    "BackgroundOpt",
+    "ConfigOpt",
+    "ControlsOpt",
+    "DebugOpt",
+    "DebuggerOpt",
     "DirectoryOpt",
-    "VeryVerboseOpt",
-    "VeryQuietOpt",
+    "DockerNetworkOpt",
+    "DockerScreenOpt",
+    "DryRunOpt",
+    "ElfRomOpt",
+    "EntrypointOpt",
+    "FatImageOpt",
+    "GitEmailOpt",
+    "GitNameOpt",
+    "InteractiveOpt",
     "LogFileOpt",
     "NdsRomOpt",
-    "FatImageOpt",
+    "PortOpt",
+    "QuietOpt",
+    "ShowConfigOpt",
+    "ShowDefaultConfigOpt",
     "SoundOpt",
-    "DebuggerOpt",
-    "ControlsOpt",
-    "SshUsernameOpt",
-    "SshPasswordOpt",
     "SshHostOpt",
-    "GitNameOpt",
-    "GitEmailOpt",
-    "VpnUsernameOpt",
-    "VpnPasswordOpt",
+    "SshPasswordOpt",
+    "SshUsernameOpt",
+    "VerboseOpt",
+    "VeryQuietOpt",
+    "VeryVerboseOpt",
+    "VpnCertOpt",
     "VpnHostOpt",
+    "VpnOpt",
+    "VpnPasswordOpt",
     "VpnPortOpt",
     "VpnRealmOpt",
-    "VpnCertOpt",
     "VpnTestDnsOpt",
     "VpnTestIpOpt",
-    "VpnOpt",
-    "ConfigOpt",
-    "ElfRomOpt",
-    "DockerNetworkOpt",
-    "BackgroundOpt",
-    "ShowConfigOpt",
-    "InteractiveOpt",
-    "ShowDefaultConfigOpt",
+    "VpnUsernameOpt",
 ]

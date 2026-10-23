@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import logging
 import os
 import socket
@@ -78,7 +94,7 @@ def test_validate_file(tmp_path: Path) -> None:
     with pytest.raises(FileNotFoundError):
         file_utils.validate_file(tmp_path / "missing.nds")
     (tmp_path / "game.elf").touch()
-    with pytest.raises(ValueError, match="Expected a .nds file"):
+    with pytest.raises(ValueError, match=r"Expected a \.nds file"):
         file_utils.validate_file(tmp_path / "game.elf")
     (tmp_path / "game.NDS").touch()
     assert file_utils.validate_file(tmp_path / "game.NDS") == tmp_path / "game.NDS"
@@ -96,13 +112,13 @@ def test_resolve_nds_discovers_the_first_rom(tmp_path: Path, caplog: pytest.LogC
 
 
 def test_resolve_elf(tmp_path: Path) -> None:
-    with pytest.raises(FileNotFoundError, match="No .elf file"):
+    with pytest.raises(FileNotFoundError, match=r"No \.elf file"):
         file_utils.resolve_elf(None, tmp_path)
     (tmp_path / "game.elf").touch()
     (tmp_path / "game.nds").touch()
     assert file_utils.resolve_elf(None, tmp_path) == (tmp_path / "game.elf", True)
     assert file_utils.resolve_elf(tmp_path / "game.elf", tmp_path) == (tmp_path / "game.elf", False)
-    with pytest.raises(ValueError, match="Expected a .elf file"):
+    with pytest.raises(ValueError, match=r"Expected a \.elf file"):
         file_utils.resolve_elf(tmp_path / "game.nds", tmp_path)
 
 
@@ -256,7 +272,7 @@ def clean_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Path]
     yield home
 
 
-def test_x11_args_mount_the_cookie_when_there_is_one(clean_env: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_x11_args_mount_the_cookie_when_there_is_one(clean_env: Path) -> None:
     mounts, envs = docker.host_x11_docker_args()
     assert mounts == ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
     assert envs == ["-e", "DISPLAY=:1"]

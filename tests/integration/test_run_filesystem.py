@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import logging
 import os
 import shutil
@@ -14,9 +30,9 @@ from bmde.core.logging import setup_logging
 from bmde.core.types import DockerOutputOptions
 
 
-def test_run_filesystem(tmp_path: Path):
-    """
-    Integration test for the run command with filesystem interaction.
+# One end-to-end scenario, read top to bottom: split into helpers it would be harder to follow
+def test_run_filesystem(tmp_path: Path):  # noqa: PLR0912, PLR0915
+    """Integration test for the run command with filesystem interaction.
     1. Clones filesystem-nds repo.
     2. Builds it.
     3. Patches the ROM.
@@ -69,7 +85,8 @@ def test_run_filesystem(tmp_path: Path):
     print("Creating FAT image...")
     fat_img_path = tmp_path / "fat.img"
     subprocess.run([str(create_fat_image), str(fat_img_path)], check=True)
-    os.chmod(fat_img_path, 0o777)
+    # The emulator in the container runs as another user and writes to the image
+    os.chmod(fat_img_path, 0o777)  # noqa: S103
     print(f"Using FAT image: {fat_img_path}")
 
     # 5. Run
@@ -108,6 +125,7 @@ def test_run_filesystem(tmp_path: Path):
                 ["mtype", "-i", str(fat_img_path), "::output.txt"],
                 capture_output=True,
                 text=True,
+                check=False,
             )
             if result.returncode == 0:
                 content = result.stdout

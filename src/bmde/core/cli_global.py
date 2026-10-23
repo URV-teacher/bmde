@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import typer
 
 from bmde.config.loader import config_sources, merge_sources
@@ -31,14 +47,12 @@ def cli_global_callback(
     quiet: QuietOpt = False,
     very_quiet: VeryQuietOpt = False,
     log_file: LogFileOpt = None,
-    show_config: ShowConfigOpt = False,
-    show_default_config: ShowDefaultConfigOpt = False,
-    version: VersionOpt = False,
+    # Eager options: their own Typer callbacks handle them and exit, but they must be parameters to be registered
+    show_config: ShowConfigOpt = False,  # noqa: ARG001
+    show_default_config: ShowDefaultConfigOpt = False,  # noqa: ARG001
+    version: VersionOpt = False,  # noqa: ARG001
 ) -> None:
-    """
-    Global option callback. Executed if no command is provided.
-    """
-
+    """Global option callback. Executed if no command is provided."""
     cli_log_level, more_than_one_flag = process_log_flags(
         very_verbose=very_verbose, verbose=verbose, quiet=quiet, very_quiet=very_quiet
     )

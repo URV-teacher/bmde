@@ -1,7 +1,23 @@
-"""
-Introspection of the settings schema. Walks the pydantic models of the settings to obtain each configurable option with
-its metadata, so the documented TOML template and the interactive ``bmde config`` command are always in sync with the
-schema.
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Introspection of the settings schema.
+
+Walks the pydantic models of the settings to obtain each configurable option with its metadata, so the documented TOML
+template and the interactive ``bmde config`` command are always in sync with the schema.
 """
 
 from __future__ import annotations
@@ -81,8 +97,7 @@ def is_model(annotation: Any) -> bool:
 def iter_sections(
     model: type[BaseModel], path: tuple[str, ...] = ()
 ) -> Iterator[tuple[tuple[str, ...], type[BaseModel], list[ConfigField]]]:
-    """
-    Yields every model of the settings tree in TOML order: first the leaf options of a model and then its sub-models.
+    """Yields every model of the settings tree in TOML order: first the leaf options of a model and then its sub-models.
 
     Args:
         model: Model to walk.
@@ -90,6 +105,7 @@ def iter_sections(
 
     Yields:
         The path of the model, the model and its leaf options.
+
     """
     leaves: list[ConfigField] = []
     children: list[tuple[str, type[BaseModel]]] = []

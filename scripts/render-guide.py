@@ -1,4 +1,20 @@
 #!/usr/bin/env python3
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import re
 from pathlib import Path
 
@@ -6,8 +22,8 @@ INCLUDE_RE = re.compile(r'^\s*--8<--\s+"([^":]+)(?::(\d+)?:(\d+)?)?"\s*$')
 
 
 def expand_include(line: str, base_dir: Path) -> list[str]:
-    """
-    Expands a MkDocs-style include directive into file contents.
+    """Expands a MkDocs-style include directive into file contents.
+
     Supports optional :start:end line ranges.
     """
     match = INCLUDE_RE.match(line)
@@ -47,11 +63,8 @@ def render_file(src: Path, dst: Path):
 
 
 def main():
-    SRC = "docs/getting-started/host_components_installation.md"
-    DST = "docs/getting-started/host_components_installation_substituted.md"
-
-    src = Path(SRC)
-    dst = Path(DST)
+    src = Path("docs/getting-started/host_components_installation.md")
+    dst = Path("docs/getting-started/host_components_installation_substituted.md")
 
     render_file(src, dst)
     print(f"Generated {dst} from {src}")

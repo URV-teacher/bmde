@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
 import re
 import shutil
@@ -30,7 +46,8 @@ def default_image_tag() -> str:
 
 
 def configure_docker_from_settings(settings: Settings) -> None:
-    global _image_tag
+    # Set once at startup, so docker_image() does not need the settings passed down through every backend
+    global _image_tag  # noqa: PLW0603
     _image_tag = settings.docker.image_tag
 
 
@@ -40,9 +57,7 @@ def docker_image(name: str) -> str:
 
 
 def can_run_docker() -> bool:
-    """
-    Return True if the current user can run Docker containers, False otherwise.
-    """
+    """Return True if the current user can run Docker containers, False otherwise."""
     # Try using the Docker CLI directly
     try:
         # Run 'docker info' quietly; suppress output
@@ -52,8 +67,6 @@ def can_run_docker() -> bool:
             stderr=subprocess.DEVNULL,
             check=True,
         )
-        log.debug("Docker container runtime running")
-        return True
     except FileNotFoundError:
         # Docker CLI not installed
         return False
@@ -63,55 +76,53 @@ def can_run_docker() -> bool:
     except Exception:
         # Catch any unexpected errors
         return False
+    else:
+        log.debug("Docker container runtime running")
+        return True
 
 
 def docker_container_exists(container_name: str) -> bool:
     try:
         subprocess.check_output(["docker", "inspect", container_name], stderr=subprocess.DEVNULL)
-        return True
     except subprocess.CalledProcessError:
         return False
+    else:
+        return True
 
 
 def docker_inspect_health(container_name: str) -> str | None:
-    """
-    Return health status string: "healthy", "unhealthy", "starting", or None if not found/no health.
-    """
+    """Return health status string: "healthy", "unhealthy", "starting", or None if not found/no health."""
     try:
         out = subprocess.check_output(
             ["docker", "inspect", "-f", "{{.State.Health.Status}}", container_name],
             text=True,
             stderr=subprocess.STDOUT,
         ).strip()
-        return out if out else None
     except subprocess.CalledProcessError:
         # Container absent or no Health configured
         return None
+    else:
+        return out if out else None
 
 
 def docker_network_exists(network_name: str) -> bool:
-    """
-    Return True if a Docker network with the given name exists, False otherwise.
-    """
+    """Return True if a Docker network with the given name exists, False otherwise."""
     try:
         subprocess.check_output(["docker", "network", "inspect", network_name], stderr=subprocess.DEVNULL)
-        return True
     except subprocess.CalledProcessError:
         return False
+    else:
+        return True
 
 
 def docker_create_network(network_name: str) -> None:
-    """
-    Create a Docker network with the given name if it does not already exist.
-    """
+    """Create a Docker network with the given name if it does not already exist."""
     log.info(f"Creating Docker network '{network_name}'...")
     subprocess.run(["docker", "network", "create", network_name], check=True)
 
 
 def docker_remove_network(network_name: str) -> None:
-    """
-    Remove a Docker network with the given name if it exists.
-    """
+    """Remove a Docker network with the given name if it exists."""
     if docker_network_exists(network_name):
         log.info(f"Removing Docker network '{network_name}'...")
         subprocess.run(["docker", "network", "rm", network_name], check=True)
@@ -128,9 +139,9 @@ CONTAINER_SECRETS_DIR = "/run/secrets"
 
 @contextmanager
 def docker_secrets(secrets: dict[str, str | None], keep: bool = False) -> Iterator[list[str]]:
-    """
-    Mounts each value in CONTAINER_SECRETS_DIR/<name> of a container, instead of passing it in its environment (-e),
-    which any user of the machine can see with ps or docker inspect.
+    """Mounts each value in CONTAINER_SECRETS_DIR/<name> of a container.
+
+    This replaces passing it in its environment (-e), which any user of the machine can see with ps or docker inspect.
 
     Args:
         secrets: Value of each secret, by name (e.g. vpn_password). The ones that are None are not mounted.
@@ -140,6 +151,7 @@ def docker_secrets(secrets: dict[str, str | None], keep: bool = False) -> Iterat
     Yields:
         The docker run arguments that mount them. The files are only readable by the user, in a temporary directory
         removed on exit (the containers already started keep their mounted copy).
+
     """
     runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
     directory = Path(
@@ -163,14 +175,16 @@ def docker_secrets(secrets: dict[str, str | None], keep: bool = False) -> Iterat
 
 
 def docker_project_dir(project: Path) -> str:
-    """
-    Path where a project is mounted in the BMDE containers. The debug information of ELFs built by the build command
-    refers to the sources under it, so the debugger needs the project mounted in the same path to find them.
+    """Path where a project is mounted in the BMDE containers.
+
+    The debug information of ELFs built by the build command refers to the sources under it, so the debugger needs the
+    project mounted in the same path to find them.
     """
     return f"/input/{project.name}"
 
 
-CONTAINER_XAUTHORITY = "/tmp/.docker.xauth"
+# A path inside the container, not a temporary file of the host
+CONTAINER_XAUTHORITY = "/tmp/.docker.xauth"  # noqa: S108
 
 
 def _host_xauthority() -> Path | None:
@@ -180,12 +194,13 @@ def _host_xauthority() -> Path | None:
 
 
 def host_x11_docker_args() -> tuple[list[str], list[str]]:
-    """
-    Return (mounts, envs) docker arguments that let a container draw on the
-    host X server (including Xwayland, which requires an MIT-MAGIC-COOKIE).
+    """Return (mounts, envs) docker arguments that let a container draw on the host X server.
+
+    This includes Xwayland, which requires an MIT-MAGIC-COOKIE.
     """
     display = os.environ.get("DISPLAY", ":0")
-    mounts = ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]
+    # The fixed location of the X server sockets, not a temporary file
+    mounts = ["-v", "/tmp/.X11-unix:/tmp/.X11-unix"]  # noqa: S108
     envs = ["-e", f"DISPLAY={display}"]
 
     source = _host_xauthority()
@@ -224,9 +239,9 @@ def _host_pulse_cookie() -> Path | None:
 
 
 def host_pulse_docker_args() -> tuple[list[str], list[str]]:
-    """
-    Return (mounts, envs) docker arguments that let a container play sound
-    through the host PulseAudio-compatible server (PulseAudio or PipeWire).
+    """Return (mounts, envs) docker arguments that let a container play sound through the host.
+
+    The host needs a PulseAudio-compatible server (PulseAudio or PipeWire).
     """
     socket = _host_pulse_socket()
     if socket is None:
@@ -251,10 +266,10 @@ CONTAINER_VNC_PORT = 5900
 def docker_screen_args(
     output: DockerOutputOptions | None, vnc_host_port: int = CONTAINER_VNC_PORT
 ) -> tuple[list[str], list[str], list[str]]:
-    """
-    Return (mounts, envs, ports) docker arguments to show the graphical output of a container of the BMDE images
-    (MODE of their entrypoint): as windows of the host X server, through a VNC server published at vnc_host_port,
-    or not at all.
+    """Return (mounts, envs, ports) docker arguments to show the graphical output of a container of the BMDE images.
+
+    The output (MODE of their entrypoint) is shown as windows of the host X server, through a VNC server published at
+    vnc_host_port, or not at all.
     """
     if output == DockerOutputOptions.HOST:
         mounts, envs = host_x11_docker_args()

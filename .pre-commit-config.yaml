@@ -5,10 +5,20 @@
 # not depend on the venv; Dependabot bumps the revs (.github/dependabot.yml). The local hooks need the project itself
 # (its dependencies, or the bmde package), so they call a Makefile target that uses the venv (`make dev`), and only run
 # when the files they check change.
-default_install_hook_types: [pre-commit, pre-push]
+default_install_hook_types: [pre-commit, commit-msg, pre-push]
 default_stages: [pre-commit]
 
 repos:
+  # First, so ruff and the whitespace hooks also see the inserted headers. The header is the text of LICENSE_HEADER: a
+  # change to it updates every Python file (on commit and with `make fmt`), replacing the previous header
+  - repo: local
+    hooks:
+      - id: license-header
+        name: license header (LICENSE_HEADER)
+        entry: python scripts/license-header.py
+        language: python
+        files: (\.py|^LICENSE_HEADER)$
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.1
     hooks:
@@ -42,6 +52,15 @@ repos:
     rev: v1.5.0
     hooks:
       - id: detect-secrets
+
+  # The commit types decide the next release (python-semantic-release), so a message that is not a Conventional Commit
+  # would be left out of the changelog. The types are the ones of .gitmessage; merge, fixup! and squash! commits pass
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.4.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [feat, fix, perf, docs, refactor, test, build, ci, chore]
 
   - repo: local
     hooks:

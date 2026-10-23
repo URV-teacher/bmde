@@ -1,8 +1,11 @@
-# Scans the Python code and the GitHub Actions workflows with CodeQL on every push to master.
+# Scans the Python code and the GitHub Actions workflows with CodeQL on every push to master and on every pull
+# request to master, because branch protection requires the Analyze checks.
 name: "CodeQL Advanced"
 
 on:
   push:
+    branches: [ "master" ]
+  pull_request:
     branches: [ "master" ]
 
 jobs:

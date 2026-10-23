@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
 import subprocess
 import sys
@@ -46,7 +62,7 @@ def git_secrets(spec: GitSpecOpts) -> dict[str, str | None]:
     }
 
 
-def _run_vpn(spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str) -> int | None | subprocess.Popen[bytes]:
+def _run_vpn(spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str) -> int | subprocess.Popen[bytes] | None:
     docker_img = docker_image("forticlient")
 
     run_args = [
@@ -82,8 +98,8 @@ def _run_vpn(spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str) -> 
 
 
 def _ensure_vpn_healthy(spec: GitSpecOpts, exec_opts: ExecOptions, timeout_s: int = 20000) -> None:
-    """
-    Ensure the 'forti-vpn' service is running and HEALTHY.
+    """Ensure the 'forti-vpn' service is running and HEALTHY.
+
     If absent or not healthy, start with `docker compose up -d forti-vpn` and wait.
     """
     container_name = "forti-vpn"
@@ -140,11 +156,11 @@ class DockerRunner(GitBackend):
         return can_run_docker()
 
     def run(self, spec: GitSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
-        """
+        """Runs the git container through the VPN.
+
         1) Ensure 'forti-vpn' compose service is up & healthy (start in background if needed).
         2) Run the git container sharing the network namespace with 'forti-vpn' with the command.
         """
-
         docker_img = docker_image("git-sshpass")
 
         # 2) Ensure VPN is healthy (starts it if needed), unless it is disabled (e.g. inside the network of the URV)

@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import typer
 
 from bmde.commands.git.command import git_command
@@ -53,16 +69,15 @@ def git_controller(
     vpn_test_ip: VpnTestIpOpt = None,
     vpn_enabled: VpnOpt = None,
 ) -> None:
-    """git wrapper with SSH password bypass and VPN management. git is a distributed version control system."""
-
+    """Git wrapper with SSH password bypass and VPN management. git is a distributed version control system."""
     log.trace(
         "CLI options provided:\n"
-        f"- Arguments: {str(arguments)}\n"
-        f"- Directory: {str(directory)}\n"
-        f"- Backend: {str(backend)}\n"
-        f"- Entrypoint: {str(entrypoint)}\n"
-        f"- Dry run: {str(dry_run)}\n"
-        f"- Interactive: {str(interactive)}\n"
+        f"- Arguments: {arguments!s}\n"
+        f"- Directory: {directory!s}\n"
+        f"- Backend: {backend!s}\n"
+        f"- Entrypoint: {entrypoint!s}\n"
+        f"- Dry run: {dry_run!s}\n"
+        f"- Interactive: {interactive!s}\n"
         f"- SSH username: {ssh_username}\n"
         f"- SSH password: {obfuscate_text(ssh_password)}\n"
         f"- SSH host: {ssh_host}\n"
@@ -71,7 +86,7 @@ def git_controller(
         f"- VPN username: {vpn_username}\n"
         f"- VPN password: {obfuscate_text(vpn_password)}\n"
         f"- VPN host: {vpn_host}\n"
-        f"- VPN port: {str(vpn_port)}\n"
+        f"- VPN port: {vpn_port!s}\n"
         f"- VPN realm: {vpn_realm}\n"
         f"- VPN cert: {vpn_cert}\n"
         f"- VPN test DNS: {vpn_test_dns}\n"
@@ -80,7 +95,7 @@ def git_controller(
 
     settings: Settings = ctx.obj["settings"]
 
-    log.trace(f"Final settings for git command:\n- {str(settings.git)}\n")
+    log.trace(f"Final settings for git command:\n- {settings.git!s}\n")
 
     ret = git_command(
         d=directory,

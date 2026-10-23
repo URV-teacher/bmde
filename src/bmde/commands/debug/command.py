@@ -1,6 +1,23 @@
-"""
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""Translates the options of the debug command into its spec.
+
 The responsibility of this file and the similar ones under each command, is to translate the logic of the bmde interface
-into the specification of the pure logic of the command, for example, translating shell into a corresponding entrypoint
+into the specification of the pure logic of the command, for example, translating shell into a corresponding entrypoint.
 """
 
 from __future__ import annotations
@@ -106,9 +123,7 @@ def create_debug_spec(
 
 
 def stop_emulator(spec: DebugSpec, emulator: int | Popen[bytes]) -> None:
-    """
-    Stops the emulator started by execute_debug and removes the resources created for it.
-    """
+    """Stops the emulator started by execute_debug and removes the resources created for it."""
     if isinstance(emulator, Popen) and emulator.poll() is None:
         log.info("Stopping the emulator")
         emulator.terminate()
@@ -127,8 +142,9 @@ def stop_emulator(spec: DebugSpec, emulator: int | Popen[bytes]) -> None:
 
 
 def execute_debug(spec: DebugSpec) -> int | Popen[bytes]:
-    """
-    Runs the emulator in debug mode and a debugger connected to it. The emulator is stopped when the debugger exits.
+    """Runs the emulator in debug mode and a debugger connected to it.
+
+    The emulator is stopped when the debugger exits.
     """
     log.info(f"Emulator output is written to {EMULATOR_LOG_FILE}")
     emulator = execute_run(spec.DebugSpecOpts.RunSpec)
@@ -177,7 +193,7 @@ def debug_command(
         configure_docker_from_settings(settings=full_settings)
         settings = full_settings.debug
 
-    log.debug(f"Settings for debug command:\n- {str(settings)}\n")
+    log.debug(f"Settings for debug command:\n- {settings!s}\n")
 
     spec = create_debug_spec(
         nds=nds,
@@ -193,6 +209,6 @@ def debug_command(
         settings=settings,
     )
 
-    log.debug(f"Spec for debug command:\n- {str(spec)}\n")
+    log.debug(f"Spec for debug command:\n- {spec!s}\n")
 
     return execute_debug(spec)

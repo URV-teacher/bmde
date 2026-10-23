@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import textwrap
 from pathlib import Path
 from typing import Any, get_origin
@@ -36,9 +52,10 @@ def format_value(key: str, value: Any) -> str:
 
 
 def render_config(settings: Settings, template: bool) -> str:
-    """
-    Renders the settings as a documented TOML file. Each option is preceded by its description and allowed values, and
-    unset options are commented out with a placeholder.
+    """Renders the settings as a documented TOML file.
+
+    Each option is preceded by its description and allowed values, and unset options are commented out with a
+    placeholder.
 
     Args:
         settings: Settings to render.
@@ -47,6 +64,7 @@ def render_config(settings: Settings, template: bool) -> str:
 
     Returns:
         The TOML text.
+
     """
     data = settings.model_dump(mode="json", by_alias=True)
     blocks: list[str] = []

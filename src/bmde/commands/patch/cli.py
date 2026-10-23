@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import typer
 
 from bmde.commands.patch.command import patch_command
@@ -26,17 +42,16 @@ def patch_controller(
     entrypoint: EntrypointOpt = None,
     dry_run: DryRunOpt = False,
 ) -> None:
-    """dlditool wrapper. Patches a NDS ROM for FAT usage."""
-
+    """Dlditool wrapper. Patches a NDS ROM for FAT usage."""
     log.debug(
         "CLI options provided:\n"
-        f"- Arguments: {str(arguments)}\n"
-        f"- Directory: {str(directory)}\n"
-        f"- Backend: {str(backend)}\n"
-        f"- Background: {str(background)}\n"
-        f"- Interactive: {str(interactive)}\n"
-        f"- Entrypoint: {str(entrypoint)}\n"
-        f"- Dry run: {str(dry_run)}\n"
+        f"- Arguments: {arguments!s}\n"
+        f"- Directory: {directory!s}\n"
+        f"- Backend: {backend!s}\n"
+        f"- Background: {background!s}\n"
+        f"- Interactive: {interactive!s}\n"
+        f"- Entrypoint: {entrypoint!s}\n"
+        f"- Dry run: {dry_run!s}\n"
     )
 
     settings: Settings = ctx.obj["settings"]

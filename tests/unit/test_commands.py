@@ -1,5 +1,20 @@
-"""
-The commands, run through the CLI as a user would: each test checks the command that bmde executes (docker run, make,
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""The commands, run through the CLI as a user would: each test checks the command that bmde executes (docker run, make,
 desmume...), with subprocess replaced by a recorder so nothing is executed.
 """
 
@@ -299,7 +314,7 @@ def test_dry_run_of_the_emulator_in_debug_mode_does_not_touch_docker(machine: Ma
     assert not [call for call in machine.docker_calls if call[1] == "network"]
 
 
-def test_run_in_the_host(machine: Machine, tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
+def test_run_in_the_host(machine: Machine, tmp_path: Path) -> None:
     machine.installed = {"desmume-cli"}
     (tmp_path / "fat.img").touch()
     (tmp_path / "desmume.ini").touch()
@@ -519,7 +534,7 @@ def test_debug_stops_the_emulator_if_the_debugger_fails(machine: Machine) -> Non
     result = bmde("debug", "-b", "host")
 
     assert isinstance(result.exception, RuntimeError)
-    (emulator,) = machine.commands
+    (_emulator,) = machine.commands
     assert ["docker", "network", "rm", "bmde-debug"] in machine.docker_calls
 
 
@@ -657,7 +672,7 @@ def test_git_aborts_when_the_vpn_does_not_start(machine: Machine, monkeypatch: p
     assert len(machine.commands) == 1  # only the VPN
 
 
-def test_git_times_out_waiting_for_the_vpn(machine: Machine, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_git_times_out_waiting_for_the_vpn(machine: Machine) -> None:
     from bmde.commands.git.backends import docker as git_docker
     from bmde.commands.git.spec import GitSpecOpts
     from bmde.core.exec import ExecOptions

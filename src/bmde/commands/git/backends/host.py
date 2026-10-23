@@ -1,3 +1,19 @@
+# bmde - Bare Metal Development Environment CLI
+# Copyright (C) 2026  Aleix Mariné Tena (AleixMT)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import shutil
 import subprocess
 
@@ -15,7 +31,8 @@ class HostRunner(GitBackend):
     def is_available(self) -> bool:
         return is_command_available("git")
 
-    def run(self, spec: GitSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:
+    # The host git only takes the arguments of exec_opts, but the signature is the one of every Backend
+    def run(self, spec: GitSpecOpts, exec_opts: ExecOptions) -> int | subprocess.Popen[bytes]:  # noqa: ARG002
         entry = str(exec_opts.entrypoint) if exec_opts.entrypoint else (shutil.which("git"))
         if not entry:
             return 127
