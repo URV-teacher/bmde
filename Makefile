@@ -103,17 +103,28 @@ fmt-ai-ignore:  ## Regenerate the ignore files of the other AI tools from .aiexc
 		{ echo '$(AI_IGNORE_HEADER)'; cat "$(AI_IGNORE_SOURCE)"; } > "$$f"
 	done
 
-fmt: fmt-example-config fmt-ai-ignore  ## Auto-format and fix everything that can be fixed, in every tracked file
+# The download logic of scripts/download_assets.sh of every component is scripts/download_lib.sh, copied into each of
+# them (they are standalone repositories, so they cannot source it from here). Components that are not checked out are
+# skipped
+DOWNLOAD_LIB := scripts/download_lib.sh
+DOWNLOAD_LIB_COPIES = $(patsubst %/download_assets.sh,%/download_lib.sh,$(wildcard components/*/scripts/download_assets.sh))
+
+fmt-download-lib:  ## Copy scripts/download_lib.sh into the scripts/ of every component
+	@for f in $(DOWNLOAD_LIB_COPIES); do
+		cp "$(DOWNLOAD_LIB)" "$$f"
+	done
+
+fmt: fmt-example-config fmt-ai-ignore fmt-download-lib  ## Auto-format and fix everything that can be fixed, in every tracked file
 	@for hook in $(FIX_HOOKS); do
 		$(PRE_COMMIT) run --all-files "$$hook" || true
 	done
 
 # ---- linting (fails on violation) ----
 
-lint: lint-pre-commit lint-mypy lint-example-config lint-ai-ignore  ## Run every check on every tracked file (what CI runs)
+lint: lint-pre-commit lint-mypy lint-example-config lint-ai-ignore lint-download-lib  ## Run every check on every tracked file (what CI runs)
 
 # The local hooks of .pre-commit-config.yaml that have a target of their own, which `make lint` already runs
-OWN_TARGET_HOOKS := mypy,example-config,ai-ignore
+OWN_TARGET_HOOKS := mypy,example-config,ai-ignore,download-lib
 
 lint-pre-commit:  ## Run the hooks of .pre-commit-config.yaml (ruff, shellcheck, detect-secrets, ...) on every file
 	@SKIP=$(OWN_TARGET_HOOKS) $(PRE_COMMIT) run --all-files --show-diff-on-failure
@@ -130,6 +141,13 @@ lint-ai-ignore:  ## Check the AI ignore files are up to date with .aiexclude (fi
 	for f in $(AI_IGNORE_COPIES); do
 		{ echo '$(AI_IGNORE_HEADER)'; cat "$(AI_IGNORE_SOURCE)"; } | diff -u "$$f" - \
 			|| { echo "$$f is outdated, run 'make fmt'"; status=1; }
+	done
+	exit $$status
+
+lint-download-lib:  ## Check the components have the same scripts/download_lib.sh as bmde (fix with make fmt)
+	@status=0
+	for f in $(DOWNLOAD_LIB_COPIES); do
+		diff -u "$$f" "$(DOWNLOAD_LIB)" || { echo "$$f is outdated, run 'make fmt'"; status=1; }
 	done
 	exit $$status
 
@@ -168,7 +186,8 @@ clean:  ## Remove build/test artifacts
 
 
 .PHONY: venv install install-test install-lint install-docs dev run clean help dist readme docs-serve docs-build docs-deploy \
-        fmt fmt-example-config fmt-ai-ignore lint lint-pre-commit lint-mypy lint-example-config lint-ai-ignore test
+        fmt fmt-example-config fmt-ai-ignore fmt-download-lib lint lint-pre-commit lint-mypy lint-example-config \
+        lint-ai-ignore lint-download-lib test
 
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .+$$' $(MAKEFILE_LIST) | \

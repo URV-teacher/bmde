@@ -8,7 +8,8 @@ Downloading and building are separate stages (see [Docker images](images.md)):
 1. **Download**: `scripts/download_assets.sh` of each component downloads its **assets** into its `assets/` folder
    (not in git). If an asset is already there, it only checks it; if it is not, it downloads it and then checks it. The
    script fails if any asset could not be downloaded or does not match its checksum. Run it with names of assets as
-   arguments to download only those.
+   arguments to download only those. The download logic is the same in every component: `scripts/download_lib.sh`,
+   whose canonical copy is the one of bmde, copied into each component by `make fmt` and checked by `make lint`.
 2. **Build**: the install scripts (`src/`) and the tests (`test/`) only take files from the repository (`src/`,
    `config/` and `assets/`), never from the internet. The only exceptions are the packages of the system, installed with
    APT, and the Docker base images, both verified by their own tools.
