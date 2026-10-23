@@ -20,7 +20,8 @@ FROM bmde-base
 
 RUN bmde-install-display
 
-# Programs built by the images of the components; their install scripts find them and do not build them again
+# Programs built by the images of the components; their install scripts find them and do not build them again. The
+# image of devkitARM does not include the NDS examples of devkitPro, which install_examples.sh installs here
 COPY --from=devkitarm /URV/bmde/devkitPro /URV/bmde/devkitPro
 COPY --from=desmume /URV/bmde/DeSmuME_0.9.11 /URV/bmde/DeSmuME_0.9.11
 COPY --from=insight /URV/bmde/insight /URV/bmde/insight

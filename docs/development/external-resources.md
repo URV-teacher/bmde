@@ -40,10 +40,14 @@ Installed during the build, not by the download scripts.
 |-------|--------|---------|-------|
 | `devkitARM_r46-x86_64-linux.tar.bz2` | <https://wii.leseratte10.de/devkitPro/devkitARM/r46%20%282017%29/devkitARM_r46-x86_64-linux.tar.bz2> | devkitARM r46, the toolchain of the course. devkitPro no longer distributes old versions, so it comes from a community mirror | SHA-256 |
 | `libnds.tar.bz2` | Stored in the repository | libnds 1.6.2 of devkitPro, with dswifi, maxmod, libfat 1.1.0 and libfilesystem, as used by the course. Not published anywhere else in this form | SHA-256 |
-| `examples.tar.bz2` | Stored in the repository | NDS examples of devkitPro, as used by the course. Not published anywhere else in this form | SHA-256 |
+| `nds-examples.tar.gz` | <https://github.com/devkitPro/nds-examples/archive/54926f9f2d44ab0ea383acd524851837fd3c2998.tar.gz> | NDS examples of devkitPro at the version of the original BMDE (the tag `v20170124`), installed by `src/install_examples.sh` and built by `test/test_windows_builds.sh` | SHA-256 |
 | `hello-world-nds.tar.gz` | <https://github.com/URV-teacher/hello-world-nds/archive/refs/heads/master.tar.gz> | Hello world project of the course, built by `test/test_operation.sh` | Not checked |
 
 Installed during the build: `make` and `bzip2` (APT).
+
+The image of the component does not include the NDS examples (`nds-examples.tar.gz`): the BMDE full image
+(`shell/Dockerfile`) installs them, and `test/test_examples.sh` and `test/test_windows_builds.sh` install them into a
+temporary directory when they are not installed.
 
 `test/test_windows_builds.sh` compares the examples built by the image with the binaries built by the Windows BMDE,
 using their SHA-1, stored in the repository (`test/windows_builds.sha1`): it needs no external resources.
@@ -97,7 +101,7 @@ tarball stored in git (history of insight-docker, `src/insight-7.3.50.20110803-c
 |-------|--------|---------|-------|
 | `dlditool-linux-x86_64.zip` | <https://www.chishm.com/DLDI/downloads/dlditool-linux-x86_64.zip> | dlditool, which patches the NDS ROMs with DLDI drivers so they can use the FAT library | SHA-256 |
 | `mpcf.dldi` | <https://www.chishm.com/DLDI/downloads/mpcf.dldi> | DLDI driver of the M3 / G6 / SuperCard CompactFlash, the one used by the course | SHA-256 |
-| `libfatdir.nds` | Built from the `libfatdir` example of devkitPro (installed by devkitarm-nds-docker), with the local devkitARM or with the image `aleixmt/bmde-linux` ([Docker Hub](https://hub.docker.com/r/aleixmt/bmde-linux)) | ROM patched by `test/test_dlditool.sh`: it uses libfat, so it has a DLDI section. The build is reproducible | SHA-256 |
+| `libfatdir.nds` | Built from the `libfatdir` example of devkitPro, at the commit installed by devkitarm-nds-docker (<https://github.com/devkitPro/nds-examples/archive/54926f9f2d44ab0ea383acd524851837fd3c2998.tar.gz>), with the local devkitARM or with the image `aleixmt/bmde-linux` ([Docker Hub](https://hub.docker.com/r/aleixmt/bmde-linux)) | ROM patched by `test/test_dlditool.sh`: it uses libfat, so it has a DLDI section. The build is reproducible | SHA-256 |
 
 Installed during the build: `unzip` (APT).
 
