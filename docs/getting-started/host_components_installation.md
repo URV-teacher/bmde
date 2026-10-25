@@ -48,6 +48,10 @@ the current directory is the root of that repository.
 ---
 
 # 4. Installation considerations
+`scripts/install.sh` of the repository of `bmde` runs every step of this guide (downloads and installation) for the
+components you choose, in order: see [components installation](components.md#host-components). This guide explains
+each of those steps, to run them one by one and to test each component.
+
 Each component is installed in two stages:
 1. **Download**: `scripts/download_assets.sh` of its repository downloads the files that come from outside of the
    repository (e.g. devkitARM, the sources of DeSmuME) into its `assets/` folder. If a file is already there, it only
@@ -646,8 +650,11 @@ SSH authentication is required for accessing the repositories.
 ##### forticlient or openfortivpn
 ###### Explanation
 VPN access to the university network. Course Git repositories are only accessible from within the university network.
-VPN access is therefore required for off-campus work. It also installs the helper of the BMDE to connect to the VPN
-(`connect_vpn.sh`) into `/URV/bmde/git-urv-vpn/bin`.
+VPN access is therefore required for off-campus work. It also installs the helpers of the BMDE to connect to the VPN
+(`connect_vpn.sh`) and to check that it works (`vpn_healthcheck.sh`) into `/URV/bmde/git-urv-vpn/bin`. Run
+`connect_vpn.sh` as your user: it uses `sudo` only for openfortivpn, and takes the credentials from the variables
+`VPN_USERNAME`, `VPN_PASSWORD`, `VPN_HOST`, `VPN_PORT`, `VPN_REALM` and `VPN_CERT` (see the README of
+git-urv-vpn-docker).
 
 ###### Proposed command
 For `openfortivpn`:

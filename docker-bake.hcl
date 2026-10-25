@@ -1,7 +1,7 @@
 # Builds the Docker images of the BMDE from this repository (after downloading the assets of each component with its
 # scripts/download_assets.sh): the base image (base/), the image of each component (from the checkouts of the
-# submodules in components/), the full development environment (shell/) and the development environment of the bmde
-# CLI (.devcontainer/bmde-dev/). Each image is built on the images being
+# submodules in components/), the full development environment (shell/), the development environment of the bmde
+# CLI (.devcontainer/bmde-dev/) and the bmde CLI in Docker (Dockerfile). Each image is built on the images being
 # built instead of the published ones, so a change in the base or in a component is tested in all the images that use
 # it.
 #
@@ -64,7 +64,7 @@ function "tags" {
 
 group "default" {
   description = "Every image"
-  targets     = ["base", "components", "full", "dev"]
+  targets     = ["base", "components", "full", "dev", "cli"]
 }
 
 group "components" {
@@ -189,4 +189,20 @@ target "dev" {
   tags       = tags("bmde-dev")
   cache-from = cache_from("dev")
   cache-to   = cache_to("dev")
+}
+
+
+target "cli" {
+  description = "aleixmt/bmde: the bmde CLI in Docker, on the development environment of the CLI"
+  context     = "."
+  contexts = {
+    bmde-dev = "target:dev"
+  }
+  # The CLI of a release runs the images tagged with its version (without VERSION, a development version: the latest)
+  args = VERSION == "" ? {} : {
+    BMDE_VERSION = VERSION
+  }
+  tags       = tags("bmde")
+  cache-from = cache_from("cli")
+  cache-to   = cache_to("cli")
 }

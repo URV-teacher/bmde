@@ -1,6 +1,6 @@
 # Downloads the assets of the components and builds the Docker images of the BMDE with docker-bake.hcl (the base
-# image, the image of each component from the submodules, the full development environment and the development
-# environment of the bmde CLI) and runs the tests of every component inside the full development environment.
+# image, the image of each component from the submodules, the full development environment, the development
+# environment of the bmde CLI and the bmde CLI in Docker) and runs the tests of every component inside the full development environment.
 #
 # On pull requests it only builds and tests. On master, release.yml calls it with candidate: true, which pushes every
 # tested image to Docker Hub with the tag sha-<commit> only; release.yml gives them their public tags (latest and the
@@ -93,6 +93,13 @@ jobs:
         run: |
           docker run --rm --entrypoint bash aleixmt/bmde-dev:latest -c \
             'python3 -m venv /tmp/venv && /tmp/venv/bin/pip --version && command -v mkfs.fat mcopy'
+
+      # The CLI in Docker: the CLI, its Docker client and the tools of its host backends
+      - name: Check the image of the CLI
+        run: |
+          docker run --rm aleixmt/bmde:latest --version
+          docker run --rm --entrypoint bmde-exec aleixmt/bmde:latest \
+            bash -c 'docker --version && command -v make arm-none-eabi-gcc desmume dlditool'
 
       - name: Log in to Docker Hub
         if: inputs.candidate

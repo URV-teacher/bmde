@@ -11,4 +11,5 @@ The **Bare Metal Development Environment (BMDE)** CLI is a tool designed to mana
 
 ## Getting Started
 
-Check out the [Installation](development/installation.md) guide to set up BMDE on your machine.
+Check out the [Installation](getting-started/installation.md) guide to choose how to set up BMDE on your machine,
+and the [development installation](development/installation.md) to work on BMDE itself.

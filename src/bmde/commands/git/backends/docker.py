@@ -86,9 +86,12 @@ def _run_vpn(spec: GitSpecOpts, exec_opts: ExecOptions, container_name: str) -> 
             "NET_ADMIN",
             "--device",
             "/dev/ppp",
-            "--health-cmd=[ -f /READY ] || exit 1",
+            # The image tells if the VPN works from the state of openfortivpn (vpn_healthcheck.sh). The images before it
+            # (e.g. pinned with docker.image_tag) do not have it, and create /READY instead once the VPN works
+            "--health-cmd=vpn_healthcheck.sh || [ -f /READY ]",
             "--health-interval=5s",
-            "--health-timeout=2s",
+            # vpn_healthcheck.sh requests the test IP and DNS of the VPN
+            "--health-timeout=10s",
             "--health-retries=12",
             "--health-start-period=120s",
             *secrets,

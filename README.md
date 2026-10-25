@@ -174,12 +174,14 @@ This section lists any major languages/frameworks/libraries/tools used in this p
 <!-- GETTING STARTED -->
 ## Getting Started
 ### Prerequisites
-To run `bmde` you will need Python 3.11 installed in your system.
+To run `bmde` you will need Python 3.11 or newer and [pipx](https://pipx.pypa.io).
 
-To run a command you will need either Docker with permissions for the user executing `bmde` `COMMAND` or the
-software that the command wraps directly installed in your system. For simplicity, we recommend sticking to Docker.
+Each command runs a component of the BMDE (devkitARM, DeSmuME, Insight...), either from its Docker image, which only
+needs Docker with permissions for the user running `bmde`, or installed in your system with `scripts/install.sh`. For
+simplicity, we recommend sticking to Docker.
 
-[Check out the docs for a full explanation on the prerequisites][docs-prerequisites].
+[Check out the docs for a full explanation on the prerequisites][docs-prerequisites] and on
+[the installation of the components][docs-components].
 
 
 
@@ -187,15 +189,13 @@ software that the command wraps directly installed in your system. For simplicit
 
 Install the command by using:
 ```shell
-pip install bmde
+pipx install bmde
 ```
 
-You may add an alias to your binary to shorten up the command from `python -m bmde` to `bmde`:
-```shell
-echo "alias bmde=python -m bmde" >> ~/.bashrc
-```
+The BMDE can also be used without Python (in Docker, or with the components in your system and the Makefiles of the
+course), as explained in the docs.
 
-[Check out the docs for a full explanation on the installation][docs-installation].
+[Check out the docs for a full explanation on every installation method][docs-installation].
 
 
 
@@ -298,8 +298,9 @@ The teachers of URV who have collaborated.
 [pypi-shield]: https://github.com/URV-teacher/bmde/actions/workflows/release.yml/badge.svg
 [pypi-url]: https://github.com/URV-teacher/bmde/actions/workflows/release.yml
 [docs-url]: https://urv-teacher.github.io/bmde/
-[docs-prerequisites]: https://urv-teacher.github.io/bmde/
-[docs-installation]: https://urv-teacher.github.io/bmde/
+[docs-prerequisites]: https://urv-teacher.github.io/bmde/getting-started/prerequisites/
+[docs-installation]: https://urv-teacher.github.io/bmde/getting-started/installation/
+[docs-components]: https://urv-teacher.github.io/bmde/getting-started/components/
 [docs-usage]: https://urv-teacher.github.io/bmde/
 [contributing-url]: https://github.com/URV-teacher/bmde/blob/master/CONTRIBUTING.md
 [docs-shield]: https://github.com/URV-teacher/bmde/actions/workflows/docs.yml/badge.svg

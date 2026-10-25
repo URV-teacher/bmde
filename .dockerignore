@@ -1,0 +1,8 @@
+# Build context of the image of the CLI (Dockerfile), which only needs the package: pyproject.toml, src/ and the files
+# that pyproject.toml references
+*
+!pyproject.toml
+!README.md
+!LICENSE
+!src/
+**/__pycache__
