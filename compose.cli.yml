@@ -1,0 +1,66 @@
+# Runs the bmde CLI in Docker (aleixmt/bmde, see Dockerfile) on the NDS project of the current directory, for those who
+# have Docker but not Python:
+#
+#   docker compose -f /path/to/bmde/compose.cli.yml run --rm bmde build      # instead of: bmde build
+#   docker compose -f /path/to/bmde/compose.cli.yml run --rm bmde run
+#
+# Not named compose.yml because docker buildx bake reads that file of the repository root as a definition of its own.
+#
+# The CLI runs the images of the components with the Docker of this computer, whose daemon looks for the paths that the
+# CLI mounts in this computer: that is why the project (the current directory), the runtime directory of the user
+# (sound, X authority of Wayland and the secrets of git) and the X server are mounted at the same path as here.
+#
+# It needs these variables, which the shell does not export: put them in your ~/.bashrc
+#   export BMDE_UID="$(id -u)" BMDE_GID="$(id -g)" DOCKER_GID="$(stat -c %g /var/run/docker.sock)"
+# Your bmde.toml is read from ~/.config/bmde (create the folder, even if empty) and from the project, as with the CLI.
+name: bmde-cli
+
+services:
+  bmde:
+    # BMDE_TAG pins a version of the CLI (e.g. 1.14.0) and of the images that it runs (see environment)
+    image: aleixmt/bmde:${BMDE_TAG:-latest}
+    init: true
+    stdin_open: true
+    tty: true
+    # The files that the CLI and the containers it runs create (e.g. the build) are owned by you
+    user: "${BMDE_UID:-1000}:${BMDE_GID:-1000}"
+    group_add:
+      - "${DOCKER_GID:?set DOCKER_GID to the group of /var/run/docker.sock: stat -c %g /var/run/docker.sock}"
+    working_dir: ${PWD}
+
+    environment:
+      # Windows of the host backends (the tools of the image), and of the containers of the components, in the X
+      # server of the host
+      DISPLAY: ${DISPLAY:-:0}
+      XAUTHORITY: ${XAUTHORITY:-}
+      # The images of the same version as the CLI. The image of a release is the one tested before releasing it,
+      # retagged, so its CLI has a development version, which would run the latest images (this overrides
+      # docker.image_tag of bmde.toml: use BMDE_TAG instead)
+      BMDE_DOCKER__IMAGE_TAG: ${BMDE_TAG:-latest}
+      XDG_RUNTIME_DIR: "${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is not set, run it from the session of your user}"
+
+    volumes:
+      # The Docker of this computer, which runs the images of the components
+      - /var/run/docker.sock:/var/run/docker.sock
+      # The project, at its path of the host
+      - type: bind
+        source: ${PWD}
+        target: ${PWD}
+      # Sound (pulse/native), the X authority of Wayland and the secrets that the CLI passes to its containers
+      - type: bind
+        source: ${XDG_RUNTIME_DIR}
+        target: ${XDG_RUNTIME_DIR}
+      # The X server of the host. Without an XAUTHORITY under XDG_RUNTIME_DIR (plain X11), allow your user with
+      # `xhost +SI:localuser:$(id -un)`
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        bind:
+          create_host_path: false
+      # Your bmde.toml (XDG_CONFIG_HOME of the image is /config)
+      - type: bind
+        source: ${XDG_CONFIG_HOME:-${HOME}/.config}/bmde
+        target: /config/bmde
+        read_only: true
+        bind:
+          create_host_path: false

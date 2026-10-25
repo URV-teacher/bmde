@@ -41,3 +41,16 @@ You need Python 3.11+, git, make and Docker.
     ```shell
     ./venv/bin/bmde --help
     ```
+
+#### The bmde command from your checkout
+
+`make dev` installs the package in `venv/` in editable mode, so `./venv/bin/bmde` always runs the code of the
+checkout: the branch that is checked out, with your changes. To use it as the `bmde` command of your `PATH` (e.g. in
+your NDS projects), install the checkout in editable mode with [pipx](https://pipx.pypa.io) too:
+
+```shell
+pipx install --editable .   # pipx uninstall bmde to go back to the published one
+```
+
+The docker backend runs the published images of the components (`latest`, for a development version), which it pulls
+on every run, not the ones built from your checkout of `components/` (see [images](images.md)).

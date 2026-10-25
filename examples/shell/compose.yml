@@ -1,0 +1,94 @@
+# Template to develop an NDS project inside the full development environment of the BMDE (aleixmt/bmde-full), with
+# every tool of the course: make, desmume, insight, dlditool, grit, git, the VPN of the URV and VS Code. Copy it to the
+# root of your project, and from there:
+#
+#   docker compose run --rm shell          # a shell in the project: make, make run, make debug, git...
+#   docker compose run --rm shell make     # one command
+#
+# The Makefiles of the course name the ROM after the folder of the project, which is mounted as /home/bmde/$PROJECT:
+# export PROJECT="$(basename "$PWD")" to get the same name as outside of the container (project.nds otherwise).
+#
+# Linux (X11, or Wayland with Xwayland) and Windows 11 with WSLg show the windows of DeSmuME, Insight and VS Code on
+# the host; elsewhere (e.g. macOS), use the VNC block of `environment` and remove the mounts of the X server and of the
+# sound. shell/compose.yml of bmde runs the same image from the repository of bmde, for any project.
+#
+# Credentials of the VPN and of the git server: one file each in ~/.config/bmde/secrets (create the folder, even if you
+# do not use them), outside of the project so they cannot be committed: vpn_username, vpn_password, vpn_host, vpn_port,
+# vpn_realm, vpn_cert, vpn_test_dns, vpn_test_ip, ssh_username, ssh_password, ssh_host, git_name and git_email, e.g.
+# printf '%s' 'my password' > ~/.config/bmde/secrets/vpn_password. They are mounted as /run/secrets, where the scripts
+# of the components read them first.
+name: bmde-shell
+
+services:
+  shell:
+    # BMDE_TAG pins a known-good environment (e.g. 1.14.0). To add tools to the environment, replace image by
+    # `build: .`, with the Dockerfile of this template next to this file
+    image: aleixmt/bmde-full:${BMDE_TAG:-latest}
+    hostname: bmde
+    init: true
+    stdin_open: true
+    tty: true
+    working_dir: /home/bmde/${PROJECT:-project}
+
+    environment:
+      # Windows of DeSmuME, Insight and VS Code in the X server of the host
+      MODE: host
+      DISPLAY: ${DISPLAY:-:0}
+      XAUTHORITY: /tmp/.Xauthority
+      # VNC instead (connect a VNC viewer to localhost:5900), for hosts without an X server:
+      # MODE: vnc
+      # VNC_PASSWORD: secret
+      # Sound of DeSmuME through the PulseAudio / PipeWire server of the host
+      PULSE_SERVER: unix:/run/pulse/native
+
+    volumes:
+      # The project: the folder of this file
+      - type: bind
+        source: .
+        target: /home/bmde/${PROJECT:-project}
+      # Credentials of the VPN and of the git server (see above)
+      - type: bind
+        source: ${BMDE_SECRETS_DIR:-${HOME}/.config/bmde/secrets}
+        target: /run/secrets
+        read_only: true
+        bind:
+          create_host_path: false
+      # The X server of the host and its cookie (needed by Xwayland). When XAUTHORITY is unset (plain X11 with
+      # `xhost +SI:localuser:$(id -un)`, or VNC), /dev/null is mounted instead
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${XAUTHORITY:-/dev/null}
+        target: /tmp/.Xauthority
+        read_only: true
+        bind:
+          create_host_path: false
+      # The sound server of the host
+      - type: bind
+        source: ${XDG_RUNTIME_DIR:-/run/user/1000}/pulse/native
+        target: /run/pulse/native
+        bind:
+          create_host_path: false
+      # Settings of DeSmuME (controls) and of VS Code, kept between runs
+      - config:/home/bmde/.config
+      # Same time zone as the host, for the dates of git and of the build
+      - /etc/localtime:/etc/localtime:ro
+
+    # The VPN of the URV creates a PPP interface. If your Docker has no /dev/ppp, remove both (no VPN then)
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/ppp
+
+    # VS Code (Electron) crashes with the default 64 MB of shared memory
+    shm_size: 1gb
+
+    # VNC server, only used with MODE=vnc (only reachable from this computer)
+    ports:
+      - "127.0.0.1:5900:5900"
+
+volumes:
+  config:

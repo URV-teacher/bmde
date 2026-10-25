@@ -6,9 +6,10 @@
 #   docker compose -f /path/to/bmde/shell/compose.yml run --rm bmde make       # one command
 #   PROJECT_DIR=~/nds/hello docker compose -f shell/compose.yml run --rm bmde  # another project
 #
-# Inside: make, desmume game.nds, insight game.elf, dlditool, grit, code --no-sandbox ., connect_vpn.sh (with sudo),
-# git. Linux (X11, or Wayland with Xwayland) and Windows 11 with WSLg show the windows on the host; elsewhere (e.g.
-# macOS), use the VNC block of `environment` and remove the mounts of the X server and of the sound.
+# Inside: make, desmume game.nds, insight game.elf, dlditool, grit, code --no-sandbox ., git and
+# sudo "$(command -v connect_vpn.sh)" (sudo resets the PATH). Linux (X11, or Wayland with Xwayland) and Windows 11
+# with WSLg show the windows on the host; elsewhere (e.g. macOS), use the VNC block of `environment` and remove the
+# mounts of the X server and of the sound.
 #
 # Credentials of the VPN and of the git server: one file each in shell/secrets/ (ignored by git, never commit them),
 # named vpn_username, vpn_password, vpn_host, vpn_port, vpn_realm, vpn_cert, vpn_test_dns, vpn_test_ip,

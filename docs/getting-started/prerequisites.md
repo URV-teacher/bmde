@@ -1,59 +1,45 @@
+# Prerequisites
 
-### Prerequisites
-#### Operating system
-This CLI has been developed in Ubuntu Linux 20.04.6 LTS (Focal Fossa), so that is the recommended operating system and
-version to use. The CLI should work in other Linux systems with minor to none changes to the installation process.
+What each [installation method](installation.md) needs in your computer. The components of the BMDE (devkitARM,
+DeSmuME...) are explained in [components installation](components.md).
 
-#### Root permissions
-You will need root permissions either to do installations or using the bundled Docker components. Usually these
-permissions are acquired using the `sudo` command.
+## Operating system
 
-#### Python
-To run the CLI you will need Python installed in your system.
+The BMDE is developed and tested in Ubuntu Linux (24.04 and 26.04), the recommended operating system. The install
+scripts of the [host components](components.md#host-components) need Ubuntu or Debian (they use `apt`); the methods
+that only need Docker also work in other Linux distributions and, with a [dev container](devcontainer.md), in Windows
+(WSL 2) and macOS.
 
-In Debian-like systems you can install it with:
+## Root permissions
+
+Installing the host components, Docker or Flatpak needs root permissions, usually acquired with `sudo`.
+
+## Python
+
+[The bmde CLI](installation.md#1-the-bmde-cli) needs Python 3.11 or newer, and [pipx](https://pipx.pypa.io), which
+installs Python programs like `bmde` in an environment of their own, with their command in your `PATH`. In Ubuntu /
+Debian:
+
 ```shell
-sudo apt install -y python
+sudo apt install -y python3 pipx
+pipx ensurepath   # then open a new terminal
 ```
 
-The recommended version to use for Python is 3.11.
+## `make`
 
-#### `make`
-You can optionally install `make` to automate some of the common operation for the development of the project, such as
-the creation of the virtual environment.
+The Makefiles of the NDS projects need `make`, which the `devkitarm` [host component](components.md#host-components)
+installs. Developing `bmde` needs it too ([development installation](../development/installation.md)). In Ubuntu /
+Debian:
 
-In Debian-like systems you can install it with:
 ```shell
 sudo apt install -y make
 ```
 
-#### Manual-installed components or `docker`
-You will also need the components of the CLI installed. In this case you can either install them into your system
-manually and
-select `host` as your backend when using the CLI to use those installations, or you can use the Docker containers that
-come bundled with
-the CLI by selecting `docker` as your backend when using the CLI.
+## Docker
 
-You can also mix and match `docker`-installed components with `host`-installed components, so there is no need to
-install all components of the same type. Exceptionally, `flathub` is another possible backend to use, but only for the
-run command.
+The [Docker components](components.md#docker-components), and the methods that run the BMDE in Docker, need Docker.
+Install it following the [official Docker installation guide][docker-installation-guide]. In Ubuntu, with `apt`:
 
-##### `flathub`
-Follow the [oficial installation guide][flathub-setup-url].
-
-In Ubuntu, you can do:
-```shell
-sudo apt install flatpak
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-```
-
-##### `docker`
-Docker components are easier to use because they do not need an installation and are recommended backend to use for all
-components.
-
-You should install Docker by following the [official Docker installation guide][docker-installation-guide].
-
-In Ubuntu, you can install the latest version of Docker using `apt` with the following:
 ```shell
 # Add Docker's official GPG key:
 sudo apt update
@@ -76,60 +62,22 @@ sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
-Currently, the CLI calls `docker` directly, so you either need to:
-* Run the app as root by calling `sudo`
-* Run the app as root by being a privileged user, for example `root`.
-* Add your user to the Docker group.
+`bmde` and the Makefiles call `docker` directly, so your user must be able to run it. Add your user to the `docker`
+group (then reboot, or log out and log in):
 
-It is recommended to add your user to the `docker` group, so that you do not need to log in as another user or add
-`sudo` in front of your call to BMDE each time.
-
-To add yourself to the Docker group you can use this command:
 ```shell
 sudo usermod -aG docker $USER
 ```
 
-You need to reboot or log out / log in for these changes to take effect.
+## Flatpak
 
-##### Manual installed components
-You can also install and use the components of the BMDE manually and use them in the CLI.
+Only for the [Flatpak DeSmuME](components.md#flatpak-desmume). Follow the [official installation guide][flathub-setup-url];
+in Ubuntu:
 
-###### devkitARM
-This is the most complex component to install manually, but it can be done.
-
-You will need to download [`libnds`][libnds-bin]
-and [`devkitARMv46`][devkitarm-bin],
-decompress them in a folder of your machine and create
-environment variables that point to your installation.
-
-The variables are the following:
-```
-DEVKITPRO=/folder/of/devkitPro \
-DEVKITARM=/folder/of/devkitARM \
-PATH=/folder/of/devkitARM/bin \
-```
-
-A script for the installation of this component will be bundled in the CLI in future versions.
-
-###### `dlditool`
-You will need to install `dlditool` only if you want to mount FAT images to your NDS ROMs.
-
-You can download it from [here][dlditool-bin].
-
-You may need a patch file for your ROMs. We have found that MPCF is the only one that works in desmume. You can download
-the MPCF patch from [here][dlditool-patch].
-
-
-###### Rest of manual installed components
-
-In Debian-like systems you can install the rest of the components in a single command with:
 ```shell
-sudo apt install -y git openfortivpn forticlient desmume make ssh
+sudo apt install -y flatpak
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 ```
 
 [flathub-setup-url]: https://flathub.org/en/setup
 [docker-installation-guide]: https://docs.docker.com/engine/install/ubuntu/
-[libnds-bin]: https://raw.githubusercontent.com/URV-teacher/devkitarm-nds-docker/master/assets/libnds.tar.bz2
-[dlditool-bin]: https://www.chishm.com/DLDI/downloads/dlditool-linux-x86_64.zip
-[dlditool-patch]: https://www.chishm.com/DLDI/downloads/mpcf.dldi
-[devkitarm-bin]: https://wii.leseratte10.de/devkitPro/devkitARM/r46%20%282017%29/devkitARM_r46-x86_64-linux.tar.bz2

@@ -3,7 +3,8 @@
 Each component of the BMDE lives in its own repository (a submodule in `components/`) and can be installed in three
 ways, all of them with the same install scripts of the component (`components/COMPONENT/src/install_*.sh`):
 
-* In a Linux host, running the scripts directly (see
+* In a Linux host, with `scripts/install.sh` (see [components installation](../getting-started/components.md)), which
+  runs the scripts of each component in order, or running them one by one (see
   [host components installation](../getting-started/host_components_installation.md)).
 * In the Docker image of the component (e.g. `aleixmt/desmume`), used by the commands of the `bmde` CLI.
 * In the full development environment (`aleixmt/bmde-full`), with all the components in one image.
@@ -53,6 +54,11 @@ download script first. Every external resource is listed in [external resources]
 * `.devcontainer/bmde-dev/`: development environment of the bmde CLI (`aleixmt/bmde-dev`), the full development
   environment plus Python and the packages of the integration tests (the Docker client comes from a feature of the dev
   container). Image of the dev container `.devcontainer/bmde-dev/`.
+* `Dockerfile` (repository root): the bmde CLI in Docker (`aleixmt/bmde`), the development environment of the CLI
+  with the package of the checkout and a Docker client, for those who have Docker but not Python. `compose.cli.yml`
+  runs it with the socket of the Docker of the host (Docker outside of Docker), so its `docker` backend runs the
+  images of the components in the host, and the paths it mounts in them (the project, the runtime directory of the
+  user, the X server) are mounted at the same path as in the host.
 
 The Dockerfiles name the published images they use as stages (e.g. `FROM aleixmt/bmde-base:latest AS bmde-base`).
 [`docker-bake.hcl`](https://github.com/URV-teacher/bmde/blob/master/docker-bake.hcl) builds every image replacing those
@@ -64,6 +70,7 @@ for script in components/*/scripts/download_assets.sh; do "${script}"; done   # 
 docker buildx bake full --load   # full development environment, and the images it needs
 shell/test.sh                    # tests of every component inside it
 docker buildx bake dev --load    # development environment of the CLI
+docker buildx bake cli --load    # the CLI in Docker
 ```
 
 ## Versions

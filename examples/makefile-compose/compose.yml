@@ -1,0 +1,84 @@
+# Services of the Docker images of the BMDE that the Makefile next to this file uses: build (make, make clean...),
+# desmume (make run) and insight (make debug). Copy both to the root of your NDS project. The Makefile gives them the
+# name of the project (PROJECT), your user (BMDE_UID, BMDE_GID) and the tag of the images (BMDE_TAG); with compose
+# alone, e.g. `docker compose run --rm build`, the defaults below are used.
+#
+# To extend an image (e.g. to add a tool to the build), replace its image by a build of your Dockerfile, e.g.:
+#   build:
+#     build: .        # a Dockerfile starting with FROM aleixmt/bmde-linux:latest
+#
+# The windows of DeSmuME and Insight are shown in the X server of the host (Linux, or Windows 11 with WSLg), and the
+# sound of DeSmuME through its PulseAudio / PipeWire server: remove the mount of the sound if your computer has none.
+
+# Windows in the X server of the host, with its cookie (needed by Xwayland). When XAUTHORITY is unset (plain X11 with
+# `xhost +SI:localuser:$(id -un)`), /dev/null is mounted instead
+x-screen-environment: &screen-environment
+  MODE: host
+  DISPLAY: ${DISPLAY:-:0}
+  XAUTHORITY: /tmp/.Xauthority
+x-screen-volumes:
+  - &x11
+    type: bind
+    source: /tmp/.X11-unix
+    target: /tmp/.X11-unix
+    bind:
+      create_host_path: false
+  - &xauthority
+    type: bind
+    source: ${XAUTHORITY:-/dev/null}
+    target: /tmp/.Xauthority
+    read_only: true
+    bind:
+      create_host_path: false
+
+services:
+  # devkitARM and libnds: runs the Makefile of the course (its arguments are the targets)
+  build:
+    image: aleixmt/bmde-linux:${BMDE_TAG:-latest}
+    user: "${BMDE_UID:-1000}:${BMDE_GID:-1000}"
+    environment:
+      DOCKER_FLAG: 1
+    # The same path as in insight, where the debugger finds the sources of the ELF
+    working_dir: /input/${PROJECT:-project}
+    volumes:
+      - .:/input/${PROJECT:-project}
+
+  # DeSmuME, with the ROMs of the project in /roms (its arguments are the ones of DeSmuME and the ROM)
+  desmume:
+    image: aleixmt/desmume:${BMDE_TAG:-latest}
+    init: true
+    environment:
+      <<: *screen-environment
+      PULSE_SERVER: unix:/run/pulse/native
+    volumes:
+      - .:/roms:ro
+      - *x11
+      - *xauthority
+      - type: bind
+        source: ${XDG_RUNTIME_DIR:-/run/user/1000}/pulse/native
+        target: /run/pulse/native
+        bind:
+          create_host_path: false
+      # Settings of DeSmuME (controls), kept between runs
+      - desmume_config:/home/desmume/.config/desmume
+
+  # Insight, connected to the GDB stub in GDB_TARGET (its argument is the ELF)
+  insight:
+    image: aleixmt/insight:${BMDE_TAG:-latest}
+    init: true
+    stdin_open: true
+    tty: true
+    environment:
+      <<: *screen-environment
+      GDB_TARGET: ${GDB_TARGET:-}
+    working_dir: /input/${PROJECT:-project}
+    volumes:
+      - .:/input/${PROJECT:-project}:ro
+      - *x11
+      - *xauthority
+      # Preferences, sessions and breakpoints of Insight, kept between runs
+      - insight_config:/home/insight
+
+volumes:
+  desmume_config:
+  insight_config:

@@ -48,6 +48,10 @@ the current directory is the root of that repository.
 ---
 
 # 4. Installation considerations
+`scripts/install.sh` of the repository of `bmde` runs every step of this guide (downloads and installation) for the
+components you choose, in order: see [components installation](components.md#host-components). This guide explains
+each of those steps, to run them one by one and to test each component.
+
 Each component is installed in two stages:
 1. **Download**: `scripts/download_assets.sh` of its repository downloads the files that come from outside of the
    repository (e.g. devkitARM, the sources of DeSmuME) into its `assets/` folder. If a file is already there, it only
