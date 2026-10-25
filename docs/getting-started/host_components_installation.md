@@ -186,7 +186,8 @@ for NDS projects.
 
 #### devkitPro NDS project examples (optional)
 ##### Explanation
-Decompress the file `examples.tar.bz2` into `$DEVKITPRO`.
+Decompress the file `nds-examples.tar.gz` (the NDS examples of devkitPro, downloaded into `assets/` with the other
+assets) into `$DEVKITPRO/examples/nds`.
 
 ###### Proposed command
 ```shell
@@ -441,7 +442,8 @@ folder, where dlditool finds the patches given by name.
 
 ###### Download assets
 Download dlditool and the DLDI driver of the course into `components/dlditool-docker/assets/`. It also builds the ROM
-used by the test (the `libfatdir` example of devkitPro) with the devkitARM installed in the build operation.
+used by the test (the `libfatdir` example of devkitPro, which it downloads) with the devkitARM installed in the build
+operation.
 
 ```shell
 components/dlditool-docker/scripts/download_assets.sh
