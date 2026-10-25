@@ -190,8 +190,8 @@ def empty_project(tmp_path: Path) -> Path:
 @pytest.mark.parametrize(
     ("target", "expected"),
     [
-        ("build", ["aleixmt/bmde-linux:latest", "DOCKER_FLAG=1", "--user"]),
-        ("clean", ["aleixmt/bmde-linux:latest clean"]),
+        ("build", ["aleixmt/devkitarm-nds:latest", "DOCKER_FLAG=1", "--user"]),
+        ("clean", ["aleixmt/devkitarm-nds:latest clean"]),
         ("run", ["aleixmt/desmume:latest /roms/game.nds"]),
         (
             "debug",
@@ -345,7 +345,8 @@ def cli_compose_env(tmp_path: Path) -> Iterator[dict[str, str]]:
 
 @pytest.mark.parametrize("backend", ["docker", "host"])
 def test_cli_in_docker_builds_a_project(project: Path, cli_compose_env: dict[str, str], backend: str) -> None:
-    # docker: the CLI runs aleixmt/bmde-linux with the Docker of the host; host: the devkitARM of the image of the CLI
+    # docker: the CLI runs aleixmt/devkitarm-nds with the Docker of the host; host: the devkitARM of the image of the
+    # CLI
     result = run(
         [
             "docker",

@@ -182,8 +182,8 @@ method for them.
       explained in its comments).
 3. Use it:
     ```shell
-    make            # build, in aleixmt/bmde-linux
-    make clean      # and any other target of the Makefile, also in aleixmt/bmde-linux
+    make            # build, in aleixmt/devkitarm-nds
+    make clean      # and any other target of the Makefile, also in aleixmt/devkitarm-nds
     make run        # run, in aleixmt/desmume
     make debug      # debug, in aleixmt/desmume and aleixmt/insight
     ```

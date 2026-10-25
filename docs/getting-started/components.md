@@ -11,16 +11,16 @@ computer and run in Docker):
   backend of `bmde` and the Makefiles of the course use.
 * [Flatpak](#flatpak-desmume): only DeSmuME, for the `flatpak` backend of `bmde run`.
 
-| Component   | Used by                                  | Docker image           | `scripts/install.sh` | Flatpak |
-|-------------|------------------------------------------|------------------------|----------------------|---------|
-| `devkitarm` | `bmde build`, `make`                     | `aleixmt/bmde-linux`   | ✅                   |         |
-| `desmume`   | `bmde run`, `make run`                   | `aleixmt/desmume`      | ✅                   | ✅      |
-| `insight`   | `bmde debug`, `make debug`               | `aleixmt/insight`      | ✅                   |         |
-| `dlditool`  | `bmde patch`                             | `aleixmt/dlditool`     | ✅                   |         |
-| `grit`      | converting images into graphics data     | `aleixmt/grit`         | ✅                   |         |
-| `git`       | `bmde git`, git                          | `aleixmt/git-sshpass`  | ✅                   |         |
-| `vpn`       | `bmde git` (VPN of the URV)              | `aleixmt/forticlient`  | ✅                   |         |
-| `vscode`    | editing, with the ARM assembly extension | `aleixmt/vscode`       | ✅                   |         |
+| Component   | Used by                                  | Docker image              | `scripts/install.sh` | Flatpak |
+|-------------|------------------------------------------|---------------------------|----------------------|---------|
+| `devkitarm` | `bmde build`, `make`                     | `aleixmt/devkitarm-nds`   | ✅                   |         |
+| `desmume`   | `bmde run`, `make run`                   | `aleixmt/desmume`         | ✅                   | ✅      |
+| `insight`   | `bmde debug`, `make debug`               | `aleixmt/insight`         | ✅                   |         |
+| `dlditool`  | `bmde patch`                             | `aleixmt/dlditool`        | ✅                   |         |
+| `grit`      | converting images into graphics data     | `aleixmt/grit`            | ✅                   |         |
+| `git`       | `bmde git`, git                          | `aleixmt/git-sshpass`     | ✅                   |         |
+| `vpn`       | `bmde git` (VPN of the URV)              | `aleixmt/forticlient`     | ✅                   |         |
+| `vscode`    | editing, with the ARM assembly extension | `aleixmt/vscode`          | ✅                   |         |
 
 ## Docker components
 

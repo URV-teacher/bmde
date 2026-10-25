@@ -5,7 +5,7 @@
 #
 # To extend an image (e.g. to add a tool to the build), replace its image by a build of your Dockerfile, e.g.:
 #   build:
-#     build: .        # a Dockerfile starting with FROM aleixmt/bmde-linux:latest
+#     build: .        # a Dockerfile starting with FROM aleixmt/devkitarm-nds:latest
 #
 # The windows of DeSmuME and Insight are shown in the X server of the host (Linux, or Windows 11 with WSLg), and the
 # sound of DeSmuME through its PulseAudio / PipeWire server: remove the mount of the sound if your computer has none.
@@ -34,7 +34,7 @@ x-screen-volumes:
 services:
   # devkitARM and libnds: runs the Makefile of the course (its arguments are the targets)
   build:
-    image: aleixmt/bmde-linux:${BMDE_TAG:-latest}
+    image: aleixmt/devkitarm-nds:${BMDE_TAG:-latest}
     user: "${BMDE_UID:-1000}:${BMDE_GID:-1000}"
     environment:
       DOCKER_FLAG: 1

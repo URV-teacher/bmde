@@ -49,7 +49,7 @@ declare -A STEPS=(
 )
 # Docker image of each component, the one that the docker backend of bmde runs
 declare -A IMAGE=(
-  [devkitarm]=bmde-linux
+  [devkitarm]=devkitarm-nds
   [desmume]=desmume
   [insight]=insight
   [dlditool]=dlditool

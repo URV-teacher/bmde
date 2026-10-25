@@ -53,7 +53,7 @@ class DockerRunner(BuildBackend):
         args += ["-v", f"{spec.d}:{project_dir}:rw"]
         args += ["-w", project_dir]  # Start with working directory in project mounted
 
-        args += [docker_image("bmde-linux")]  # Base image
+        args += [docker_image("devkitarm-nds")]  # Base image
 
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)

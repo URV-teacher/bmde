@@ -193,7 +193,7 @@ def test_build_in_docker(machine: Machine) -> None:
     assert option(cmd, "--user") == [f"{os.getuid()}:{os.getgid()}"]
     assert option(cmd, "-v") == [f"{project}:/input/Hello:rw"]
     assert option(cmd, "-w") == ["/input/Hello"]
-    assert cmd[-2:] == ["aleixmt/bmde-linux:1.15.0", "clean"]
+    assert cmd[-2:] == ["aleixmt/devkitarm-nds:1.15.0", "clean"]
 
 
 def test_build_with_another_entrypoint_and_no_tty(machine: Machine) -> None:
@@ -209,7 +209,7 @@ def test_image_tag_setting_applies_to_the_cli(machine: Machine, monkeypatch: pyt
     monkeypatch.setenv("BMDE_DOCKER__IMAGE_TAG", "sha-0123abc")
 
     assert bmde("build").exit_code == 0
-    assert "aleixmt/bmde-linux:sha-0123abc" in machine.commands[0]
+    assert "aleixmt/devkitarm-nds:sha-0123abc" in machine.commands[0]
 
 
 def test_build_in_the_host_runs_make_in_the_project(machine: Machine, tmp_path: Path) -> None:
@@ -920,7 +920,7 @@ def test_backends_called_by_the_api_without_arguments(machine: Machine) -> None:
     build_docker, build_host, run_docker, run_host, debug_docker, debug_host, patch_host, git_host, git_docker = (
         commands
     )
-    assert build_docker[-1] == "aleixmt/bmde-linux:1.15.0"
+    assert build_docker[-1] == "aleixmt/devkitarm-nds:1.15.0"
     assert run_docker[-2:] == ["aleixmt/desmume:1.15.0", "/roms/Hello.nds"]
     assert "-it" not in build_docker
     assert build_host == ["make"]  # not in the PATH: the plain name
@@ -964,7 +964,7 @@ def test_api_loads_the_settings_when_not_given(machine: Machine, monkeypatch: py
     assert git_command(d=None) == 0
     assert debug_command(nds=None, elf=None) == 0
     assert all(cmd[0] == "docker" for cmd in machine.commands)
-    assert "aleixmt/bmde-linux:sha-0123abc" in machine.commands[0]
+    assert "aleixmt/devkitarm-nds:sha-0123abc" in machine.commands[0]
     assert create_git_spec(d=None).GitSpecOpts.d == Path.cwd()
 
 
