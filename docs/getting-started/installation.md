@@ -81,10 +81,13 @@ connection to the VPN, git and the debugger are done by hand.
     make run        # run in DeSmuME
     make debug      # debug with DeSmuME and Insight
     ```
-4. To use the git server of the course from outside the URV, connect to the VPN with `openfortivpn` (in another
-   terminal, it asks for your password and stays connected until you stop it), and then use git as usual:
+4. To use the git server of the course from outside the URV, connect to the VPN with `connect_vpn.sh`, as your user
+   (it uses `sudo` itself, only for openfortivpn). It takes your credentials from the variables `VPN_USERNAME`,
+   `VPN_PASSWORD` (or `VPN_PASSWORD_FILE`, a file with it), `VPN_HOST`, `VPN_PORT`, `VPN_REALM` and `VPN_CERT`, waits
+   until the VPN works and stays connected until you stop it (Ctrl+C), so run it in another terminal. Then use git as
+   usual; `vpn_healthcheck.sh -v` tells whether the VPN still works:
     ```shell
-    sudo openfortivpn HOST:PORT --username=USERNAME --realm=REALM --trusted-cert=CERT
+    connect_vpn.sh                                   # in another terminal
     git clone 12345678-A@git.deim.urv.cat:comp_20
     ```
 
@@ -104,8 +107,8 @@ and VPN helpers: your computer only needs [Docker](prerequisites.md#docker). Ins
    user in the image is `bmde`, with UID 1000 (the one of the first user of Linux): with another UID, the files of the
    build are not yours. If the windows of DeSmuME and Insight do not open, allow the user of the image with
    `xhost +SI:localuser:$(id -un)`.
-3. Use it as in a host: `make`, `make run`, `make debug`, `git`... To connect to the VPN, run
-   `sudo "$(command -v connect_vpn.sh)" &`, which takes your credentials from `/run/secrets` (see below).
+3. Use it as in a host: `make`, `make run`, `make debug`, `git`... To connect to the VPN, run `connect_vpn.sh &`,
+   which takes your credentials from `/run/secrets` (see below).
 
 To avoid typing all of that, copy [`examples/shell/compose.yml`](https://github.com/URV-teacher/bmde/blob/master/examples/shell/compose.yml)
 to the root of your project. It also brings the sound of DeSmuME, the VPN, your credentials (as Docker secrets, from
