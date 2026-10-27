@@ -54,4 +54,4 @@ def test_image_tag_setting_pins_every_image(monkeypatch: pytest.MonkeyPatch) -> 
     configure_docker_from_settings(load_settings())
 
     assert docker_image("insight") == "aleixmt/insight:sha-0123abc"
-    assert docker_image("bmde-linux") == "aleixmt/bmde-linux:sha-0123abc"
+    assert docker_image("devkitarm-nds") == "aleixmt/devkitarm-nds:sha-0123abc"

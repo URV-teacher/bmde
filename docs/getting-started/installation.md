@@ -51,6 +51,9 @@ in Docker or installed in your computer, so you can mix and match them.
     username = "..."
     password = "..."
     ```
+   On Linux, the VPN may also need the `ppp_async` kernel module loaded on the host (`sudo modprobe ppp_async`, and
+   `echo ppp_async | sudo tee /etc/modules-load.d/ppp.conf` to load it on every boot, see
+   [git](../commands/git.md#vpn-with-the-docker-backend-on-linux-the-ppp_async-kernel-module)).
 6. Use it in your projects:
     ```shell
     bmde git clone 12345678-A@git.deim.urv.cat:comp_20
@@ -182,8 +185,8 @@ method for them.
       explained in its comments).
 3. Use it:
     ```shell
-    make            # build, in aleixmt/bmde-linux
-    make clean      # and any other target of the Makefile, also in aleixmt/bmde-linux
+    make            # build, in aleixmt/devkitarm-nds
+    make clean      # and any other target of the Makefile, also in aleixmt/devkitarm-nds
     make run        # run, in aleixmt/desmume
     make debug      # debug, in aleixmt/desmume and aleixmt/insight
     ```

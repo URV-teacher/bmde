@@ -59,7 +59,7 @@ using their SHA-1, stored in the repository (`test/windows_builds.sha1`): it nee
 | `desmume_0.9.11.orig.tar.gz` | <https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/desmume/0.9.11-3build2/desmume_0.9.11.orig.tar.gz>, falling back to <http://archive.ubuntu.com/ubuntu/pool/universe/d/desmume/desmume_0.9.11.orig.tar.gz> | Upstream sources of DeSmuME 0.9.11, the version of the course, built with HUD and GDB stub | SHA-256 |
 | `desmume_0.9.11-3build2.diff.gz` | <https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/desmume/0.9.11-3build2/desmume_0.9.11-3build2.diff.gz>, falling back to <http://archive.ubuntu.com/ubuntu/pool/universe/d/desmume/desmume_0.9.11-3build2.diff.gz> | Patches of the Ubuntu package, which make the 0.9.11 sources build with current compilers | SHA-256 |
 | `hello-world-nds.nds` | <https://github.com/URV-teacher/hello-world-nds/releases/download/v1.0/hello-world-nds.nds> | ROM run by `test/test_desmume.sh` and `test/test_gdbport.sh` | SHA-256 |
-| `filesystem-nds.nds` | Built from the sources of [filesystem-nds](https://github.com/URV-teacher/filesystem-nds) at a fixed commit (<https://github.com/URV-teacher/filesystem-nds/archive/0121751d8ce58cd63fd959653b1c2f786f50d124.tar.gz>), with the local devkitARM and dlditool or with the images `aleixmt/bmde-linux` and `aleixmt/dlditool` | ROM run by `test/image/test_fat.sh`, which checks the files that it writes in the FAT image. The build is reproducible | SHA-256 |
+| `filesystem-nds.nds` | Built from the sources of [filesystem-nds](https://github.com/URV-teacher/filesystem-nds) at a fixed commit (<https://github.com/URV-teacher/filesystem-nds/archive/0121751d8ce58cd63fd959653b1c2f786f50d124.tar.gz>), with the local devkitARM and dlditool or with the images `aleixmt/devkitarm-nds` and `aleixmt/dlditool` | ROM run by `test/image/test_fat.sh`, which checks the files that it writes in the FAT image. The build is reproducible | SHA-256 |
 | `hello-world-nds.tar.gz` | <https://github.com/URV-teacher/hello-world-nds/archive/refs/heads/master.tar.gz> | Hello world project of the course, built and run by `test/test_operation.sh` | Not checked |
 
 Installed during the build (APT): the build dependencies of DeSmuME (`build-essential`, `autoconf`, `automake`,
@@ -101,7 +101,7 @@ tarball stored in git (history of insight-docker, `src/insight-7.3.50.20110803-c
 |-------|--------|---------|-------|
 | `dlditool-linux-x86_64.zip` | <https://www.chishm.com/DLDI/downloads/dlditool-linux-x86_64.zip> | dlditool, which patches the NDS ROMs with DLDI drivers so they can use the FAT library | SHA-256 |
 | `mpcf.dldi` | <https://www.chishm.com/DLDI/downloads/mpcf.dldi> | DLDI driver of the M3 / G6 / SuperCard CompactFlash, the one used by the course | SHA-256 |
-| `libfatdir.nds` | Built from the `libfatdir` example of devkitPro, at the commit installed by devkitarm-nds-docker (<https://github.com/devkitPro/nds-examples/archive/54926f9f2d44ab0ea383acd524851837fd3c2998.tar.gz>), with the local devkitARM or with the image `aleixmt/bmde-linux` ([Docker Hub](https://hub.docker.com/r/aleixmt/bmde-linux)) | ROM patched by `test/test_dlditool.sh`: it uses libfat, so it has a DLDI section. The build is reproducible | SHA-256 |
+| `libfatdir.nds` | Built from the `libfatdir` example of devkitPro, at the commit installed by devkitarm-nds-docker (<https://github.com/devkitPro/nds-examples/archive/54926f9f2d44ab0ea383acd524851837fd3c2998.tar.gz>), with the local devkitARM or with the image `aleixmt/devkitarm-nds` ([Docker Hub](https://hub.docker.com/r/aleixmt/devkitarm-nds)) | ROM patched by `test/test_dlditool.sh`: it uses libfat, so it has a DLDI section. The build is reproducible | SHA-256 |
 
 Installed during the build: `unzip` (APT).
 
@@ -140,4 +140,4 @@ Installed during the build: the dependencies of VS Code declared by its package 
 These assets are under our control, but they are downloaded from GitHub like any other asset: the ROM and the project
 of `hello-world-nds` (desmume-docker, devkitarm-nds-docker, insight-docker), the ROM of `filesystem-nds`
 (desmume-docker), the extension and its install script (vscode-arm-syntax-docker, arm-syntax-vscode-extension), and the
-images `aleixmt/bmde-linux` and `aleixmt/dlditool`, which build test ROMs (desmume-docker, dlditool-docker).
+images `aleixmt/devkitarm-nds` and `aleixmt/dlditool`, which build test ROMs (desmume-docker, dlditool-docker).

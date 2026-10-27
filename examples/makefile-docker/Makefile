@@ -3,7 +3,7 @@
 #
 # Copy it to the root of your NDS project instead of its Makefile: the only requirement of the computer is then Docker.
 # In the host, each target runs in the image of its component with docker run: the build (and any other target, e.g.
-# make clean) in aleixmt/bmde-linux, run in aleixmt/desmume and debug in aleixmt/desmume and aleixmt/insight.
+# make clean) in aleixmt/devkitarm-nds, run in aleixmt/desmume and debug in aleixmt/desmume and aleixmt/insight.
 #
 # Inside the containers (DOCKER_FLAG, which they get from here), or when the tools are installed (DEVKITARM, e.g. in a
 # host with scripts/install.sh of bmde, or in the shell of aleixmt/bmde-full), it is the Makefile of the course as is
@@ -26,7 +26,7 @@ PROJECT		:=	/input/$(TARGET)
 # The files created by the build are owned by the user of the host
 DOCKER_RUN	:=	docker run --rm -e DOCKER_FLAG=1
 BUILD_RUN	:=	$(DOCKER_RUN) --user $(shell id -u):$(shell id -g) -v "$(CURDIR):$(PROJECT)" -w $(PROJECT) \
-				aleixmt/bmde-linux:$(BMDE_TAG)
+				aleixmt/devkitarm-nds:$(BMDE_TAG)
 # Terminal debuggers need a TTY, only available if make has one
 TTY			:=	$(shell [ -t 0 ] && echo -t)
 

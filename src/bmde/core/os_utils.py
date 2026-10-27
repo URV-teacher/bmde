@@ -17,6 +17,7 @@
 import os
 import shutil
 import subprocess
+from pathlib import Path
 
 
 def is_command_available(cmd: str) -> bool:
@@ -47,3 +48,16 @@ def host_uid_gid() -> tuple[int, int]:
         return int(uid), int(gid)
     except Exception:
         return 1000, 1000
+
+
+def ppp_line_discipline_unavailable(root: Path = Path("/")) -> bool:
+    """Return True if a container can't use the PPP line discipline that the VPN (pppd) needs.
+
+    That happens when the ppp_async kernel module is neither loaded nor built in and the kernel doesn't let
+    unprivileged processes autoload line disciplines (dev.tty.ldisc_autoload = 0), as in recent Ubuntu kernels.
+    Returns False when it can't tell, e.g. outside Linux.
+    """
+    autoload = root / "proc" / "sys" / "dev" / "tty" / "ldisc_autoload"
+    if not autoload.is_file():
+        return False
+    return autoload.read_text().strip() == "0" and not (root / "sys" / "module" / "ppp_async").is_dir()

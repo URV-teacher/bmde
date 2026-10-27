@@ -9,7 +9,7 @@
 # Base image of the BMDE images and images of the components with programs that need a build. docker-bake.hcl replaces
 # these stages by the images being built
 FROM aleixmt/bmde-base:latest AS bmde-base
-FROM aleixmt/bmde-linux:latest AS devkitarm
+FROM aleixmt/devkitarm-nds:latest AS devkitarm
 FROM aleixmt/desmume:latest AS desmume
 FROM aleixmt/insight:latest AS insight
 FROM aleixmt/dlditool:latest AS dlditool

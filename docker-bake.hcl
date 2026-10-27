@@ -87,10 +87,10 @@ BASE_IMAGE = {
 }
 
 target "devkitarm" {
-  description = "aleixmt/bmde-linux: devkitARM r46 and libnds, to build NDS programs (bmde build)"
+  description = "aleixmt/devkitarm-nds: devkitARM r46 and libnds, to build NDS programs (bmde build)"
   context     = "components/devkitarm-nds-docker"
   contexts    = BASE_IMAGE
-  tags        = tags("bmde-linux")
+  tags        = tags("devkitarm-nds")
   cache-from  = cache_from("devkitarm")
   cache-to    = cache_to("devkitarm")
 }
