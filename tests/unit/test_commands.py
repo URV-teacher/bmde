@@ -151,6 +151,8 @@ def machine(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Machine
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    # The kernel modules of the real host must not decide whether the VPN can start
+    monkeypatch.setattr("bmde.commands.git.backends.docker.ppp_line_discipline_unavailable", lambda: False)
     monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path / "runtime"))
     monkeypatch.delenv("XAUTHORITY", raising=False)
     monkeypatch.delenv("PULSE_SERVER", raising=False)
@@ -682,6 +684,22 @@ def test_git_times_out_waiting_for_the_vpn(machine: Machine) -> None:
 
     with pytest.raises(TimeoutError):
         git_docker._ensure_vpn_healthy(spec, ExecOptions(), timeout_s=0)
+
+
+def test_git_explains_a_missing_ppp_module_instead_of_starting_the_vpn(
+    machine: Machine, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from bmde.commands.git.backends import docker as git_docker
+    from bmde.commands.git.spec import GitSpecOpts
+    from bmde.core.exec import ExecOptions
+
+    monkeypatch.setattr(git_docker, "ppp_line_discipline_unavailable", lambda: True)
+    machine.vpn_health = ["absent"]
+    spec = GitSpecOpts(Path.cwd(), *([None] * 13))
+
+    with pytest.raises(RuntimeError, match="modprobe ppp_async"):
+        git_docker._ensure_vpn_healthy(spec, ExecOptions())
+    assert machine.commands == []
 
 
 def test_git_fails_when_the_broken_vpn_cannot_be_removed(machine: Machine, monkeypatch: pytest.MonkeyPatch) -> None:

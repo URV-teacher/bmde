@@ -29,7 +29,7 @@ from bmde.core.docker import (
     docker_secrets,
 )
 from bmde.core.exec import ExecOptions, run_cmd
-from bmde.core.os_utils import host_uid_gid
+from bmde.core.os_utils import host_uid_gid, ppp_line_discipline_unavailable
 
 from ..spec import GitSpecOpts
 from .backend import GitBackend
@@ -122,6 +122,14 @@ def _ensure_vpn_healthy(spec: GitSpecOpts, exec_opts: ExecOptions, timeout_s: in
             subprocess.run(["docker", "rm", "-f", container_name], check=True, text=True)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to remove unhealthy container '{container_name}': {e}") from e
+
+    # Otherwise pppd fails inside the container ("Couldn't set tty to PPP discipline") after a misleading login
+    if ppp_line_discipline_unavailable():
+        raise RuntimeError(
+            "The VPN needs the ppp_async kernel module, which containers cannot load on this host "
+            "(dev.tty.ldisc_autoload = 0). Load it with 'sudo modprobe ppp_async', and add 'ppp_async' to "
+            "/etc/modules-load.d/ppp.conf to load it on every boot"
+        )
 
     log.info("Running VPN")
     _run_vpn(spec, exec_opts, container_name)

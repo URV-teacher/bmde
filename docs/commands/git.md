@@ -79,3 +79,26 @@ If possible, the option `--dry-run` will be implemented to simulate what the pro
 With `--verbose` shows more information and with `--trace` shows all logs. With `-q` shows no output.
 
 With `--vpn on|off` you can control the VPN. The default is `on`.
+
+### VPN with the `docker` backend on Linux: the `ppp_async` kernel module
+
+The VPN container runs `pppd`, which needs the PPP line discipline of the kernel, provided by the `ppp_async` module.
+Containers cannot load kernel modules themselves, so on hosts where the kernel does not autoload line disciplines
+(`dev.tty.ldisc_autoload = 0`, the default in recent Ubuntu kernels) the module must be loaded on the host. Otherwise
+the VPN logs in and then fails with `Couldn't set tty to PPP discipline: Operation not permitted`, and `bmde git`
+stops before starting it, telling you to load the module.
+
+Load it once:
+
+```sh
+sudo modprobe ppp_async
+```
+
+And load it on every boot:
+
+```sh
+echo ppp_async | sudo tee /etc/modules-load.d/ppp.conf
+```
+
+`sysctl dev.tty.ldisc_autoload` shows whether your kernel autoloads them, and `ls /sys/module/ppp_async` whether the
+module is already loaded.

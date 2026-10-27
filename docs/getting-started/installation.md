@@ -51,6 +51,9 @@ in Docker or installed in your computer, so you can mix and match them.
     username = "..."
     password = "..."
     ```
+   On Linux, the VPN may also need the `ppp_async` kernel module loaded on the host (`sudo modprobe ppp_async`, and
+   `echo ppp_async | sudo tee /etc/modules-load.d/ppp.conf` to load it on every boot, see
+   [git](../commands/git.md#vpn-with-the-docker-backend-on-linux-the-ppp_async-kernel-module)).
 6. Use it in your projects:
     ```shell
     bmde git clone 12345678-A@git.deim.urv.cat:comp_20

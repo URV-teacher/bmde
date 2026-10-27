@@ -130,6 +130,22 @@ def test_is_command_available() -> None:
     assert not os_utils.is_command_available("bmde-command-that-does-not-exist")
 
 
+@pytest.mark.parametrize(
+    ("autoload", "module_loaded", "expected"),
+    [("0", False, True), ("0", True, False), ("1", False, False), (None, False, False)],
+)
+def test_ppp_line_discipline_unavailable(
+    tmp_path: Path, autoload: str | None, module_loaded: bool, expected: bool
+) -> None:
+    if autoload is not None:
+        (tmp_path / "proc" / "sys" / "dev" / "tty").mkdir(parents=True)
+        (tmp_path / "proc" / "sys" / "dev" / "tty" / "ldisc_autoload").write_text(f"{autoload}\n")
+    if module_loaded:
+        (tmp_path / "sys" / "module" / "ppp_async").mkdir(parents=True)
+
+    assert os_utils.ppp_line_discipline_unavailable(tmp_path) is expected
+
+
 def test_host_uid_gid(monkeypatch: pytest.MonkeyPatch) -> None:
     assert os_utils.host_uid_gid() == (os.getuid(), os.getgid())
 
