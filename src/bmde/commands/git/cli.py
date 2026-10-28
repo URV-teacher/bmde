@@ -29,6 +29,7 @@ from bmde.core.shared_options import (
     GitEmailOpt,
     GitNameOpt,
     InteractiveOpt,
+    SkipKeyscanOpt,
     SshHostOpt,
     SshPasswordOpt,
     SshUsernameOpt,
@@ -68,6 +69,7 @@ def git_controller(
     vpn_test_dns: VpnTestDnsOpt = None,
     vpn_test_ip: VpnTestIpOpt = None,
     vpn_enabled: VpnOpt = None,
+    skip_keyscan: SkipKeyscanOpt = False,
 ) -> None:
     """Git wrapper with SSH password bypass and VPN management. git is a distributed version control system."""
     log.trace(
@@ -91,6 +93,7 @@ def git_controller(
         f"- VPN cert: {vpn_cert}\n"
         f"- VPN test DNS: {vpn_test_dns}\n"
         f"- VPN test IP: {vpn_test_ip}\n"
+        f"- Skip keyscan: {skip_keyscan!s}\n"
     )
 
     settings: Settings = ctx.obj["settings"]
@@ -118,6 +121,7 @@ def git_controller(
         vpn_test_dns=vpn_test_dns,
         vpn_test_ip=vpn_test_ip,
         vpn_enabled=vpn_enabled,
+        skip_keyscan=skip_keyscan,
         settings=settings.git,
     )
 

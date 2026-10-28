@@ -199,6 +199,9 @@ class DockerRunner(GitBackend):
         args: list[str] = []
         if exec_opts.arguments:
             args = exec_opts.arguments
+        # An option of the entrypoint of the image, which comes before the arguments of git: not for another entrypoint
+        if spec.skip_keyscan and not exec_opts.entrypoint:
+            args = ["--skip-keyscan", *args]
 
         run_args = [
             "docker",
