@@ -101,6 +101,19 @@ def test_legacy_env_vars_are_reported(monkeypatch: pytest.MonkeyPatch, caplog: p
     assert "BMDE_ROOT" not in caplog.text
 
 
+def test_loading_does_not_log_values(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture):
+    # Logged before the SecretsFilter knows the credentials, e.g. under the logging of a program using bmde.api
+    caplog.set_level(1)
+    config = tmp_path / "home" / ".config" / "bmde" / "bmde.toml"
+    config.parent.mkdir(parents=True)
+    config.write_text('[git.ssh]\npassword = "file-secret"\n')  # pragma: allowlist secret
+    monkeypatch.setenv("BMDE_GIT__VPN__PASSWORD", "env-secret")
+    load_settings()
+    assert "git.ssh.password" in caplog.text
+    assert "file-secret" not in caplog.text
+    assert "env-secret" not in caplog.text
+
+
 def test_project_config_search_stops_at_git_root(repo: Path):
     (repo.parent / "bmde.toml").touch()
     (repo / "src").mkdir()

@@ -97,8 +97,22 @@ def read_toml(path: Path) -> dict[str, Any]:
     with path.open("rb") as f:
         log.debug(f"Reading TOML file: {path}")
         settings = tomllib.load(f)
-        log.trace(f"Loaded settings: {settings}")
+        # Only the keys: the values can be credentials, and they are logged before the SecretsFilter knows them (or,
+        # when bmde is used as a library, under the filter of the caller, which does not know them at all)
+        log.trace(f"Loaded settings: {', '.join(key_paths(settings))}")
         return settings
+
+
+def key_paths(data: dict[str, Any], prefix: str = "") -> list[str]:
+    """Returns the dotted path of every leaf key of a nested dictionary, e.g. ["git.ssh.host", "logging.level"]."""
+    paths: list[str] = []
+    for key, value in data.items():
+        path = f"{prefix}{key}"
+        if isinstance(value, dict):
+            paths += key_paths(value, prefix=f"{path}.")
+        else:
+            paths.append(path)
+    return paths
 
 
 def env_config() -> dict[str, Any]:
@@ -113,7 +127,8 @@ def env_config() -> dict[str, Any]:
     """
     warn_legacy_env_vars(os.environ)
     result = EnvSettingsSource(Settings)()
-    log.debug(f"Parsed environment variables: {result!s}")
+    # Only the keys, for the same reason as in read_toml
+    log.debug(f"Parsed environment variables: {', '.join(key_paths(result))}")
     return result
 
 
