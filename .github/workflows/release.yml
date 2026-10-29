@@ -85,8 +85,27 @@ jobs:
       - name: Build package
         run: make dist
 
+      # The attestations are signed through the public services of Sigstore, which sometimes fail for a while (e.g. a
+      # 502 of Rekor lost the upload of 3.2.0, and a 500 the one of 1.13.0): retry once after a pause
       - name: Publish package distributions to PyPI
+        id: publish
+        continue-on-error: true
         uses: pypa/gh-action-pypi-publish@release/v1
+
+      # The action refuses to sign a package that already has an attestation, as the ones signed before the failure. They
+      # are written by its container, as root
+      - name: Prepare the retry of the publication
+        if: steps.publish.outcome == 'failure'
+        run: |
+          sudo rm -f dist/*.publish.attestation
+          sleep 120
+
+      - name: Retry publishing package distributions to PyPI
+        if: steps.publish.outcome == 'failure'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # A file uploaded by the first attempt can't be uploaded again
+          skip-existing: true
 
   publish-images:
     name: Publish Docker images
