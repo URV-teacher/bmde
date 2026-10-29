@@ -252,10 +252,12 @@ to this one. To use the controls of the course, run
 
 ###### Download assets
 Download the sources of DeSmuME 0.9.11 (and the ROM and project used by the tests) into
-`components/desmume-docker/assets/`.
+`components/desmume-docker/assets/`. Its other asset, `filesystem-nds.nds`, is only used by the tests of the Docker
+image, and it can't be built yet: it needs the DLDI patch installed in the patch operation.
 
 ```shell
-components/desmume-docker/scripts/download_assets.sh
+components/desmume-docker/scripts/download_assets.sh desmume_0.9.11.orig.tar.gz desmume_0.9.11-3build2.diff.gz \
+  hello-world-nds.nds hello-world-nds.tar.gz
 ```
 
 ###### Proposed command
