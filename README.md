@@ -232,6 +232,35 @@ bmde run
 See the [project roadmap][roadmap-url] for a full list of proposed features, and known [issues][issues-url] and its
 implementation state).
 
+What was planned for the components and the installation of the BMDE, and how it ended up:
+
+- [x] A Docker image of DeSmuME that builds the 0.9.11 of the course, with its command line emulator
+  (`components/desmume-docker`)
+- [x] Debug through the GDB stub of DeSmuME, with Insight or `gdb-multiarch` (`bmde debug`)
+- [x] Git through the URV VPN (`components/git-urv-vpn-docker`, `bmde git`)
+- [x] An extension of VS Code for the ARM syntax, whose workflow releases it and publishes it in the marketplace
+  (`components/arm-syntax-vscode-extension`), and an image of VS Code with it (`components/vscode-arm-syntax-docker`)
+- [x] A hello world NDS project of the course, with releases, used as a template and to test the components
+  ([hello-world-nds](https://github.com/URV-teacher/hello-world-nds))
+- [x] Install the components in a Linux computer with a script (`scripts/install.sh`)
+- [x] A common Docker shell of the BMDE with every component (`aleixmt/bmde-full`), while keeping the installation
+  in the host, with the same code
+- [x] Tell the installation of the `bmde` program from that of its components (see the
+  [installation][docs-installation])
+- [x] Implement, test and document every way to install it (see the [installation][docs-installation]):
+  - [x] `pipx install bmde`, rather than `sudo pip install bmde` or `venv/bin/pip install bmde`
+  - [x] From the sources, for developers (`git clone`, and its venv)
+  - [x] A Makefile with Docker (`examples/makefile-docker`)
+  - [x] A Makefile with Docker Compose (`examples/makefile-compose`)
+  - [ ] A Makefile with `bmde` (in progress)
+  - [x] In the host (`scripts/install.sh`)
+  - [x] The Docker shell (`aleixmt/bmde-full`, e.g. with `examples/shell/compose.yml`)
+  - [x] `bmde` itself in Docker, running the components in the Docker of the host (`compose.cli.yml`)
+- [x] Folders of their own for the configuration and the data once installed (e.g. `~/.config/bmde`)
+- [x] Configure `bmde` globally and for each command, in a TOML file (`bmde config`, `bmde.toml`)
+- [x] Keep the default configuration file up to date on each commit (`examples/bmde.toml`, which `make fmt`
+  regenerates and the linting checks)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
