@@ -58,6 +58,8 @@ Each component is installed in two stages:
    checks it. Every file with a fixed version is checked against its pinned SHA-256, and the script fails if it does not
    match. Run it with names of assets as arguments to download only those. All these external resources are listed in
    [external resources](../development/external-resources.md).
+   It downloads them with `curl`, which is not installed in every Ubuntu: install it with
+   `sudo apt-get install -y curl` first.
 2. **Installation**: the scripts in the `src/` folder of its repository, which only take files from the repository
    (`src/`, `config/` and `assets/`), never from the internet.
 
@@ -76,11 +78,16 @@ All scripts follow the same conventions:
 * They can be run again safely: a program that is already installed is not built again.
 * They need the files downloaded by the download script, and fail asking to run it if they are missing.
 
+Each test of a component ends printing `... OK` (e.g. `libnds OK`) when it passes, and stops with an error when it
+does not.
+
 Each code snippet assume that previous snippets have been run successfully.
 
 Snippets can be executed:
 
-* Manually, copying code line by line to a terminal
+* Manually, copying code line by line to a terminal. This only works for the short snippets (e.g. the download
+  commands): the install scripts and the tests find the files of their component (`assets/`, `config/`...) from
+  the path of their file, so run them with their file, as explained below.
 * Using the corresponding file for that snippet. The corresponding file for each snippet can be found in the source code
   of each snippet in this guide. This is because each snippet is embedded in the docs with mkdocs or with the script
   `scripts/render-guide.py`. Each script can be run with `bash components/COMPONENT/src/SCRIPT.sh` (or
@@ -245,10 +252,12 @@ to this one. To use the controls of the course, run
 
 ###### Download assets
 Download the sources of DeSmuME 0.9.11 (and the ROM and project used by the tests) into
-`components/desmume-docker/assets/`.
+`components/desmume-docker/assets/`. Its other asset, `filesystem-nds.nds`, is only used by the tests of the Docker
+image, and it can't be built yet: it needs the DLDI patch installed in the patch operation.
 
 ```shell
-components/desmume-docker/scripts/download_assets.sh
+components/desmume-docker/scripts/download_assets.sh desmume_0.9.11.orig.tar.gz desmume_0.9.11-3build2.diff.gz \
+  hello-world-nds.nds hello-world-nds.tar.gz
 ```
 
 ###### Proposed command
@@ -332,7 +341,7 @@ a normal user, allow it to use privileged ports from 1000 with `sudo sysctl net.
 --8<-- "components/desmume-docker/test/test_gdbport.sh"
 ```
 
-You should see `DeSmuME listening to port 1024` in your terminal if everything was OK.
+You should see `DeSmuME listening to port 1024` and `DeSmuME GDB stub OK` in your terminal if everything was OK.
 
 ##### `insight` and `arm-eabi-gdb`
 ###### Explanation
