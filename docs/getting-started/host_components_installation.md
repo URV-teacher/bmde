@@ -76,6 +76,9 @@ All scripts follow the same conventions:
 * They can be run again safely: a program that is already installed is not built again.
 * They need the files downloaded by the download script, and fail asking to run it if they are missing.
 
+Each test of a component ends printing `... OK` (e.g. `libnds OK`) when it passes, and stops with an error when it
+does not.
+
 Each code snippet assume that previous snippets have been run successfully.
 
 Snippets can be executed:
@@ -332,7 +335,7 @@ a normal user, allow it to use privileged ports from 1000 with `sudo sysctl net.
 --8<-- "components/desmume-docker/test/test_gdbport.sh"
 ```
 
-You should see `DeSmuME listening to port 1024` in your terminal if everything was OK.
+You should see `DeSmuME listening to port 1024` and `DeSmuME GDB stub OK` in your terminal if everything was OK.
 
 ##### `insight` and `arm-eabi-gdb`
 ###### Explanation
