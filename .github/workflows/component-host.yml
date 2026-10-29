@@ -36,7 +36,12 @@ on:
 
 jobs:
   host:
-    runs-on: ubuntu-latest
+    # The Ubuntu versions that docs/getting-started/host_components_installation.md says the scripts are tested on
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7

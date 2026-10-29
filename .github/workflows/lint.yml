@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   quality:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       # With the components, whose scripts/download_lib.sh make lint compares with the one of bmde
       - name: Checkout Code
