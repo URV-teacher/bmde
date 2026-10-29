@@ -303,6 +303,16 @@ def test_run_in_docker(machine: Machine) -> None:
     assert cmd[-2:] == ["aleixmt/desmume:1.15.0", "/roms/Hello.nds"]
 
 
+def test_run_in_docker_without_a_screen_uses_the_command_line_emulator(machine: Machine) -> None:
+    result = bmde("run", "--no-sound", "-s", "none")
+
+    assert result.exit_code == 0, result.output
+    (cmd,) = machine.commands
+    # The graphical emulator can't start without a screen
+    assert option(cmd, "-e") == ["MODE=none", "DESMUME_CLI=1", "DESMUME_USE_SOUND=0"]
+    assert option(cmd, "-p") == []
+
+
 def test_run_in_docker_with_a_fat_image_custom_controls_and_debug(machine: Machine, tmp_path: Path) -> None:
     (tmp_path / "fat.img").touch()
     (tmp_path / "desmume.ini").touch()
