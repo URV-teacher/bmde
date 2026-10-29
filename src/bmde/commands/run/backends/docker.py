@@ -26,7 +26,7 @@ from bmde.core.docker import (
     host_pulse_docker_args,
 )
 from bmde.core.exec import ExecOptions, run_cmd
-from bmde.core.types import DOCKER_DESMUME_DEBUG_HOST
+from bmde.core.types import DOCKER_DESMUME_DEBUG_HOST, DockerOutputOptions
 
 from ..spec import RunSpecOpts
 from .backend import RunBackend
@@ -51,6 +51,10 @@ class DockerRunner(RunBackend):
 
         screen_mounts, envs, ports = docker_screen_args(spec.graphical_output)
         mounts += screen_mounts
+        # Without a screen, the graphical emulator can't even start (it exits at once, "cannot open display"): run the
+        # one of the command line instead, e.g. to run a ROM unattended
+        if spec.graphical_output not in (DockerOutputOptions.HOST, DockerOutputOptions.VNC):
+            envs += ["-e", "DESMUME_CLI=1"]
 
         if spec.debug:
             port = spec.arm9_debug_port if spec.arm9_debug_port is not None else 1024
