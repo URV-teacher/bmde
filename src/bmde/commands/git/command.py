@@ -56,6 +56,7 @@ def create_git_spec(
     vpn_test_dns: str | None = None,
     vpn_test_ip: str | None = None,
     vpn_enabled: bool | None = None,
+    skip_keyscan: bool = False,
     settings: GitSettings | None = None,
 ) -> GitSpec:
     if d is None:
@@ -81,6 +82,7 @@ def create_git_spec(
             vpn_test_dns=(vpn_test_dns if vpn_test_dns is not None else settings.vpn.test_dns),
             vpn_test_ip=(vpn_test_ip if vpn_test_ip is not None else settings.vpn.test_ip),
             vpn_enabled=(vpn_enabled if vpn_enabled is not None else settings.vpn.enabled),
+            skip_keyscan=skip_keyscan,
         ),
         SpecExecOpts=SpecExecOpts(
             backend=(
@@ -138,6 +140,7 @@ def git_command(
     vpn_test_dns: str | None = None,
     vpn_test_ip: str | None = None,
     vpn_enabled: bool | None = None,
+    skip_keyscan: bool = False,
     settings: GitSettings | None = None,
 ) -> int | Popen[bytes]:
 
@@ -168,6 +171,7 @@ def git_command(
         vpn_test_dns=vpn_test_dns,
         vpn_test_ip=vpn_test_ip,
         vpn_enabled=vpn_enabled,
+        skip_keyscan=skip_keyscan,
         settings=settings,
     )
 

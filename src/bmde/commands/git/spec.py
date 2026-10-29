@@ -39,6 +39,9 @@ class GitSpecOpts(BaseSpec):
     vpn_test_ip: str | None
     # Run git through the VPN of the URV (not needed inside its network)
     vpn_enabled: bool = True
+    # Don't trust the key of the git server before running git, which needs to reach it: for the git commands that
+    # don't (e.g. a checkout), so that they run without the network of the URV
+    skip_keyscan: bool = False
 
 
 @dataclass

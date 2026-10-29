@@ -639,6 +639,19 @@ def test_git_without_the_vpn(machine: Machine, monkeypatch: pytest.MonkeyPatch) 
     assert option(machine.commands[-1], "--network") == ["container:forti-vpn"]
 
 
+def test_git_can_skip_the_keyscan_for_local_commands(machine: Machine) -> None:
+    machine.vpn_health = ["absent"]
+
+    # Independent of the VPN: inside the network of the URV, git without it still trusts the key of the server
+    assert bmde("git", *VPN, "--no-vpn", "--", "clone", "repo").exit_code == 0
+    assert bmde("git", *VPN, "--no-vpn", "--skip-keyscan", "--", "checkout", "abc1234").exit_code == 0
+
+    cloning, checking_out = machine.commands
+    assert cloning[-3:] == ["aleixmt/git-sshpass:1.15.0", "clone", "repo"]
+    # An option of the entrypoint of the image, before the arguments of git
+    assert checking_out[-4:] == ["aleixmt/git-sshpass:1.15.0", "--skip-keyscan", "checkout", "abc1234"]
+
+
 def test_git_starts_the_vpn_and_waits_for_it(machine: Machine, monkeypatch: pytest.MonkeyPatch) -> None:
     import time
 

@@ -330,6 +330,16 @@ VpnOpt = Annotated[
     typer.Option("--vpn/--no-vpn", help="Run git through the VPN of the URV (not needed inside its network)"),
 ]
 
+SkipKeyscanOpt = Annotated[
+    bool,
+    typer.Option(
+        "--skip-keyscan",
+        help="Don't trust the key of the git server first, which needs to reach it: only for the git commands that "
+        "don't reach it (e.g. a checkout), which then run offline too, e.g. with --no-vpn outside the URV (docker "
+        "backend)",
+    ),
+]
+
 
 # TODO Add all opts to this variable so they are marked as publicly exposed
 __all__ = [
@@ -356,6 +366,7 @@ __all__ = [
     "QuietOpt",
     "ShowConfigOpt",
     "ShowDefaultConfigOpt",
+    "SkipKeyscanOpt",
     "SoundOpt",
     "SshHostOpt",
     "SshPasswordOpt",
