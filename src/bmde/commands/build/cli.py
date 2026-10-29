@@ -26,6 +26,7 @@ from bmde.core.shared_options import (
     DirectoryOpt,
     DryRunOpt,
     EntrypointOpt,
+    IconOpt,
     InteractiveOpt,
 )
 
@@ -41,6 +42,7 @@ def build_controller(
     interactive: InteractiveOpt = True,
     entrypoint: EntrypointOpt = None,
     dry_run: DryRunOpt = False,
+    icon: IconOpt = None,
 ) -> None:
     """DevkitARM make wrapper. Builds NDS ROM from source code."""
     settings: Settings = ctx.obj["settings"]
@@ -54,6 +56,7 @@ def build_controller(
         f"- Interactive: {interactive!s}\n"
         f"- Entrypoint: {entrypoint!s}\n"
         f"- Dry run: {dry_run!s}\n"
+        f"- Icon: {icon!s}\n"
     )
 
     ret = build_command(
@@ -64,6 +67,7 @@ def build_controller(
         interactive=interactive,
         entrypoint=entrypoint,
         dry_run=dry_run,
+        icon=icon,
         settings=settings.build,
     )
 

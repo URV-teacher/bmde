@@ -22,6 +22,7 @@ from subprocess import Popen
 
 from bmde.core import logging
 from bmde.core.exec import ExecOptions
+from bmde.core.file_utils import validate_file
 
 from ...config.loader import load_settings
 from ...core.docker import configure_docker_from_settings
@@ -43,6 +44,7 @@ def create_build_spec(
     interactive: bool = True,
     dry_run: bool = False,
     entrypoint: Path | None = None,
+    icon: Path | None = None,
     settings: BuildSettings | None = None,
 ) -> BuildSpec:
     """Creates the BuildSpec from the provided arguments."""
@@ -59,9 +61,17 @@ def create_build_spec(
     if settings.execution_settings.arguments is not None:
         passed_args += settings.execution_settings.arguments
 
+    if icon is None and settings.icon is not None:
+        # A relative icon of the config refers to the project, so a repo bmde.toml can point to an icon of the repo
+        icon = settings.icon if settings.icon.is_absolute() else d / settings.icon
+    if icon is not None:
+        # ndstool chooses the format by the extension, and the docker backend mounts it over the default icon.bmp
+        icon = validate_file(icon.resolve(), ".bmp")
+
     return BuildSpec(
         BuildSpecOpts=BuildSpecOpts(
             d=d,
+            icon=icon,
         ),
         SpecExecOpts=SpecExecOpts(
             backend=backend
@@ -103,6 +113,7 @@ def build_command(
     interactive: bool = True,
     dry_run: bool = False,
     entrypoint: Path | None = None,
+    icon: Path | None = None,
     settings: BuildSettings | None = None,
 ) -> int | Popen[bytes]:
     """CLI Entrypoint. Orchestrates spec creation and execution."""
@@ -120,6 +131,7 @@ def build_command(
         interactive=interactive,
         dry_run=dry_run,
         entrypoint=entrypoint,
+        icon=icon,
         settings=settings,
     )
 

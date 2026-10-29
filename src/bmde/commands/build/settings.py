@@ -14,12 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from pydantic import BaseModel
+from pathlib import Path
+
+from pydantic import BaseModel, Field
 
 from bmde.config.command_settings import ExecutionSettings
 
 
 class BuildSettings(BaseModel):
     """Settings of the build command."""
+
+    icon: Path | None = Field(
+        default=None,
+        description="Path to a 32x32 BMP with a palette used as icon of the built .nds instead of the default one of "
+        "libnds (relative to the project directory)",
+    )
 
     execution_settings: ExecutionSettings = ExecutionSettings()

@@ -27,6 +27,9 @@ from .backend import BuildBackend
 
 log = logging.get_logger(__name__)
 
+# Icon of libnds in the image: the default GAME_ICON of ds_rules, and the one set by the Makefile of the course
+DEFAULT_ICON = "/URV/bmde/devkitPro/libnds/icon.bmp"
+
 
 class DockerRunner(BuildBackend):
     def is_available(self) -> bool:
@@ -52,6 +55,11 @@ class DockerRunner(BuildBackend):
         project_dir = docker_project_dir(Path(spec.d))
         args += ["-v", f"{spec.d}:{project_dir}:rw"]
         args += ["-w", project_dir]  # Start with working directory in project mounted
+
+        if spec.icon is not None:
+            # Mounted over the default icon instead of passing GAME_ICON to make so that it works with any entrypoint
+            # (e.g. a shell); the Makefile of the course points GAME_ICON to it
+            args += ["-v", f"{spec.icon}:{DEFAULT_ICON}:ro"]
 
         args += [docker_image("devkitarm-nds")]  # Base image
 

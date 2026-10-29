@@ -219,14 +219,14 @@ def test_config_secrets_numbers_and_discarding(tmp_path: Path):
 
 def test_config_advanced_list_options(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     target = tmp_path / "bmde.toml"
-    # entrypoint, arguments, background, dry_run, interactive, backend, save
-    result = runner.invoke(app, ["config", "build", "-a", "-f", str(target)], input="\n-j 4\n\n\n\n\ny\n")
+    # icon, entrypoint, arguments, background, dry_run, interactive, backend, save
+    result = runner.invoke(app, ["config", "build", "-a", "-f", str(target)], input="\n\n-j 4\n\n\n\n\ny\n")
     assert result.exit_code == 0, result.output
     assert tomllib.loads(target.read_text()) == {"build": {"execution_settings": {"arguments": ["-j", "4"]}}}
 
     # The current list is offered as default answer, so keeping it changes nothing
     monkeypatch.setenv("BMDE_BUILD__EXECUTION_SETTINGS__ARGUMENTS", '["-j", "4"]')
-    result = runner.invoke(app, ["config", "build", "-a", "-f", str(tmp_path / "other.toml")], input="\n" * 6)
+    result = runner.invoke(app, ["config", "build", "-a", "-f", str(tmp_path / "other.toml")], input="\n" * 7)
     assert "[-j 4]" in result.output
     assert "Nothing changed." in result.output
 

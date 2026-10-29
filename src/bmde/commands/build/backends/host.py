@@ -68,6 +68,13 @@ class HostRunner(BuildBackend):
             make_path = shutil.which("make")
             entry = "make" if make_path is None else make_path
         args = [entry]
+        if spec.icon is not None:
+            if exec_opts.entrypoint is None:
+                # The libnds of the host is not replaced as in the docker backend: a variable of the make command line
+                # overrides the GAME_ICON of the Makefile of the course (and of its sub-makes), unlike the environment
+                args += [f"GAME_ICON={spec.icon}"]
+            else:
+                log.warning(f"The icon is only passed to the default entrypoint (make), ignoring {spec.icon}")
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)
         # make builds the Makefile of its working directory: a directory given as argument would be taken as a target
