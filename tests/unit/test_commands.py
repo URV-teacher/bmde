@@ -227,6 +227,49 @@ def test_build_in_the_host_runs_make_in_the_project(machine: Machine, tmp_path: 
     assert kwargs["cwd"] == str(other)
 
 
+def test_build_icon_replaces_the_default_icon_of_the_image(machine: Machine, tmp_path: Path) -> None:
+    icon = tmp_path / "red.bmp"
+    icon.touch()
+
+    result = bmde("build", "--icon", str(icon))
+
+    assert result.exit_code == 0, result.output
+    (cmd,) = machine.commands
+    assert f"{icon}:/URV/bmde/devkitPro/libnds/icon.bmp:ro" in option(cmd, "-v")
+
+
+def test_build_icon_of_the_config_is_relative_to_the_project(machine: Machine, monkeypatch: pytest.MonkeyPatch) -> None:
+    machine.installed = {"make", "arm-none-eabi-gcc"}
+    (Path.cwd() / "art").mkdir()
+    (Path.cwd() / "art" / "icon.bmp").touch()
+    monkeypatch.setenv("BMDE_BUILD__ICON", "art/icon.bmp")
+
+    result = bmde("build", "-b", "host", "clean")
+
+    assert result.exit_code == 0, result.output
+    # A variable of the command line, because the Makefile of the course overrides GAME_ICON of the environment
+    assert machine.commands == [["/usr/bin/make", f"GAME_ICON={Path.cwd() / 'art' / 'icon.bmp'}", "clean"]]
+
+
+def test_host_build_icon_is_not_passed_to_another_entrypoint(machine: Machine, tmp_path: Path) -> None:
+    machine.installed = {"make", "arm-none-eabi-gcc"}
+    icon = tmp_path / "red.bmp"
+    icon.touch()
+
+    assert bmde("build", "-b", "host", "--entrypoint", "/bin/bash", "--icon", str(icon)).exit_code == 0
+    assert machine.commands == [["/bin/bash"]]
+
+
+def test_build_icon_must_be_a_bmp(machine: Machine, tmp_path: Path) -> None:
+    icon = tmp_path / "icon.png"
+    icon.touch()
+
+    result = bmde("build", "--icon", str(icon))
+
+    assert isinstance(result.exception, ValueError)
+    assert machine.commands == []
+
+
 def test_build_fails_when_the_backend_is_not_available(machine: Machine) -> None:
     result = bmde("build", "-b", "host")
 

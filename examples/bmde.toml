@@ -55,6 +55,9 @@ interactive = true
 
 # Settings of the build command.
 [build]
+# Path to a 32x32 BMP with a palette used as icon of the built .nds instead of the default one of libnds (relative to
+# the project directory)
+# icon = "<path>"
 
 # How the command is executed.
 [build.execution_settings]

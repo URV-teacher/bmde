@@ -24,6 +24,8 @@ from bmde.core.spec_opts import SpecExecOpts
 @dataclass
 class BuildSpecOpts(BaseSpec):
     d: Path
+    # Replaces the default icon of libnds, used by the Makefiles that do not choose their own one
+    icon: Path | None = None
 
 
 @dataclass

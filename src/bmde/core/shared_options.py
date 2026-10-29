@@ -261,6 +261,21 @@ ControlsOpt = Annotated[
     ),
 ]
 
+# Build
+
+IconOpt = Annotated[
+    Path | None,
+    typer.Option(
+        "--icon",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        resolve_path=True,
+        help="32x32 BMP with a palette used as icon of the built .nds instead of the default one of libnds (optional)",
+    ),
+]
+
 # Git
 
 
@@ -359,6 +374,7 @@ __all__ = [
     "FatImageOpt",
     "GitEmailOpt",
     "GitNameOpt",
+    "IconOpt",
     "InteractiveOpt",
     "LogFileOpt",
     "NdsRomOpt",
