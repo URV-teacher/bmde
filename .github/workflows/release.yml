@@ -37,7 +37,7 @@ jobs:
 
   release:
     needs: [lint, test, images]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     outputs:
@@ -61,7 +61,7 @@ jobs:
 
   pypi-publish:
     name: Upload release to PyPI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs: [release, publish-images]
     # Without a new version the package would get a development version (e.g. 1.13.1.dev7+gffa0227a0), which PyPI
     # rejects
@@ -90,7 +90,7 @@ jobs:
 
   publish-images:
     name: Publish Docker images
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     needs: release
     steps:
       - uses: actions/checkout@v7
