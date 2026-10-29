@@ -58,6 +58,8 @@ Each component is installed in two stages:
    checks it. Every file with a fixed version is checked against its pinned SHA-256, and the script fails if it does not
    match. Run it with names of assets as arguments to download only those. All these external resources are listed in
    [external resources](../development/external-resources.md).
+   It downloads them with `curl`, which is not installed in every Ubuntu: install it with
+   `sudo apt-get install -y curl` first.
 2. **Installation**: the scripts in the `src/` folder of its repository, which only take files from the repository
    (`src/`, `config/` and `assets/`), never from the internet.
 
@@ -83,7 +85,9 @@ Each code snippet assume that previous snippets have been run successfully.
 
 Snippets can be executed:
 
-* Manually, copying code line by line to a terminal
+* Manually, copying code line by line to a terminal. This only works for the short snippets (e.g. the download
+  commands): the install scripts and the tests find the files of their component (`assets/`, `config/`...) from
+  the path of their file, so run them with their file, as explained below.
 * Using the corresponding file for that snippet. The corresponding file for each snippet can be found in the source code
   of each snippet in this guide. This is because each snippet is embedded in the docs with mkdocs or with the script
   `scripts/render-guide.py`. Each script can be run with `bash components/COMPONENT/src/SCRIPT.sh` (or
