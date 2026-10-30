@@ -51,23 +51,31 @@ directory) to use another icon. It must be a 32x32 BMP with a palette (indexed c
 has 8 bits per pixel) using at most 16 colours; the first colour of the palette is transparent. The ROM does not depend
 on the icon in the Makefile of the course, so run `bmde build clean` first if the ROM is already built.
 
-* With the `docker` backend, the icon is mounted read-only over the default icon of the image. It is used by every
-  Makefile that uses the default icon, also from another `--entrypoint` (e.g. `/bin/bash`), but not by a Makefile that
-  sets `GAME_ICON` to another file (e.g. an `icon.bmp` of the project).
-* With the `host` backend, the libnds of the host is not modified: `GAME_ICON=PATH/TO/icon.bmp` is passed to `make`,
-  which overrides the `GAME_ICON` of any Makefile. It is ignored with another `--entrypoint`.
+With the default entrypoint (`make`), the icon is passed to it as `GAME_ICON=...`: a variable of the make command
+line overrides the `GAME_ICON` of any Makefile, so the icon is used even if the Makefile chooses its own one (e.g. the
+template of devkitPro, used by [hello-world-nds](https://github.com/URV-teacher/hello-world-nds), uses the `icon.bmp`
+of the project if there is one).
 
-To do the same without `bmde`, mount the icon over the default one when running the image:
+* With the `docker` backend, the icon is also mounted read-only over the default icon of the image, so it is used from
+  another `--entrypoint` (e.g. `/bin/bash`) too, by the Makefiles that use the default icon.
+* With the `host` backend, the libnds of the host is not modified, so the icon is ignored with another `--entrypoint`.
+
+To do the same without `bmde`, mount the icon over the default one when running the image, and pass it to make:
 
 ```shell
 docker run --rm -v "$PWD:/input/project" -w /input/project \
-  -v "$PWD/icon.bmp:/URV/bmde/devkitPro/libnds/icon.bmp:ro" aleixmt/devkitarm-nds
+  -v "$PWD/icon.bmp:/URV/bmde/devkitPro/libnds/icon.bmp:ro" aleixmt/devkitarm-nds \
+  GAME_ICON=/URV/bmde/devkitPro/libnds/icon.bmp
 ```
 
-or add it to the `volumes` of the service that builds the project in a `compose.yml`:
+or, in a `compose.yml`, add it to the `volumes` of the service that builds the project, and to its `command`:
 
 ```yaml
     volumes:
       - .:/input/project
       - ./icon.bmp:/URV/bmde/devkitPro/libnds/icon.bmp:ro
+    command: GAME_ICON=/URV/bmde/devkitPro/libnds/icon.bmp
 ```
+
+Without passing `GAME_ICON`, the mounted icon is only used by the Makefiles that use the default icon, such as the
+Makefile of the course.
