@@ -236,6 +236,18 @@ def test_build_icon_replaces_the_default_icon_of_the_image(machine: Machine, tmp
     assert result.exit_code == 0, result.output
     (cmd,) = machine.commands
     assert f"{icon}:/URV/bmde/devkitPro/libnds/icon.bmp:ro" in option(cmd, "-v")
+    # Also passed to make, so that it overrides a Makefile that chooses its own icon
+    assert cmd[-1] == "GAME_ICON=/URV/bmde/devkitPro/libnds/icon.bmp"
+
+
+def test_build_icon_is_only_mounted_for_another_entrypoint(machine: Machine, tmp_path: Path) -> None:
+    icon = tmp_path / "red.bmp"
+    icon.touch()
+
+    assert bmde("build", "--entrypoint", "/bin/bash", "--icon", str(icon)).exit_code == 0
+    (cmd,) = machine.commands
+    assert f"{icon}:/URV/bmde/devkitPro/libnds/icon.bmp:ro" in option(cmd, "-v")
+    assert cmd[-1] == "aleixmt/devkitarm-nds:1.15.0"
 
 
 def test_build_icon_of_the_config_is_relative_to_the_project(machine: Machine, monkeypatch: pytest.MonkeyPatch) -> None:

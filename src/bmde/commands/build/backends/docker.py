@@ -57,11 +57,15 @@ class DockerRunner(BuildBackend):
         args += ["-w", project_dir]  # Start with working directory in project mounted
 
         if spec.icon is not None:
-            # Mounted over the default icon instead of passing GAME_ICON to make so that it works with any entrypoint
-            # (e.g. a shell); the Makefile of the course points GAME_ICON to it
+            # Mounted over the default icon so that it is also used from another entrypoint (e.g. a shell)
             args += ["-v", f"{spec.icon}:{DEFAULT_ICON}:ro"]
 
         args += [docker_image("devkitarm-nds")]  # Base image
+
+        if spec.icon is not None and exec_opts.entrypoint is None:
+            # As in the host backend: a variable of the make command line also overrides a Makefile that chooses its
+            # own icon, e.g. the template of devkitPro, which uses the icon.bmp of the project if there is one
+            args += [f"GAME_ICON={DEFAULT_ICON}"]
 
         if exec_opts.arguments is not None:
             args += list(exec_opts.arguments)
