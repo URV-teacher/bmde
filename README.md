@@ -11,6 +11,7 @@
 [![Style (Ruff)][ruff-shield]][ruff-url]
 [![PyPI][pypi-shield]][pypi-url]
 [![Docs][docs-shield]][docs-url]
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/AleixMT/badge.svg)](https://hub.xerj.org/contributors/AleixMT)
 
 
 <!-- PROJECT LOGO -->
