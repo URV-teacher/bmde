@@ -20,7 +20,7 @@ repos:
         files: (\.py|^LICENSE_HEADER)$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.2
+    rev: v0.17.3
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -56,7 +56,7 @@ repos:
   # The commit types decide the next release (python-semantic-release), so a message that is not a Conventional Commit
   # would be left out of the changelog. The types are the ones of .gitmessage; merge, fixup! and squash! commits pass
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
